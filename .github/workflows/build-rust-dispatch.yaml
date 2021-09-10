@@ -108,7 +108,9 @@ jobs:
           python3 x.py dist src --stage 2
       - name: Build with x.py - dist packages
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
-        run: python3 x.py dist --stage 2 --exclude src/doc
+        run: python3 x.py dist --stage 2
+        # Excluding src/doc breaks build of 1.55
+        #run: python3 x.py dist --stage 2 --exclude src/doc
       - name: Build with x.py - dist packages - continue on error - problem with Long path on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         continue-on-error: true
