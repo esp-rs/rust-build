@@ -30,11 +30,11 @@ jobs:
     strategy:
       matrix:
         #os: [macos-latest, self-hosted-macos-arm64, ubuntu-latest, windows-latest]
-        os: [macos-latest, ubuntu-18.04 ]
+        #os: [macos-latest, ubuntu-18.04 ]
         #os: [macos-latest, ubuntu-18.04, windows-latest]
         #os: [ubuntu-18.04]
         #os: [windows-latest]
-        # os: [macos-latest]
+        os: [macos-latest]
         # os: [ [self-hosted, Windows, X64] ]
         # os: [ [self-hosted, macOS, M1] ]
         include:
