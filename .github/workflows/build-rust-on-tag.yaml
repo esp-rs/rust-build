@@ -44,12 +44,12 @@ jobs:
           ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-apple-darwin.tar.xz'
           ASSET_NAME: 'rust-1.55.0-dev-x86_64-x86_64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
-        - os: ubuntu-18.04
-          ARCH: ''
-          TARGET: linux-x64
-          ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_NAME: 'rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_CONTENT_TYPE: 'application/x-tar'
+        #- os: ubuntu-18.04
+        #  ARCH: ''
+        #  TARGET: linux-x64
+        #  ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+        #  ASSET_NAME: 'rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+        #  ASSET_CONTENT_TYPE: 'application/x-tar'
         #- os: windows-latest
         #  ARCH: ''
         #  TARGET: win-x64
