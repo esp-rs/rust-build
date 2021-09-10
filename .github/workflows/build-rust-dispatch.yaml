@@ -114,7 +114,7 @@ jobs:
       - name: Build with x.py - dist packages - continue on error - problem with Long path on Windows
         if: ${{ matrix.os == 'windows-latest' }}
         continue-on-error: true
-        run: python3 x.py dist --stage 2 --exclude src/doc
+        run: python3 x.py dist --stage 2
       - name: Build with x.py - dist packages - with cached LLVM
         if: ${{ matrix.os == 'macos-m1-self-hosted' }}
         run: python3 x.py dist --stage 2 --exclude src/doc --llvm-skip-rebuild TRUE
