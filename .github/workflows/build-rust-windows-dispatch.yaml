@@ -98,7 +98,8 @@ jobs:
       - name: Prepare build
         run: python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=rustfmt --dist-compression-formats='xz'
       - name: Build with x.py - only components
-        if: ${{ matrix.os == 'windows-self-hosted' }}
+        if: ${{ matrix.os == 'windows-self-hosted' ||  matrix.os == 'windows-latest' }}
+        continue-on-error: true
         run: |
           python3 x.py build compiler/rustc src/tools/rustfmt library/std --stage 2
           python3 x.py dist src --stage 2
@@ -107,10 +108,6 @@ jobs:
         run: python3 x.py dist --stage 2
         # Excluding src/doc breaks build of 1.55
         #run: python3 x.py dist --stage 2 --exclude src/doc
-      - name: Build with x.py - dist packages - continue on error - problem with Long path on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        continue-on-error: true
-        run: python3 x.py dist --stage 2
       - name: Build with x.py - dist packages - with cached LLVM
         if: ${{ matrix.os == 'macos-m1-self-hosted' }}
         run: python3 x.py dist --stage 2 --exclude src/doc --llvm-skip-rebuild TRUE
