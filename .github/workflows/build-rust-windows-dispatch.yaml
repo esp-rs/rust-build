@@ -91,6 +91,7 @@ jobs:
         with:
           repository: esp-rs/rust
           ref: esp-1.55.0
+          submodule: true
       - name: Set up Python
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
