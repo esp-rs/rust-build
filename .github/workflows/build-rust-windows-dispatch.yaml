@@ -1,9 +1,4 @@
-name: build-rust-dispatch
-
-# on:
-#   push:
-#     tags:
-#     - 'v*'
+name: build-rust-windows-dispatch
 
 on:
   workflow_dispatch
