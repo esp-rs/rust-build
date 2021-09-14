@@ -41,11 +41,11 @@ TOOLCHAIN_DESTINATION_DIR="~/.rustup/toolchains/esp"
 
 mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
 
-curl -O "https://github.com/esp-rs/rust-build/releases/tag/v${VERSION}/${RUST_DIST}.tar.xz"
+curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
 tar xvf ${RUST_DIST}.tar.xz
 ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
-curl -O "https://dl.espressif.com/dl/idf-rust/dist/noarch/${RUST_SRC_DIST}.tar.xz"
+curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_SRC_DIST}.tar.xz"
 tar xvf ${RUST_SRC_DIST}.tar.xz
 ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
@@ -111,11 +111,11 @@ TOOLCHAIN_DESTINATION_DIR="~/.rustup/toolchains/esp"
 
 mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
 
-curl -O "https://github.com/esp-rs/rust-build/releases/tag/v${VERSION}/${RUST_DIST}.tar.xz"
+curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
 tar xvf ${RUST_DIST}.tar.xz
 ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
-curl -O "https://dl.espressif.com/dl/idf-rust/dist/noarch/${RUST_SRC_DIST}.tar.xz"
+curl -LO "https://github.com/esp-rs/rust-build/releases/download/${RUST_SRC_DIST}.tar.xz"
 tar xvf ${RUST_SRC_DIST}.tar.xz
 ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
@@ -183,11 +183,11 @@ TOOLCHAIN_DESTINATION_DIR="~/.rustup/toolchains/esp"
 
 mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
 
-wget https://github.com/esp-rs/rust-build/releases/tag/v${VERSION}/${RUST_DIST}.tar.xz
+wget https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz
 tar xvf ${RUST_DIST}.tar.xz
 ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
-wget https://dl.espressif.com/dl/idf-rust/dist/noarch/${RUST_SRC_DIST}.tar.xz
+wget https://github.com/esp-rs/rust-build/releases/download/${RUST_SRC_DIST}.tar.xz
 tar xvf ${RUST_SRC_DIST}.tar.xz
 ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
@@ -256,7 +256,7 @@ $RustDist="rust-${VERSION}-${ARCH}"
 mkdir -p ~\.rustup\toolchains\ -ErrorAction SilentlyContinue
 pushd ~\.rustup\toolchains\
 
-Invoke-WebRequest "https://github.com/esp-rs/rust-build/releases/tag/v${VERSION}/${RUST_DIST}.tar.xz" -OutFile "${RustDist}.zip"
+Invoke-WebRequest "https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz" -OutFile "${RustDist}.zip"
 7z x .\${RustDist}.zip
 popd
 
