@@ -1,17 +1,17 @@
 # rust-build
 
 This repository contains:
-- workflows for building Rust fork esp-rs/rust with Xtensa support
-- binary artifacts in Releases
+- workflows for building Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
+- binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
 
 ## Quick start
 
 The installation process of ready to use custom build of Rust and LLVM:
 
-* [Linux Ubuntu 18, Ubuntu 20 x64, Mint 20 x64, OpenSUSE Thumbleweed x64](rust-on-xtensa-installation-x86_64-unknown-linux-gnu.md)
-* [macOS Big Sur x64](rust-on-xtensa-installation-x86_64-apple-darwin.md)
-* [macOS Big Sur M1](rust-on-xtensa-installation-aarch64-apple-darwin.md)
-* [Windows 10 x64](rust-on-xtensa-installation-x86_64-pc-windows-msvc.md)
+* [macOS Big Sur M1](#rust-on-xtensa-installation-for-macos-m1)
+* [macOS Big Sur x64](#rust-on-xtensa-installation-for-macos-x64)
+* [Linux x64](#rust-on-xtensa-installation-for-linux-x64)
+* [Windows 10 x64](#rust-on-xtensa-installation-for-windows-x64)
 * Not supported: Linux arm64 - missing support in ESP-IDF - https://github.com/espressif/esp-idf/issues/6475
 
 ## Installation
@@ -80,7 +80,7 @@ For the ESP32-S3 (Xtensa architecture):
 idf.py set-target esp32s3
 ```
 
-## Build and flash
+#### Build and flash
 
 ```sh
 idf.py build flash
@@ -150,7 +150,7 @@ For the ESP32-S3 (Xtensa architecture):
 idf.py set-target esp32s3
 ```
 
-## Build and flash
+#### Build and flash
 
 ```sh
 idf.py build flash
@@ -222,7 +222,7 @@ For the ESP32-S3 (Xtensa architecture):
 idf.py set-target esp32s3
 ```
 
-## Build and flash
+#### Build and flash
 
 ```sh
 idf.py build flash
