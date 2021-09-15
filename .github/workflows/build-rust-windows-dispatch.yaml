@@ -3,6 +3,10 @@ name: build-rust-windows-dispatch
 on:
   workflow_dispatch
 
+defaults:
+  run:
+    working-directory: d:/
+
 jobs:
   get_release:
     # https://github.com/octokit/request-action
