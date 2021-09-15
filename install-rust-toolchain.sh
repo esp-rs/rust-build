@@ -28,7 +28,7 @@ RUST_DIST="rust-${VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${VERSION}"
 TOOLCHAIN_DESTINATION_DIR="$HOME/.rustup/toolchains/esp"
 LLVM_RELEASE="esp-12.0.1-20210823"
-LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.zip"
+LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
 IDF_TOOLS_PATH="$HOME/.espressif"
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
 
