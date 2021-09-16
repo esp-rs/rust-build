@@ -64,7 +64,7 @@ rustup default esp
 echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
     curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
-    mkdir -p `dirname "${IDF_TOOL_XTENSA_ELF_CLANG}"`
+    mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
     tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}"
     echo "done"
 else
