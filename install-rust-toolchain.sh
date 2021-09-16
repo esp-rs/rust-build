@@ -16,7 +16,7 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
-    LLVM_RELEASE="esp-12.0.1-20210914"
+    #LLVM_RELEASE="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
