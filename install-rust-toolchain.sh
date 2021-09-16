@@ -1,7 +1,7 @@
 #!/bin/bash
 
 set -e
-set -v
+#set -v
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
@@ -65,7 +65,7 @@ echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
     curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
     mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
-    if [ ${ARCH} == "aarch64-apple-darwin" ]; then
+    if [ ${ARCH} == "aarch64-apple-darwin" ] || [ ${ARCH} == "x86_64-unknown-linux-gnu" ] ; then
         tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
     else
         tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}"
