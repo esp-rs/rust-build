@@ -41,9 +41,12 @@ echo "Installation of toolchain for ${ARCH}"
 VERSION="1.55.0-dev"
 RUST_DIST="rust-${VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${VERSION}"
-TOOLCHAIN_DESTINATION_DIR="$HOME/.rustup/toolchains/esp"
+if [ -z "${RUSTUP_HOME}" ]; then
+    RUSTUP_HOME="${HOME}/.rustup"
+fi
+TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
-IDF_TOOLS_PATH="$HOME/.espressif"
+IDF_TOOLS_PATH="${HOME}/.espressif"
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
 
