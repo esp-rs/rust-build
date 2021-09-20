@@ -1,7 +1,19 @@
 #!/bin/bash
 
+function install_rust() {
+    curl https://sh.rustup.rs -sSf | bash -s -- --profile minimal --default-toolchain nightly -y
+    if [ ! -z "${CARGO_HOME}" ]; then
+        source ${CARGO_HOME}/env
+    else
+        source ${HOME}/.cargo/env
+    fi
+}
+
 set -e
 #set -v
+
+which rust || install_rust
+rustup toolchain list | grep nightly || install_rust 
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
@@ -25,7 +37,6 @@ fi
 
 echo "Installation of toolchain for ${ARCH}"
 
-rustup toolchain list | grep nightly || rustup toolchain install nightly
 
 VERSION="1.55.0-dev"
 RUST_DIST="rust-${VERSION}-${ARCH}"
@@ -58,8 +69,6 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     fi
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 fi
-
-rustup default esp
 
 echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
