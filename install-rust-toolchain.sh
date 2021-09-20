@@ -46,7 +46,9 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
-IDF_TOOLS_PATH="${HOME}/.espressif"
+if [ -z "${IDF_TOOLS_PATH}" ]; then
+    IDF_TOOLS_PATH="${HOME}/.espressif"
+fi
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
 

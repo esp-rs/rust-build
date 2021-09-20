@@ -10,6 +10,7 @@ The installation process of ready to use custom build of Rust and LLVM:
 
 * [macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64](#rust-on-xtensa-installation-for-macos-and-linux)
 * [Windows 10 x64](#rust-on-xtensa-installation-for-windows-x64)
+* [Podman/Docker](#rust-podman-or-docker)
 * Not supported: Linux arm64 - missing support in ESP-IDF - https://github.com/espressif/esp-idf/issues/6475
 
 ## Installation
@@ -123,4 +124,23 @@ idf.py set-target esp32s3
 ```sh
 idf.py build flash
 ```
+
+### Rust with Podman or Docker
+
+Alternatively you might build the project in the container where image already contains pre-installed Rust and ESP-IDF.
+
+Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
+
+```
+podman run --device /dev/ttyUSB0 --device /dev/ttyUSB1 -it espressif/idf-rust-examples
+```
+
+Docker (does not support flashing from container):
+
+```
+docker run -it espressif/idf-rust-examples
+```
+
+Then follow instructions displayed on the screen.
+
 
