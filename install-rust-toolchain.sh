@@ -1,7 +1,19 @@
 #!/bin/bash
 
+function install_rust() {
+    curl https://sh.rustup.rs -sSf | bash -s -- --profile minimal --default-toolchain nightly -y
+    if [ ! -z "${CARGO_HOME}" ]; then
+        source ${CARGO_HOME}/env
+    else
+        source ${HOME}/.cargo/env
+    fi
+}
+
 set -e
 #set -v
+
+which rust || install_rust
+rustup toolchain list | grep nightly || install_rust 
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
@@ -25,14 +37,18 @@ fi
 
 echo "Installation of toolchain for ${ARCH}"
 
-rustup toolchain list | grep nightly || rustup toolchain install nightly
 
 VERSION="1.55.0-dev"
 RUST_DIST="rust-${VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${VERSION}"
-TOOLCHAIN_DESTINATION_DIR="$HOME/.rustup/toolchains/esp"
+if [ -z "${RUSTUP_HOME}" ]; then
+    RUSTUP_HOME="${HOME}/.rustup"
+fi
+TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
-IDF_TOOLS_PATH="$HOME/.espressif"
+if [ -z "${IDF_TOOLS_PATH}" ]; then
+    IDF_TOOLS_PATH="${HOME}/.espressif"
+fi
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
 
@@ -58,8 +74,6 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     fi
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 fi
-
-rustup default esp
 
 echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
