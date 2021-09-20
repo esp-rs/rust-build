@@ -10,7 +10,7 @@ The installation process of ready to use custom build of Rust and LLVM:
 
 * [macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64](#rust-on-xtensa-installation-for-macos-and-linux)
 * [Windows 10 x64](#rust-on-xtensa-installation-for-windows-x64)
-* [Podman/Docker](#rust-podman-or-docker)
+* [Podman/Docker](#rust-with-podman-or-docker)
 * Not supported: Linux arm64 - missing support in ESP-IDF - https://github.com/espressif/esp-idf/issues/6475
 
 ## Installation
