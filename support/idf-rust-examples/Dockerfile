@@ -4,7 +4,12 @@ FROM espressif/idf-rust
 RUN apt update \
     && apt install -y vim nano
 
-# Dependency for Cargo first example
+# Requirement for Cargo-first example
+RUN rustup install stable \
+    && rustup default stable \
+    && rustup component add rustfmt
+
+# Dependency for Cargo-first example
 RUN cargo install cargo-pio ldproxy espflash
 
 COPY entrypoint.sh /opt/esp/entrypoint.sh
