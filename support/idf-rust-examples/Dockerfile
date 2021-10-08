@@ -1,5 +1,4 @@
-#FROM espressif/idf-rust
-FROM idf-rust
+FROM espressif/idf-rust
 
 # Some tools to make life with examples easier
 RUN apt update \
