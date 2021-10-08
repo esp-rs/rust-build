@@ -31,6 +31,7 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
 $Version="1.55.0-dev"
 $Arch="x86_64-pc-windows-msvc"
 $RustDist="rust-${Version}-${Arch}"
+$RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${Version}/${RustDist}.zip"
 $ToolchainDestinationDir="${HOME}/.rustup/toolchains/esp"
 $LlvmRelease="esp-12.0.1-20210823"
 $IdfToolsPath="${HOME}/.espressif"
@@ -48,17 +49,21 @@ if (Test-Path -Path ${ToolchainDestinationDir} -PathType Container) {
 mkdir -p "${HOME}/.rustup/toolchains/" -ErrorAction SilentlyContinue
 Push-Location "${HOME}/.rustup/toolchains"
 
+"* installing esp toolchain"
 if (-Not (Test-Path -Path "${RustDist}.zip" -PathType Leaf)) {
-    Invoke-WebRequest "https://github.com/esp-rs/rust-build/releases/download/v${Version}/${RustDist}.zip" -OutFile "${RustDist}.zip"
+    "** downloading: ${RustDistZipUrl}"
+    Invoke-WebRequest "${RustDistZipUrl}" -OutFile "${RustDist}.zip"
 }
 7z x .\${RustDist}.zip
+"Toolchains:"
+ls
 Pop-Location
 
 "* installing ${IdfToolXtensaElfClang}"
 if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
     if (-Not (Test-Path -Path ${LlvmFile} -PathType Leaf)) {
         "** downloading: ${LlvmUrl}"
-        Invoke-WebRequest "https://github.com/espressif/llvm-project/releases/download/${LlvmRelease}/${LlvmFile}" -OutFile ${LlvmFile}
+        Invoke-WebRequest "${$LlvmUrl}" -OutFile ${LlvmFile}
     }
     mkdir -p "${IdfToolsPath}/tools/xtensa-esp32-elf-clang/" -ErrorAction SilentlyContinue
     7z x ${LlvmFile}
