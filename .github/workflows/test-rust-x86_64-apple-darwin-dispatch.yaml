@@ -79,6 +79,8 @@ jobs:
         working-directory: rust-esp32-std-hello
         run: |
           cat ../export-rust.sh
+          echo "Content of $LIBCLANG_PATH"
+          ls $LIBCLANG_PATH
           source ../export-rust.sh
           cargo +esp build
 
