@@ -75,5 +75,6 @@ jobs:
           repository: ivmarkov/rust-esp32-std-hello
           path: rust-esp32-std-hello
       - name: Build rust-esp32-std-hello
+        working-directory: rust-esp32-std-hello
         run: cargo +esp build
 
