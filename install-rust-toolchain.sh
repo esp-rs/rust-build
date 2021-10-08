@@ -12,7 +12,7 @@ function install_rust() {
 set -e
 #set -v
 
-which rust || install_rust
+which rustc || install_rust
 rustup toolchain list | grep nightly || install_rust 
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
