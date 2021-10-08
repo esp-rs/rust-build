@@ -28,7 +28,6 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-pc-windows-msvc"
 
 LLVM_RELEASE="esp-12.0.1-20210823"
-LIBRARY_EXTENSION="dylib"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
@@ -38,10 +37,8 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_RELEASE="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
-    LIBRARY_EXTENSION="so"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
-    LIBRARY_EXTENSION="dll"
 fi
 
 echo "Installation of toolchain for ${ARCH}"
@@ -100,10 +97,10 @@ fi
 
 echo "Add following command to ~/.zshrc"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
-echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/libclang.${LIBRARY_EXTENSION}\"
+echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 
 # Store export instructions in the file
 if [[ "$1" == "--export-file" ]]; then
     echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "$2"
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/libclang.${LIBRARY_EXTENSION}\" >> "$2"
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "$2"
 fi
