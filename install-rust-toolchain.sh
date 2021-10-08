@@ -1,7 +1,8 @@
 #!/bin/bash
 
 function install_rust() {
-    curl https://sh.rustup.rs -sSf | bash -s -- --profile minimal --default-toolchain nightly -y
+    curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
+
     if [ ! -z "${CARGO_HOME}" ]; then
         source ${CARGO_HOME}/env
     else
@@ -9,11 +10,16 @@ function install_rust() {
     fi
 }
 
+function install_rustfmt() {
+    rustup component add rustfmt --toolchain stable
+}
+
 set -e
 #set -v
 
+# Check required tooling - rustc, rustfmt
 which rustc || install_rust
-rustup toolchain list | grep nightly || install_rust 
+rustfmt --version | grep stable || install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"

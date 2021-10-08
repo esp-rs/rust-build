@@ -10,4 +10,3 @@ WORKDIR /opt
 
 COPY install-rust-toolchain.sh .
 RUN ./install-rust-toolchain.sh
-
