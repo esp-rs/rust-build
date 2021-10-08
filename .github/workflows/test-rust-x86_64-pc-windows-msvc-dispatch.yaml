@@ -68,7 +68,7 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Install Rust
         shell: pwsh
-        run: .\Install-RustToolchain.ps1
+        run: .\Install-RustToolchain.ps1 -ExportFile .\Export-Rust.ps1
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -76,5 +76,8 @@ jobs:
           path: rust-esp32-std-hello
       - name: Build rust-esp32-std-hello
         working-directory: rust-esp32-std-hello
-        run: cargo +esp build
+        shell: pwsh
+        run: |
+          . ..\Export-Rust.ps1
+          cargo +esp build
 

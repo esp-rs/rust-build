@@ -1,3 +1,9 @@
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [String]
+    $ExportFile = ''
+)
 
 $ErrorActionPreference = "Stop"
 #Set-PSDebug -Trace 1
@@ -53,5 +59,10 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
 }
 
 "Add following command to PowerShell profile"
-'$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
-'$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
+$ExportContent='$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
+$ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
+$ExportContent
+
+if ('' -ne $ExportFile) {
+    OutFile -FilePath $ExportFile -InputObject $ExportContent
+}

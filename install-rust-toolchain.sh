@@ -92,4 +92,7 @@ fi
 echo "Add following command to ~/.zshrc"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 
-
+# Store export instructions in the file
+if [[ "$1" == "--export-file" ]]; then
+    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" >> "$2"
+fi

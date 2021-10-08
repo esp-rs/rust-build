@@ -67,7 +67,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Install Rust
-        run: ./install-rust-toolchain.sh
+        run: ./install-rust-toolchain.sh --export-file export-rust.sh
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
@@ -75,5 +75,7 @@ jobs:
           path: rust-esp32-std-hello
       - name: Build rust-esp32-std-hello
         working-directory: rust-esp32-std-hello
-        run: cargo +esp build
+        run: |
+          source ../export-rust.sh
+          cargo +esp build
 
