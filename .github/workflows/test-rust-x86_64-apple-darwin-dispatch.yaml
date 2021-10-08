@@ -68,11 +68,13 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Install Rust
         run: ./install-rust-toolchain.sh --export-file export-rust.sh
-      - name: Checkout repository
+      - name: Checkout repository rust-esp32-std-hello
         uses: actions/checkout@v2
         with:
           repository: ivmarkov/rust-esp32-std-hello
           path: rust-esp32-std-hello
+      - name: Install Cargo-first build dependencies
+        run: cargo install cargo-pio ldproxy
       - name: Build rust-esp32-std-hello
         working-directory: rust-esp32-std-hello
         run: |
