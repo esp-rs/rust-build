@@ -64,5 +64,5 @@ $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/li
 $ExportContent
 
 if ('' -ne $ExportFile) {
-    OutFile -FilePath $ExportFile -InputObject $ExportContent
+    Out-File -FilePath $ExportFile -InputObject $ExportContent
 }
