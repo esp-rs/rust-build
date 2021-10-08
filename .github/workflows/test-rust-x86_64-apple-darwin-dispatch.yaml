@@ -79,10 +79,10 @@ jobs:
         working-directory: rust-esp32-std-hello
         run: |
           cat ../export-rust.sh
-          echo "Content of $LIBCLANG_PATH"
-          ls $LIBCLANG_PATH
           export PATH="/Users/runner/.espressif/tools/xtensa-esp32-elf-clang/esp-12.0.1-20210823-x86_64-apple-darwin/bin/:$PATH"
           export LIBCLANG_PATH="/Users/runner/.espressif/tools/xtensa-esp32-elf-clang/esp-12.0.1-20210823-x86_64-apple-darwin/lib/"
+          echo "Content of $LIBCLANG_PATH"
+          ls $LIBCLANG_PATH
           source ../export-rust.sh
           cargo +esp build
 
