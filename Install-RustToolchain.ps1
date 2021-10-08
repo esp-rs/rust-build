@@ -20,6 +20,12 @@ if ((rustup show | Select-String -Pattern stable).Length -eq 0) {
     rustup toolchain install stable
 }
 
+# It seems there is a dependency on nightly for some reason only on Windows
+# It might be caused by way of packaging to dist ZIP.
+if ((rustup show | Select-String -Pattern nightly).Length -eq 0) {
+    rustup toolchain install nightly
+}
+
 if (-Not (Get-Command rustfmt -errorAction SilentlyContinue)) {
     InstallRustFmt
 }
