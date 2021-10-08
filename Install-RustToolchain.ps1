@@ -63,7 +63,7 @@ Pop-Location
 if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
     if (-Not (Test-Path -Path ${LlvmFile} -PathType Leaf)) {
         "** downloading: ${LlvmUrl}"
-        Invoke-WebRequest "${$LlvmUrl}" -OutFile ${LlvmFile}
+        Invoke-WebRequest "${LlvmUrl}" -OutFile ${LlvmFile}
     }
     mkdir -p "${IdfToolsPath}/tools/xtensa-esp32-elf-clang/" -ErrorAction SilentlyContinue
     7z x ${LlvmFile}
