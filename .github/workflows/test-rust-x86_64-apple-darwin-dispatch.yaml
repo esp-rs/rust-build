@@ -1,4 +1,4 @@
-name: Test build of Rust examples on Windows
+name: Test macOS x86_64 - build of Rust examples
 
 on:
   workflow_dispatch
@@ -13,20 +13,20 @@ jobs:
         #os: [macos-latest, ubuntu-18.04 ]
         #os: [macos-latest, ubuntu-18.04, windows-latest]
         #os: [ubuntu-18.04]
-        os: [windows-latest]
-        # os: [macos-latest]
+        #os: [windows-latest]
+        os: [macos-latest]
         # os: [ [self-hosted, Windows, X64] ]
         # os: [ [self-hosted, macOS, M1] ]
         #os: [ windows-self-hosted, macos-m1-self-hosted ]
         # os: [ windows-self-hosted ]
         include:
-        # - os: macos-latest
-        #   ARCH: ''
-        #   TARGET: macos-x64
-        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-apple-darwin.tar.xz'
-        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-x86_64-apple-darwin.tar.xz'
-        #   ASSET_CONTENT_TYPE: 'application/x-tar'
-        #   LLVM_ROOT_OPTION: ''
+        - os: macos-latest
+          ARCH: ''
+          TARGET: macos-x64
+          ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.55.0-dev-x86_64-x86_64-apple-darwin.tar.xz'
+          ASSET_CONTENT_TYPE: 'application/x-tar'
+          LLVM_ROOT_OPTION: ''
         # - os: ubuntu-18.04
         #   ARCH: ''
         #   TARGET: linux-x64
@@ -34,13 +34,13 @@ jobs:
         #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
         #   ASSET_CONTENT_TYPE: 'application/x-tar'
         #   LLVM_ROOT_OPTION: ''
-        - os: windows-latest
-          ARCH: ''
-          TARGET: win-x64
-          ASSET_PATH: 'build/dist/esp.zip'
-          ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
-          ASSET_CONTENT_TYPE: 'application/zip'
-          LLVM_ROOT_OPTION: ''
+        # - os: windows-latest
+        #   ARCH: ''
+        #   TARGET: win-x64
+        #   ASSET_PATH: 'build/dist/esp.zip'
+        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
+        #   ASSET_CONTENT_TYPE: 'application/zip'
+        #   LLVM_ROOT_OPTION: ''
         # - os: windows-self-hosted
         #   ARCH: ''
         #   TARGET: win-x64
@@ -67,8 +67,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Install Rust
-        shell: pwsh
-        run: .\Install-RustToolchain.ps1
+        run: ./install-rust-toolchain.sh
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
