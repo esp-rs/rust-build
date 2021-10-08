@@ -16,6 +16,7 @@ RUN if [ ! -e /opt/rust-esp32-example ]; then git clone https://github.com/espre
 
 # Test builds
 RUN cd /opt/rust-esp32-example \
+    && . $IDF_PATH/export.sh
     && idf.py build \
     && idf.py fullclean
 

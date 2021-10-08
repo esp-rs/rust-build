@@ -4,12 +4,8 @@ on:
   workflow_dispatch
 
 jobs:
-
-
-  build-idf-rust:
-    name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
-    needs: get_release
+  build-idf-rust-examples:
+    name: Build IDF Rust Examples for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
