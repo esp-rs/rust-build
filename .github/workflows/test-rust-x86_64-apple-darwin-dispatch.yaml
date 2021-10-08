@@ -78,6 +78,7 @@ jobs:
       - name: Build rust-esp32-std-hello
         working-directory: rust-esp32-std-hello
         run: |
+          cat ../export-rust.sh
           source ../export-rust.sh
           cargo +esp build
 
