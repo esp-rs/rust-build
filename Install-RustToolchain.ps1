@@ -54,8 +54,6 @@ if (-Not (Test-Path -Path "${RustDist}.zip" -PathType Leaf)) {
 7z x .\${RustDist}.zip
 Pop-Location
 
-rustup default esp
-
 "* installing ${IdfToolXtensaElfClang}"
 if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
     if (-Not (Test-Path -Path ${LlvmFile} -PathType Leaf)) {
