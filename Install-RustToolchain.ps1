@@ -8,12 +8,24 @@ param (
 $ErrorActionPreference = "Stop"
 #Set-PSDebug -Trace 1
 
+function InstallRustFmt() {
+    rustup component add rustfmt --toolchain=stable
+}
+
 if (-Not (Get-Command 7z -errorAction SilentlyContinue)) {
     choco install 7zip
 }
 
-if ((rustup show | Select-String -Pattern nightly).Length -eq 0) {
-    rustup toolchain install nightly
+if ((rustup show | Select-String -Pattern stable).Length -eq 0) {
+    rustup toolchain install stable
+}
+
+if (-Not (Get-Command rustfmt -errorAction SilentlyContinue)) {
+    InstallRustFmt
+}
+
+if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
+    InstallRustFmt
 }
 
 $Version="1.55.0-dev"

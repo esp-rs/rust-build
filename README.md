@@ -80,7 +80,7 @@ Tested OS: Windows 10 x64
 #### Prerequisites
 
 - Visual Studio - installed with option Desktop development with C++
-- rustup - installed with nightly toolchain - https://rustup.rs/
+- rustup - installed with stable toolchain - https://rustup.rs/
 - Chocolatey - https://chocolatey.org/
 
 #### Installation commands for PowerShell
