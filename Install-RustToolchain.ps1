@@ -8,12 +8,22 @@ param (
 $ErrorActionPreference = "Stop"
 #Set-PSDebug -Trace 1
 
+function InstallRustup() {
+    Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
+    ./rustup-init.exe --default-toolchain stable -y
+    $env:PATH+="%USERPROFILE%\.cargo\bin;$env:PATH"
+}
+
 function InstallRustFmt() {
     rustup component add rustfmt --toolchain=stable
 }
 
-if (-Not (Get-Command 7z -errorAction SilentlyContinue)) {
+if (-Not (Get-Command 7z -ErrorAction SilentlyContinue)) {
     choco install 7zip
+}
+
+if (-Not (Get-Command rustup -ErrorAction SilentlyContinue)) {
+    InstallRustup
 }
 
 if ((rustup show | Select-String -Pattern stable).Length -eq 0) {
