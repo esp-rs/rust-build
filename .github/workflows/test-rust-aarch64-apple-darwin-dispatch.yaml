@@ -74,11 +74,24 @@ jobs:
           path: rust-esp32-std-hello
       - name: Install Cargo-first build dependencies
         run: cargo install cargo-pio ldproxy
-      - name: Build rust-esp32-std-hello
+      - name: Build rust-esp32-std-hello xtensa-esp32-espidf
         working-directory: rust-esp32-std-hello
         run: |
           cat ../export-rust.sh
           source ../export-rust.sh
           ls $LIBCLANG_PATH
-          cargo +esp build
-
+          cargo +esp build --target xtensa-esp32-espidf
+      - name: Build rust-esp32-std-hello xtensa-esp32s2-espidf
+        working-directory: rust-esp32-std-hello
+        run: |
+          cat ../export-rust.sh
+          source ../export-rust.sh
+          ls $LIBCLANG_PATH
+          cargo +esp build --target xtensa-esp32s2-espidf
+      - name: Build rust-esp32-std-hello xtensa-esp32-espidf
+        working-directory: rust-esp32-std-hello riscv32imc-esp-espidf
+        run: |
+          cat ../export-rust.sh
+          source ../export-rust.sh
+          ls $LIBCLANG_PATH
+          cargo +esp build --target riscv32imc-esp-espidf
