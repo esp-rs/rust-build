@@ -91,8 +91,8 @@ jobs:
           source ../export-rust.sh
           ls $LIBCLANG_PATH
           cargo +esp build --target xtensa-esp32s2-espidf
-      - name: Build rust-esp32-std-hello xtensa-esp32-espidf
-        working-directory: rust-esp32-std-hello riscv32imc-esp-espidf
+      - name: Build rust-esp32-std-hello riscv32imc-esp-espidf
+        working-directory: rust-esp32-std-hello
         run: |
           cat ../export-rust.sh
           source ../export-rust.sh
