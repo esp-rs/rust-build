@@ -11,7 +11,7 @@ $ErrorActionPreference = "Stop"
 function InstallRustup() {
     Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
     ./rustup-init.exe --default-toolchain stable -y
-    $env:PATH+="%USERPROFILE%\.cargo\bin;$env:PATH"
+    $env:PATH+="$env:USERPROFILE\.cargo\bin;$env:PATH"
 }
 
 function InstallRustFmt() {
