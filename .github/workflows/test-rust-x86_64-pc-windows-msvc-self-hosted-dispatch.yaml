@@ -74,8 +74,6 @@ jobs:
         with:
           repository: ivmarkov/rust-esp32-std-hello
           path: rust-esp32-std-hello
-      - name: Install Cargo-first build dependencies
-        run: cargo install cargo-pio ldproxy
       - name: Build rust-esp32-std-hello
         working-directory: rust-esp32-std-hello
         shell: pwsh

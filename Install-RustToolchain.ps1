@@ -89,6 +89,9 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
     "already installed"
 }
 
+"Install common dependencies"
+cargo install cargo-pio ldproxy
+
 "Add following command to PowerShell profile"
 $ExportContent='$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
 $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
