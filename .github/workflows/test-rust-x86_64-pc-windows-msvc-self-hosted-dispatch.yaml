@@ -83,5 +83,6 @@ jobs:
         shell: pwsh
         run: |
           . ..\Export-Rust.ps1
+          $env:IDF_CCACHE_ENABLE=""
           cargo +esp build
 
