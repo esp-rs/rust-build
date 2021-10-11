@@ -1,0 +1,84 @@
+name: Test macOS M1 self-hosted - build of Rust examples
+
+on:
+  workflow_dispatch
+
+jobs:
+  build-idf-rust-examples:
+    name: Build IDF Rust Examples for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        #os: [macos-latest, self-hosted-macos-arm64, ubuntu-latest, windows-latest]
+        #os: [macos-latest, ubuntu-18.04 ]
+        #os: [macos-latest, ubuntu-18.04, windows-latest]
+        #os: [ubuntu-18.04]
+        #os: [windows-latest]
+        # os: [macos-latest]
+        # os: [ [self-hosted, Windows, X64] ]
+        # os: [ [self-hosted, macOS, M1] ]
+        os: [ macos-m1-self-hosted ]
+        # os: [ windows-self-hosted ]
+        include:
+        - os: macos-m1-self-hosted
+          ARCH: ''
+          ASSET_PATH: 'build/dist/rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
+          ASSET_CONTENT_TYPE: 'application/x-tar'
+          LLVM_ROOT_OPTION: ''
+        # - os: ubuntu-18.04
+        #   ARCH: ''
+        #   TARGET: linux-x64
+        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+        #   ASSET_CONTENT_TYPE: 'application/x-tar'
+        #   LLVM_ROOT_OPTION: ''
+        # - os: windows-latest
+        #   ARCH: ''
+        #   TARGET: win-x64
+        #   ASSET_PATH: 'build/dist/esp.zip'
+        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
+        #   ASSET_CONTENT_TYPE: 'application/zip'
+        #   LLVM_ROOT_OPTION: ''
+        # - os: windows-self-hosted
+        #   ARCH: ''
+        #   TARGET: win-x64
+        #   ASSET_PATH: 'build/dist/esp.zip'
+        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
+        #   ASSET_CONTENT_TYPE: 'application/zip'
+        #   LLVM_ROOT_OPTION: '--llvm-root=C:/llvm-project'
+        # - os: macos-m1-self-hosted
+        #   ARCH: ''
+        #   TARGET: win-x64
+        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
+        #   ASSET_NAME: 'rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
+        #   ASSET_CONTENT_TYPE: 'application/x-tar'
+        #   LLVM_ROOT_OPTION: ''
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Set up Python
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+      - name: Setup Ninja
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
+        uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Install Rust
+        run: ./install-rust-toolchain.sh --export-file export-rust.sh
+      - name: Checkout repository rust-esp32-std-hello
+        uses: actions/checkout@v2
+        with:
+          repository: ivmarkov/rust-esp32-std-hello
+          path: rust-esp32-std-hello
+      - name: Install Cargo-first build dependencies
+        run: cargo install cargo-pio ldproxy
+      - name: Build rust-esp32-std-hello
+        working-directory: rust-esp32-std-hello
+        run: |
+          cat ../export-rust.sh
+          source ../export-rust.sh
+          ls $LIBCLANG_PATH
+          cargo +esp build
+
