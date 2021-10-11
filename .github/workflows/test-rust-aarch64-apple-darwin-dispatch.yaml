@@ -65,6 +65,9 @@ jobs:
       - name: Setup Ninja
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Clean environment before running test
+        if: ${{ matrix.os == 'macos-m1-self-hosted' }}
+        run: rm -rf "${HOME}/.rustup/toolchains/esp"
       - name: Install Rust
         run: ./install-rust-toolchain.sh --export-file export-rust.sh
       - name: Checkout repository rust-esp32-std-hello
