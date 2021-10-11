@@ -6,12 +6,14 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
+$ExportContent = ""
 #Set-PSDebug -Trace 1
 
 function InstallRustup() {
     Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
     ./rustup-init.exe --default-toolchain stable -y
-    $env:PATH+="$env:USERPROFILE\.cargo\bin;$env:PATH"
+    $env:PATH+=";$env:USERPROFILE\.cargo\bin"
+    $ExportContent+="`n" + '$env:PATH+=";$env:USERPROFILE\.cargo\bin"'
 }
 
 function InstallRustFmt() {
@@ -93,7 +95,7 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
 cargo install cargo-pio ldproxy
 
 "Add following command to PowerShell profile"
-$ExportContent='$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
+$ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
 $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
 $ExportContent
 
