@@ -69,7 +69,7 @@ jobs:
       - name: Clean environment before running test
         if: ${{ matrix.os == 'windows-self-hosted' }}
         shell: pwsh
-        run: Remove-Item -Recurse -Force "$env:USERPROFILE/.rustup/toolchains/esp"
+        run: Remove-Item -Recurse -Force "$env:USERPROFILE/.rustup/toolchains/esp" -ErrorAction SilentlyContinue
       - name: Install Rust
         shell: pwsh
         run: .\Install-RustToolchain.ps1 -ExportFile .\Export-Rust.ps1
