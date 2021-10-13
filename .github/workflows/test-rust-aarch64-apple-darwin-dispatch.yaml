@@ -98,3 +98,42 @@ jobs:
           source ../export-rust.sh
           ls $LIBCLANG_PATH
           cargo +esp build --target riscv32imc-esp-espidf
+      - name: Prepare artifact for upload
+        working-directory: rust-esp32-std-hello/target/xtensa-esp32-espidf/debug/
+        run: zip ../.../../../rust-esp32-std-hello-xtensa-esp32-espidf.zip rust-esp32-std-hello
+      - name: Prepare artifact for upload
+        working-directory: rust-esp32-std-hello/target/xtensa-esp32s2-espidf/debug/
+        run: zip ../.../../../rust-esp32-std-hello-xtensa-esp32s2-espidf.zip rust-esp32-std-hello
+      - name: Prepare artifact for upload
+        working-directory: rust-esp32-std-hello/target/riscv32imc-esp-espidf/debug/
+        run: zip ../.../../../rust-esp32-std-hello-riscv32imc-esp-espidf.zip rust-esp32-std-hello
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: rust-esp32-std-hello-xtensa-esp32-espidf.zip
+          asset_name: rust-esp32-std-hello-xtensa-esp32-espidf.zip
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: rust-esp32-std-hello-xtensa-esp32s2-espidf.zip
+          asset_name: rust-esp32-std-hello-xtensa-esp32s2-espidf.zip
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: rust-esp32-std-hello-riscv32imc-esp-espidf.zip
+          asset_name: rust-esp32-std-hello-riscv32imc-esp-espidf.zip
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
