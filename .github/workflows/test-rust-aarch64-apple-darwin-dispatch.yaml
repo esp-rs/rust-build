@@ -29,6 +29,7 @@ jobs:
 
   build-idf-rust-examples:
     name: Build IDF Rust Examples for ${{ matrix.os }}
+    needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
