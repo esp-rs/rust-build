@@ -108,7 +108,7 @@ jobs:
         working-directory: rust-esp32-std-hello/target/riscv32imc-esp-espidf/debug/
         run: zip ../.../../../rust-esp32-std-hello-riscv32imc-esp-espidf.zip rust-esp32-std-hello
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-esp32
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -118,7 +118,7 @@ jobs:
           asset_name: rust-esp32-std-hello-xtensa-esp32-espidf.zip
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-esp32s2
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -128,7 +128,7 @@ jobs:
           asset_name: rust-esp32-std-hello-xtensa-esp32s2-espidf.zip
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Upload Release Asset
-        id: upload-release-asset
+        id: upload-release-asset-esp32c3
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
