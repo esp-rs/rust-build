@@ -6,6 +6,8 @@ param (
 )
 
 $ErrorActionPreference = "Stop"
+# Disable progress bar when downloading - speed up download - https://stackoverflow.com/questions/28682642/powershell-why-is-using-invoke-webrequest-much-slower-than-a-browser-download
+$ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
 
