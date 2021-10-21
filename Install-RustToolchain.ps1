@@ -48,12 +48,12 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
     InstallRustFmt
 }
 
-$Version="1.55.0-dev"
+$Version="1.56.0-dev"
 $Arch="x86_64-pc-windows-msvc"
 $RustDist="rust-${Version}-${Arch}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${Version}/${RustDist}.zip"
 $ToolchainDestinationDir="${HOME}/.rustup/toolchains/esp"
-$LlvmRelease="esp-12.0.1-20210823"
+$LlvmRelease="esp-12.0.1-20210914"
 $IdfToolsPath="${HOME}/.espressif"
 $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmRelease}-${Arch}"
 $LlvmArch="win64"

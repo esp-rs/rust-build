@@ -27,7 +27,7 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
 
-LLVM_RELEASE="esp-12.0.1-20210823"
+LLVM_RELEASE="esp-12.0.1-20210914"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
@@ -44,7 +44,7 @@ fi
 echo "Installation of toolchain for ${ARCH}"
 
 
-VERSION="1.55.0-dev"
+VERSION="1.56.0-dev"
 RUST_DIST="rust-${VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${VERSION}"
 if [ -z "${RUSTUP_HOME}" ]; then
