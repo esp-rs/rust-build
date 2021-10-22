@@ -20,7 +20,7 @@ jobs:
           ARCH: ''
           TARGET: macos-x64
           ASSET_PATH: 'build/dist/rust-1.56.0-dev-x86_64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-x86_64-x86_64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.56.0-dev-x86_64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
