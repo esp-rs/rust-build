@@ -44,6 +44,7 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+        ref: build/1.56
       - name: Set up Python
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
