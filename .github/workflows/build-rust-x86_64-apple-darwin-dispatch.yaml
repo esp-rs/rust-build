@@ -67,6 +67,7 @@ jobs:
           python3 x.py dist src --stage 2
       - name: Build with x.py - dist packages - continue on error - macOS pgk problem
         if: ${{ matrix.os == 'macos-latest' }}
+        continue-on-error: true
         run: python3 x.py dist --stage 2
       - name: Build with x.py - dist packages
         if: ${{ matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
