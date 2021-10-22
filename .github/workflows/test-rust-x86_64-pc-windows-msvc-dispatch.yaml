@@ -1,7 +1,12 @@
 name: Test Windows - build of Rust examples
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      rust_build_branch:
+        description: 'Branch with test scripts'
+        required: true
+        default: 'main'
 
 jobs:
   build-idf-rust-examples:
@@ -21,6 +26,8 @@ jobs:
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust_build_branch }}
       - name: Set up Python
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2

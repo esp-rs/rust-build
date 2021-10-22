@@ -1,7 +1,12 @@
 name: Test macOS M1 self-hosted - build of Rust examples
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      rust_build_branch:
+        description: 'Branch with test scripts'
+        required: true
+        default: 'main'
 
 jobs:
   get_release:
@@ -45,7 +50,7 @@ jobs:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
-          ref: build/1.56
+          ref: ${{ github.event.inputs.rust_build_branch }}
       - name: Set up Python
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
