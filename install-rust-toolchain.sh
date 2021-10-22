@@ -31,7 +31,7 @@ LLVM_RELEASE="esp-12.0.1-20210914"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
-    LLVM_RELEASE="esp-12.0.1-20210823"
+    #LLVM_RELEASE="esp-12.0.1-20210823"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
