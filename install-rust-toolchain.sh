@@ -1,5 +1,62 @@
 #!/bin/bash
 
+# Default values
+TOOLCHAIN_VERSION="1.56.0-dev"
+if [ -z "${RUSTUP_HOME}" ]; then
+    RUSTUP_HOME="${HOME}/.rustup"
+fi
+TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
+
+INSTALLATION_MODE="install" # reinstall, uninstall
+EXTRA_CRATES="cargo-pio ldproxy"
+
+# Process positional arguments
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -c|--extra-crates)
+      EXTRA_CRATES="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -e|--export-file)
+      EXPORT_FILE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -t|--toolchain-version)
+      TOOLCHAIN_VERSION="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -d|--toolchain-destination)
+      TOOLCHAIN_DESTINATION_DIR="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -i|--installation-mode)
+      INSTALLATION_MODE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    *)    # unknown option
+      POSITIONAL+=("$1") # save it in an array for later
+      shift # past argument
+      ;;
+  esac
+done
+
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+echo "Processing configuration:"
+echo "--installation-mode     = ${INSTALLATION_MODE}"
+echo "--export-file           = ${EXPORT_FILE}"
+echo "--extra-crates          = ${EXTRA_CRATES}"
+echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
+echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
+
 function install_rust() {
     curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
 
@@ -42,24 +99,33 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
 fi
 
-echo "Installation of toolchain for ${ARCH}"
+echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
 
-VERSION="1.56.0-dev"
-RUST_DIST="rust-${VERSION}-${ARCH}"
-RUST_SRC_DIST="rust-src-${VERSION}"
-if [ -z "${RUSTUP_HOME}" ]; then
-    RUSTUP_HOME="${HOME}/.rustup"
-fi
-TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
+RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
+RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
-RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_DIST}.tar.xz"
+RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
-if [ -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
+if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ] ; then
+    echo "Removing:"
+
+    echo " - ${TOOLCHAIN_DESTINATION_DIR}"
+    rm -rf "${TOOLCHAIN_DESTINATION_DIR}"
+
+    echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
+    rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
+
+    if [ "${INSTALLATION_MODE}" == "uninstall" ]; then
+        exit 0
+    fi
+fi
+
+if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
     echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
     echo "Please, remove the directory before new installation."
     exit 1
@@ -76,7 +142,7 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
     if [ ! -f ${RUST_SRC_DIST}.tar.xz ]; then
-        curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${VERSION}/${RUST_SRC_DIST}.tar.xz"
+        curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
         tar xf ${RUST_SRC_DIST}.tar.xz
     fi
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
@@ -84,7 +150,9 @@ fi
 
 echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
-    curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
+    if [ ! -f "${LLVM_FILE}" ]; then
+        curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
+    fi
     mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
     if [ ${ARCH} == "x86_64-apple-darwin" ] || [ ${ARCH} == "aarch64-apple-darwin" ] || [ ${ARCH} == "x86_64-unknown-linux-gnu" ] ; then
         tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
@@ -96,12 +164,17 @@ else
     echo "already installed"
 fi
 
+if [[ ! -z "${EXTRA_CRATES}" ]]; then
+    echo "Installing additional extra crates: ${EXTRA_CRATES}"
+    cargo install ${EXTRA_CRATES}
+fi
+
 echo "Add following command to ~/.zshrc"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 
 # Store export instructions in the file
-if [[ "$1" == "--export-file" ]]; then
-    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "$2"
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "$2"
+if [[ ! -z "${EXPORT_FILE}" ]]; then
+    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
 fi
