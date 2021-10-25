@@ -79,7 +79,7 @@ set -e
 #set -v
 
 # Check required tooling - rustc, rustfmt
-which rustc || install_rust
+command -v rustup || install_rust
 rustup toolchain list | grep nightly || install_rust_nightly
 rustfmt --version | grep stable || install_rustfmt
 
