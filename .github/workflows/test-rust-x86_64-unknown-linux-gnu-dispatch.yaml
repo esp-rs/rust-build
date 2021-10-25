@@ -7,6 +7,10 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      toolchain_version:
+        description: 'Version of Rust IDF toolchain'
+        required: true
+        default: '1.56.0-dev'
 
 jobs:
   build-idf-rust-examples:
@@ -36,18 +40,6 @@ jobs:
       - name: Setup Ninja
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Install Rust
-        run: ./install-rust-toolchain.sh --export-file export-rust.sh
-      - name: Checkout repository rust-esp32-std-hello
-        uses: actions/checkout@v2
-        with:
-          repository: ivmarkov/rust-esp32-std-hello
-          path: rust-esp32-std-hello
-      - name: Install Cargo-first build dependencies
-        run: cargo install cargo-pio ldproxy
-      - name: Build rust-esp32-std-hello
-        working-directory: rust-esp32-std-hello
-        run: |
-          source ../export-rust.sh
-          cargo +esp build
+      - name: Test Rust toolchain by compiling STD demo
+        run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }}
 
