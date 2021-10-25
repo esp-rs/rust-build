@@ -67,6 +67,10 @@ function install_rust() {
     fi
 }
 
+function install_rust_nightly() {
+    rustup toolchain install nightly
+}
+
 function install_rustfmt() {
     rustup component add rustfmt --toolchain stable
 }
@@ -76,6 +80,7 @@ set -e
 
 # Check required tooling - rustc, rustfmt
 which rustc || install_rust
+rustup toolchain list | grep nightly || install_rust_nightly
 rustfmt --version | grep stable || install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
