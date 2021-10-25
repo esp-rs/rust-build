@@ -41,7 +41,7 @@ jobs:
           ARCH: ''
           TARGET: win-x64
           ASSET_PATH: 'build/dist/rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.56.0.1-dev-aarch64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
