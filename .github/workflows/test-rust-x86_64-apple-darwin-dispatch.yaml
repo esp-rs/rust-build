@@ -7,6 +7,10 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      toolchain_version:
+        description: 'Version of Rust IDF toolchain'
+        required: true
+        default: '1.56.0-dev'
 
 jobs:
   build-idf-rust-examples:
@@ -37,5 +41,5 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Test Rust toolchain by compiling STD demo
-        run: ./test-rust-toolchain.sh --toolchain-version esp-1.55.0
+        run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }}
 
