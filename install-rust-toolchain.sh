@@ -8,7 +8,7 @@ fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 INSTALLATION_MODE="install" # reinstall, uninstall
-EXTRA_CRATES="cargo-pio ldproxy"
+EXTRA_CRATES="cargo-pio espflash ldproxy"
 
 # Process positional arguments
 POSITIONAL=()

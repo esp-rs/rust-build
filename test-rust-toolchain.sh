@@ -2,6 +2,9 @@
 
 # Default values
 TOOLCHAIN_VERSION="1.56.0-dev"
+if [ -z "${RUSTUP_HOME}" ]; then
+    RUSTUP_HOME="${HOME}/.rustup"
+fi
 TOOLCHAIN_PREFIX="esp"
 BUILD_TARGET="xtensa-esp32-espidf"
 
@@ -43,7 +46,10 @@ echo "--toolchain-version  = ${TOOLCHAIN_VERSION}"
 TOOLCHAIN_NAME="${TOOLCHAIN_PREFIX}-${TOOLCHAIN_VERSION}"
 EXPORT_FILE="export-rust-${TOOLCHAIN_NAME}.sh"
 
-./install-rust-toolchain.sh --installation-mode reinstall --export-file "${EXPORT_FILE}" --toolchain-version ${TOOLCHAIN_VERSION}
+./install-rust-toolchain.sh --installation-mode reinstall \
+    --export-file "${EXPORT_FILE}" \
+    --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
+    --toolchain-version ${TOOLCHAIN_VERSION}
 . "./${EXPORT_FILE}"
 
 RUST_STD_DEMO="rust-esp32-std-demo"
