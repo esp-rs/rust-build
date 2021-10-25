@@ -8,6 +8,7 @@ fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 INSTALLATION_MODE="install" # reinstall, uninstall
+CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="cargo-pio espflash ldproxy"
 
 # Process positional arguments
@@ -41,6 +42,10 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -x|--clear-cache)
+      CLEAR_DOWNLOAD_CACHE="YES"
+      shift
+      ;;
     *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
       shift # past argument
@@ -56,6 +61,7 @@ echo "--export-file           = ${EXPORT_FILE}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
+echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 
 function install_rust() {
     curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
@@ -124,6 +130,14 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
 
     echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
+
+    if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+        echo " - ${RUST_SRC_DIST}.tar.xz"
+        rm -f "${RUST_SRC_DIST}.tar.xz"
+
+        echo " - ${LLVM_FILE}"
+        rm -f "${LLVM_FILE}"
+    fi
 
     if [ "${INSTALLATION_MODE}" == "uninstall" ]; then
         exit 0
