@@ -34,13 +34,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-18.04]
         include:
-        - os: ubuntu-20.04
+        - os: ubuntu-18.04
           ARCH: ''
           TARGET: linux-x64
           ASSET_PATH: 'build/dist/rust-1.56.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+          ASSET_NAME: 'rust-1.56.0.1-dev-x86_64-unknown-linux-gnu.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
@@ -51,13 +51,15 @@ jobs:
           ref: esp-1.56.0
           submodules: true
       - name: Set up Python
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-20.04' || matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
       - name: Setup Ninja
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-20.04' || matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Free up 24GB of disk space
+        run: sudo rm -rf /usr/share/dotnet
       - name: Prepare build
         run: python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=rustfmt --dist-compression-formats='xz'
       - name: Build with x.py - only components
@@ -66,7 +68,7 @@ jobs:
           python3 x.py build compiler/rustc src/tools/rustfmt library/std --stage 2
           python3 x.py dist src --stage 2
       - name: Build with x.py - dist packages
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-20.04' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
         run: python3 x.py dist --stage 2 --exclude src/doc
         continue-on-error: true
         # Excluding src/doc breaks build of 1.55
