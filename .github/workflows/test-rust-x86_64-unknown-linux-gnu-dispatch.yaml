@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.56.0-dev'
+        default: '1.56.0.1'
 
 jobs:
   build-idf-rust-examples:
@@ -18,13 +18,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-20.04]
+        os: [ubuntu-18.04]
         include:
-        - os: ubuntu-20.04
+        - os: ubuntu-18.04
           ARCH: ''
           TARGET: linux-x64
-          ASSET_PATH: 'build/dist/rust-1.56.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-x86_64-unknown-linux-gnu.tar.xz'
+          ASSET_PATH: 'build/dist/rust-1.56.1-x86_64-unknown-linux-gnu.tar.xz'
+          ASSET_NAME: 'rust-1.56.0.1-x86_64-unknown-linux-gnu.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
