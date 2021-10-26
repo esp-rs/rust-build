@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.56.0-dev'
+        default: '1.56.0.1'
 
 jobs:
   build-idf-rust-examples:
@@ -23,8 +23,8 @@ jobs:
         - os: macos-latest
           ARCH: ''
           TARGET: macos-x64
-          ASSET_PATH: 'build/dist/rust-1.56.0-dev-x86_64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-x86_64-apple-darwin.tar.xz'
+          ASSET_PATH: 'build/dist/rust-1.56.0.1-x86_64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.56.0.1-x86_64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:

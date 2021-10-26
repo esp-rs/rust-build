@@ -7,6 +7,10 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      target:
+        description: 'Target to build (e.g. xtensa-esp32-espidf)'
+        required: true
+        default: 'all'
 
 jobs:
   get_release:
@@ -59,39 +63,8 @@ jobs:
       - name: Setup Ninja
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Clean environment before running test
-        if: ${{ matrix.os == 'macos-m1-self-hosted' }}
-        run: rm -rf "${HOME}/.rustup/toolchains/esp"
-      - name: Install Rust
-        run: ./install-rust-toolchain.sh --export-file export-rust.sh
-      - name: Checkout repository rust-esp32-std-hello
-        uses: actions/checkout@v2
-        with:
-          repository: ivmarkov/rust-esp32-std-hello
-          path: rust-esp32-std-hello
-      - name: Install Cargo-first build dependencies
-        run: cargo install cargo-pio ldproxy
-      - name: Build rust-esp32-std-hello xtensa-esp32-espidf
-        working-directory: rust-esp32-std-hello
-        run: |
-          cat ../export-rust.sh
-          source ../export-rust.sh
-          ls $LIBCLANG_PATH
-          cargo +esp build --target xtensa-esp32-espidf
-      - name: Build rust-esp32-std-hello xtensa-esp32s2-espidf
-        working-directory: rust-esp32-std-hello
-        run: |
-          cat ../export-rust.sh
-          source ../export-rust.sh
-          ls $LIBCLANG_PATH
-          cargo +esp build --target xtensa-esp32s2-espidf
-      - name: Build rust-esp32-std-hello riscv32imc-esp-espidf
-        working-directory: rust-esp32-std-hello
-        run: |
-          cat ../export-rust.sh
-          source ../export-rust.sh
-          ls $LIBCLANG_PATH
-          cargo +esp build --target riscv32imc-esp-espidf
+      - name: Test Rust toolchain by compiling STD demo
+        run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }} --target ${{ github.event.inputs.target }}
       - name: Prepare artifact for upload
         working-directory: rust-esp32-std-hello/target/xtensa-esp32-espidf/debug/
         run: zip ../../../../rust-esp32-std-hello-xtensa-esp32-espidf.zip rust-esp32-std-hello
