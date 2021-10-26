@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Default values
 TOOLCHAIN_VERSION="1.56.0-dev"
 if [ -z "${RUSTUP_HOME}" ]; then
@@ -7,7 +9,7 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_PREFIX="esp"
 BUILD_TARGET="xtensa-esp32-espidf"
-INSTALLATION_MODE="install" # reinstall, uninstall
+INSTALLATION_MODE="reinstall" # install, reinstall, uninstall
 
 # Process positional arguments
 POSITIONAL=()
@@ -70,9 +72,9 @@ export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
 export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
 
 if [ "${BUILD_TARGET}" == "all" ]; then
-  cargo +${TOOLCHAIN_NAME} build --target xtensa-esp32-espidf --installation-mode reinstall
-  cargo +${TOOLCHAIN_NAME} build --target xtensa-esp32s2-espidf
-  cargo +${TOOLCHAIN_NAME} build --target riscv32imc-esp-espidf
+  for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf xtensa-esp32s3-espidf; do
+    cargo +${TOOLCHAIN_NAME} build --target ${TARGET}
+  done
 else
   cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}
 fi
