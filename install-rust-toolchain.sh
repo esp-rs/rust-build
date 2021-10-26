@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default values
-TOOLCHAIN_VERSION="1.56.0-dev"
+TOOLCHAIN_VERSION="1.56.0.1"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -156,13 +156,15 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     if [ ! -f ${RUST_DIST}.tar.xz ]; then
         echo "** downloading: ${RUST_DIST_URL}"
         curl -LO "${RUST_DIST_URL}"
-        tar xf ${RUST_DIST}.tar.xz
+        mkdir -p ${RUST_DIST}
+        tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
     fi
     ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
     if [ ! -f ${RUST_SRC_DIST}.tar.xz ]; then
         curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
-        tar xf ${RUST_SRC_DIST}.tar.xz
+        mkdir -p ${RUST_SRC_DIST}
+        tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
     fi
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 fi
