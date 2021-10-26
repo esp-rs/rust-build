@@ -72,7 +72,8 @@ export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
 export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
 
 if [ "${BUILD_TARGET}" == "all" ]; then
-  for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf xtensa-esp32s3-espidf; do
+  for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
+    echo "Building target: ${TARGET}"
     cargo +${TOOLCHAIN_NAME} build --target ${TARGET}
   done
 else
