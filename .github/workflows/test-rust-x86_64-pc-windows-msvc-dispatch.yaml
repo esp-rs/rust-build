@@ -48,6 +48,8 @@ jobs:
         working-directory: rust-esp32-std-hello
         shell: pwsh
         run: |
+          $env:RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
+          $env:RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
           . ..\Export-Rust.ps1
           cargo +esp build
 
