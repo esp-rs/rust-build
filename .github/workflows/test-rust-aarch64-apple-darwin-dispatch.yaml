@@ -85,8 +85,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-hello-xtensa-esp32-espidf.zip
-          asset_name: rust-esp32-std-hello-xtensa-esp32-espidf.zip
+          asset_path: rust-esp32-std-demo-xtensa-esp32-espidf.zip
+          asset_name: rust-esp32-std-demo-xtensa-esp32-espidf.zip
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Upload Release Asset
         id: upload-release-asset-esp32s2
@@ -95,8 +95,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-hello-xtensa-esp32s2-espidf.zip
-          asset_name: rust-esp32-std-hello-xtensa-esp32s2-espidf.zip
+          asset_path: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
+          asset_name: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Upload Release Asset
         id: upload-release-asset-esp32c3
@@ -105,6 +105,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-hello-riscv32imc-esp-espidf.zip
-          asset_name: rust-esp32-std-hello-riscv32imc-esp-espidf.zip
+          asset_path: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
+          asset_name: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
