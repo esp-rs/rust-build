@@ -7,6 +7,10 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      toolchain_version:
+        description: 'Version of Rust IDF toolchain'
+        required: true
+        default: '1.56.0.1'
       target:
         description: 'Target to build (e.g. xtensa-esp32-espidf)'
         required: true
