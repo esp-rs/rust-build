@@ -19,7 +19,7 @@ The installation process of ready to use custom build of Rust and LLVM:
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](../README.md#esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
 
 Tested OS: macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64
 
@@ -80,7 +80,7 @@ idf.py build flash
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](../README.md#esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](esp32-c3).
 
 Tested OS: Windows 10 x64
 
@@ -135,6 +135,14 @@ idf.py set-target esp32s3
 
 ```sh
 idf.py build flash
+```
+
+### ESP32-C3
+
+Install the RISCV target for Rust:
+
+```sh
+rustup target add riscv32i-unknown-none-elf
 ```
 
 ### Rust with Podman or Docker
