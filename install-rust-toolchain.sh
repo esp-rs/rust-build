@@ -73,7 +73,7 @@ function install_rust() {
     fi
 }
 
-function install_rust() {
+function install_rust_toolchain() {
     rustup toolchain install $1
 }
 
@@ -87,8 +87,8 @@ set -e
 
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rust
-rustup toolchain list | grep stable || install_rust stable
-rustup toolchain list | grep nightly || install_rust nightly
+rustup toolchain list | grep stable || install_rust_toolchain stable
+rustup toolchain list | grep nightly || install_rust_toolchain nightly
 rustfmt --version 2> /dev/null | install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
