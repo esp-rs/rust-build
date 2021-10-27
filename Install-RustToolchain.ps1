@@ -94,7 +94,9 @@ if (-Not (Test-Path -Path "${RustDist}.zip" -PathType Leaf)) {
     Invoke-WebRequest "${RustDistZipUrl}" -OutFile "${RustDist}.zip"
 }
 
-Expand-Archive .\${RustDist}.zip -DestinationPath ${ToolchainDestination}
+Expand-Archive .\${RustDist}.zip -DestinationPath ${ToolchainDestination}-tmp
+mv ${ToolchainDestination}-tmp/* ${ToolchainDestination}
+Remove-Item -Recurse -Force ${ToolchainDestination}-tmp
 "Toolchains:"
 ls
 Pop-Location
@@ -106,8 +108,9 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
         Invoke-WebRequest "${LlvmUrl}" -OutFile ${LlvmFile}
     }
     mkdir -p "${IdfToolsPath}/tools/xtensa-esp32-elf-clang/" -ErrorAction SilentlyContinue
-    Expand-Archive ${LlvmFile} -DestinationPath ${IdfToolXtensaElfClang}
-    # mv xtensa-esp32-elf-clang "${IdfToolXtensaElfClang}"
+    Expand-Archive ${LlvmFile} -DestinationPath ${IdfToolXtensaElfClang}-tmp
+    mv ${IdfToolXtensaElfClang}-tmp/xtensa-esp32-elf-clang "${IdfToolXtensaElfClang}"
+    Remove-Item -Recurse -Force ${IdfToolXtensaElfClang}-tmp/
     "done"
 } else {
     "already installed"

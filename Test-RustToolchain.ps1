@@ -31,6 +31,6 @@ if (-Not (Test-Path -Path ${RustStdDemo} -PathType Container)) {
 Push-Location ${RustStdDemo}
 $env:RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
 $env:RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
-Pop-Location
 
 cargo +${ToolchainName} build --target ${BuildTarget}
+Pop-Location
