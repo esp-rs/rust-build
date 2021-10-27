@@ -65,7 +65,9 @@ echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 
 function install_rust() {
     curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
+}
 
+function source_cargo() {
     if [ ! -z "${CARGO_HOME}" ]; then
         source ${CARGO_HOME}/env
     else
@@ -87,6 +89,7 @@ set -e
 
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rust
+command -v cargo || source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
 rustfmt --version 2> /dev/null | install_rustfmt

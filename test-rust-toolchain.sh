@@ -55,11 +55,21 @@ echo "--toolchain-version  = ${TOOLCHAIN_VERSION}"
 TOOLCHAIN_NAME="${TOOLCHAIN_PREFIX}-${TOOLCHAIN_VERSION}"
 EXPORT_FILE="export-rust-${TOOLCHAIN_NAME}.sh"
 
+function source_cargo() {
+    if [ ! -z "${CARGO_HOME}" ]; then
+        source ${CARGO_HOME}/env
+    else
+        source ${HOME}/.cargo/env
+    fi
+}
+
 ./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
     --export-file "${EXPORT_FILE}" \
     --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
     --toolchain-version ${TOOLCHAIN_VERSION}
-. "./${EXPORT_FILE}"
+source "./${EXPORT_FILE}"
+command -v cargo || source_cargo
+
 
 RUST_STD_DEMO="rust-esp32-std-demo"
 
