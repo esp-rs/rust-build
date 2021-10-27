@@ -2,7 +2,13 @@
 param (
     [Parameter()]
     [String]
-    $ExportFile = ''
+    $ExportFile = '',
+    [String]
+    $ToolchainVersion = '1.56.0.1',
+    [String]
+    $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
+    [String]
+    $InstallationMode = 'install' # reinstall, uninstall
 )
 
 $ErrorActionPreference = "Stop"
@@ -10,6 +16,11 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
+
+"Processing configuration:"
+"-InstalltationMode    = ${InstallationMode}"
+"-ToolchainVersion     = ${ToolchainVersion}"
+"-ToolchainDestination = ${ToolchainDestination}"
 
 function InstallRustup() {
     Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
@@ -20,10 +31,6 @@ function InstallRustup() {
 
 function InstallRustFmt() {
     rustup component add rustfmt --toolchain=stable
-}
-
-if (-Not (Get-Command 7z -ErrorAction SilentlyContinue)) {
-    choco install 7zip
 }
 
 if (-Not (Get-Command rustup -ErrorAction SilentlyContinue)) {
@@ -48,20 +55,32 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
     InstallRustFmt
 }
 
-$Version="1.55.0-dev"
 $Arch="x86_64-pc-windows-msvc"
-$RustDist="rust-${Version}-${Arch}"
-$RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${Version}/${RustDist}.zip"
-$ToolchainDestinationDir="${HOME}/.rustup/toolchains/esp"
-$LlvmRelease="esp-12.0.1-20210823"
+$RustDist="rust-${ToolchainVersion}-${Arch}"
+$RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
+$LlvmRelease="esp-12.0.1-20210914"
 $IdfToolsPath="${HOME}/.espressif"
 $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmRelease}-${Arch}"
 $LlvmArch="win64"
 $LlvmFile="xtensa-esp32-elf-llvm12_0_1-${LlvmRelease}-${LlvmArch}.zip"
 $LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmRelease}/${LlvmFile}"
 
-if (Test-Path -Path ${ToolchainDestinationDir} -PathType Container) {
-    "Previous installation of toolchain exist in: ${ToolchainDestinationDir}"
+if (("uninstall" -eq $InstallationMode) -or ("reinstall" -eq $InstallationMode)) {
+    "Removing:"
+
+    " - ${ToolchainDestination}"
+    Remove-Item -Recurse -Force -Path ${ToolchainDestination} -ErrorAction SilentlyContinue
+
+    " - ${IdfToolXtensaElfClang}"
+    Remove-Item -Recurse -Force -Path ${IdfToolXtensaElfClang} -ErrorAction SilentlyContinue
+
+    if ("uninstall" -eq $InstallationMode) {
+        exit 0
+    }
+}
+
+if (Test-Path -Path ${ToolchainDestination} -PathType Container) {
+    "Previous installation of toolchain exist in: ${ToolchainDestination}"
     "Please, remove the directory before new installation."
     exit 1
 }
@@ -74,7 +93,10 @@ if (-Not (Test-Path -Path "${RustDist}.zip" -PathType Leaf)) {
     "** downloading: ${RustDistZipUrl}"
     Invoke-WebRequest "${RustDistZipUrl}" -OutFile "${RustDist}.zip"
 }
-7z x .\${RustDist}.zip
+
+Expand-Archive .\${RustDist}.zip -DestinationPath ${ToolchainDestination}-tmp
+mv ${ToolchainDestination}-tmp/* ${ToolchainDestination}
+Remove-Item -Recurse -Force ${ToolchainDestination}-tmp
 "Toolchains:"
 ls
 Pop-Location
@@ -86,8 +108,9 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
         Invoke-WebRequest "${LlvmUrl}" -OutFile ${LlvmFile}
     }
     mkdir -p "${IdfToolsPath}/tools/xtensa-esp32-elf-clang/" -ErrorAction SilentlyContinue
-    7z x ${LlvmFile}
-    mv xtensa-esp32-elf-clang "${IdfToolXtensaElfClang}"
+    Expand-Archive ${LlvmFile} -DestinationPath ${IdfToolXtensaElfClang}-tmp
+    mv ${IdfToolXtensaElfClang}-tmp/xtensa-esp32-elf-clang "${IdfToolXtensaElfClang}"
+    Remove-Item -Recurse -Force ${IdfToolXtensaElfClang}-tmp/
     "done"
 } else {
     "already installed"

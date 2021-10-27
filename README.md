@@ -19,7 +19,7 @@ The installation process of ready to use custom build of Rust and LLVM:
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](../README.md#esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
 
 Tested OS: macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64
 
@@ -34,6 +34,13 @@ Tested OS: macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64
 ```
 
 Export variables displayed at the end of the script.
+
+Installation of different version of toolchain:
+
+```
+./install-rust-toolchain.sh --toolchain-version 1.55.0-dev --export-file export-1.55.0-dev.sh
+source ./export-1.55.0-dev.sh
+```
 
 #### Get source code of examples
 
@@ -73,15 +80,13 @@ idf.py build flash
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](../README.md#esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](esp32-c3).
 
 Tested OS: Windows 10 x64
 
 #### Prerequisites
 
 - Visual Studio - installed with option Desktop development with C++
-- rustup - installed with stable toolchain - https://rustup.rs/
-- Chocolatey - https://chocolatey.org/
 
 #### Installation commands for PowerShell
 
@@ -91,11 +96,18 @@ Tested OS: Windows 10 x64
 
 Export variables displayed at the end of the output from the script.
 
+Installation of different version of toolchain:
+
+```
+./Install-RustToolchain.sh --toolchain-version 1.55.0-dev --export-file Export-1.55.0-dev.ps1
+source ./Export-1.55.0-dev.ps1
+```
+
 #### Get source code of examples
 
 ```sh
 Invoke-WebRequest https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip -OutFile rust-esp32-example.zip
-7z x rust-esp32-example.zip
+Expand-Archive rust-esp32-example.zip
 cd rust-esp32-example-main
 ```
 
@@ -123,6 +135,14 @@ idf.py set-target esp32s3
 
 ```sh
 idf.py build flash
+```
+
+### ESP32-C3
+
+Install the RISCV target for Rust:
+
+```sh
+rustup target add riscv32i-unknown-none-elf
 ```
 
 ### Rust with Podman or Docker

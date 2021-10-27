@@ -32,60 +32,25 @@ jobs:
     # needs: create_release
     needs: get_release
     runs-on: ${{ matrix.os }}
+    env:
+      working-directory: D:/
     strategy:
       matrix:
-        #os: [macos-latest, self-hosted-macos-arm64, ubuntu-latest, windows-latest]
-        #os: [macos-latest, ubuntu-18.04 ]
-        #os: [macos-latest, ubuntu-18.04, windows-latest]
-        #os: [ubuntu-18.04]
         os: [windows-latest]
-        # os: [macos-latest]
-        # os: [ [self-hosted, Windows, X64] ]
-        # os: [ [self-hosted, macOS, M1] ]
-        #os: [ windows-self-hosted, macos-m1-self-hosted ]
-        # os: [ windows-self-hosted ]
         include:
-        # - os: macos-latest
-        #   ARCH: ''
-        #   TARGET: macos-x64
-        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-apple-darwin.tar.xz'
-        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-x86_64-apple-darwin.tar.xz'
-        #   ASSET_CONTENT_TYPE: 'application/x-tar'
-        #   LLVM_ROOT_OPTION: ''
-        # - os: ubuntu-18.04
-        #   ARCH: ''
-        #   TARGET: linux-x64
-        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-        #   ASSET_CONTENT_TYPE: 'application/x-tar'
-        #   LLVM_ROOT_OPTION: ''
         - os: windows-latest
           ARCH: ''
           TARGET: win-x64
           ASSET_PATH: 'build/dist/esp.zip'
-          ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
+          ASSET_NAME: 'rust-1.56.0.1-dev-x86_64-pc-windows-msvc.zip'
           ASSET_CONTENT_TYPE: 'application/zip'
           LLVM_ROOT_OPTION: ''
-        # - os: windows-self-hosted
-        #   ARCH: ''
-        #   TARGET: win-x64
-        #   ASSET_PATH: 'build/dist/esp.zip'
-        #   ASSET_NAME: 'rust-1.55.0-dev-x86_64-pc-windows-msvc.zip'
-        #   ASSET_CONTENT_TYPE: 'application/zip'
-        #   LLVM_ROOT_OPTION: '--llvm-root=C:/llvm-project'
-        # - os: macos-m1-self-hosted
-        #   ARCH: ''
-        #   TARGET: win-x64
-        #   ASSET_PATH: 'build/dist/rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
-        #   ASSET_NAME: 'rust-1.55.0-dev-aarch64-apple-darwin.tar.xz'
-        #   ASSET_CONTENT_TYPE: 'application/x-tar'
-        #   LLVM_ROOT_OPTION: ''
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           repository: esp-rs/rust
-          ref: esp-1.55.0
+          ref: esp-1.56.0
           submodules: true
       - name: Set up Python
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
@@ -96,8 +61,10 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Prepare build
+        working-directory: D:/rust
         run: python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=rustfmt --dist-compression-formats='xz'
       - name: Build with x.py - only components
+        working-directory: D:/rust
         if: ${{ matrix.os == 'windows-self-hosted' ||  matrix.os == 'windows-latest' }}
         continue-on-error: true
         run: python3 x.py dist --stage 2
@@ -110,30 +77,31 @@ jobs:
         if: ${{ matrix.os == 'macos-m1-self-hosted' }}
         run: python3 x.py dist --stage 2 --exclude src/doc --llvm-skip-rebuild TRUE
       - name: Dist bundle for Windows
+        working-directory: D:/rust/build/dist
         # Windows build has several issues:
-        # - long path problem in version 1.55.0, build of some dist artifacts fails
+        # - long path problem in version 1.56.0, build of some dist artifacts fails
         # - cp -r from stage2 is dangerous, because there is a src symlink to parent project dir which causes recursion
         # Following code is workaround which assembles minimal distribution of toolchain which should be extracted to ~/.rustup/toolchains.
         if: ${{ matrix.os == 'windows-self-hosted' || matrix.os == 'windows-latest' }}
         shell: pwsh
         run: |
-          cd build/dist
           mkdir esp
-          7z e rust-1.55.0-dev-x86_64-pc-windows-msvc.tar.xz
-          7z x rust-1.55.0-dev-x86_64-pc-windows-msvc.tar
-          pushd rust-1.55.0-dev-x86_64-pc-windows-msvc
+          7z e rust-1.56.0-dev-x86_64-pc-windows-msvc.tar.xz
+          7z x rust-1.56.0-dev-x86_64-pc-windows-msvc.tar
+          pushd rust-1.56.0-dev-x86_64-pc-windows-msvc
           cp -Recurse .\rustc\bin ..\esp\
           cp -Recurse .\rustc\lib ..\esp\
           cp -Recurse .\rustc\share ..\esp\
           cp -ErrorAction SilentlyContinue -Recurse .\rust-std-x86_64-pc-windows-msvc\lib\* ..\esp\lib\
           popd
-          7z e rust-src-1.55.0-dev.tar.xz
-          7z x rust-src-1.55.0-dev.tar
-          pushd rust-src-1.55.0-dev
+          7z e rust-src-1.56.0-dev.tar.xz
+          7z x rust-src-1.56.0-dev.tar
+          pushd rust-src-1.56.0-dev
           cp -ErrorAction SilentlyContinue -Recurse .\rust-src\lib\* ..\esp\lib\
           popd
           7z a esp.zip esp/
       - name: Upload Release Asset
+        working-directory: D:/rust/build/dist
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
@@ -142,7 +110,5 @@ jobs:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
-          # asset_path: build/dist/rust-1.55.0-dev-aarch64-apple-darwin.tar.xz
-          # asset_name: rust-1.55.0-dev-aarch64-apple-darwin.tar.xz
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
 
