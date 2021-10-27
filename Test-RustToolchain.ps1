@@ -18,11 +18,15 @@ $RustStdDemo = "rust-esp32-std-demo"
 
 $ToolchainPrefix = "esp"
 $ToolchainName = "${ToolchainPrefix}-${ToolchainVersion}"
+$ExportFile="Export-Rust-${ToolchainName}.ps1"
 
 ./Install-RustToolchain.ps1 `
+    -ExportFile ${ExportFile} `
     -InstallationMode ${InstallationMode} `
     -ToolchainVersion ${ToolchainVersion} `
     -ToolchainDestination "${HOME}/.rustup/toolchains/${ToolchainName}"
+
+. ./${ExportFile}
 
 if (-Not (Test-Path -Path ${RustStdDemo} -PathType Container)) {
     git clone https://github.com/ivmarkov/${RustStdDemo}.git
