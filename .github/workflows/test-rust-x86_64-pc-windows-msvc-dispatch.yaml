@@ -36,20 +36,6 @@ jobs:
       - name: Setup Ninja
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Install Rust
+      - name: Test Rust
         shell: pwsh
-        run: .\Install-RustToolchain.ps1 -ExportFile .\Export-Rust.ps1
-      - name: Checkout repository rust-esp32-std-hello
-        uses: actions/checkout@v2
-        with:
-          repository: ivmarkov/rust-esp32-std-hello
-          path: rust-esp32-std-hello
-      - name: Build rust-esp32-std-hello
-        working-directory: rust-esp32-std-hello
-        shell: pwsh
-        run: |
-          $env:RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
-          $env:RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
-          . ..\Export-Rust.ps1
-          cargo +esp build
-
+        run: .\Test-RustToolchain.ps1
