@@ -35,6 +35,13 @@ Tested OS: macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64
 
 Export variables displayed at the end of the script.
 
+Installation of different version of toolchain:
+
+```
+./install-rust-toolchain.sh --toolchain-version 1.55.0-dev --export-file export-1.55.0-dev.sh
+source ./export-1.55.0-dev.sh
+```
+
 #### Get source code of examples
 
 ```
@@ -80,8 +87,6 @@ Tested OS: Windows 10 x64
 #### Prerequisites
 
 - Visual Studio - installed with option Desktop development with C++
-- rustup - installed with stable toolchain - https://rustup.rs/
-- Chocolatey - https://chocolatey.org/
 
 #### Installation commands for PowerShell
 
@@ -90,6 +95,13 @@ Tested OS: Windows 10 x64
 ```
 
 Export variables displayed at the end of the output from the script.
+
+Installation of different version of toolchain:
+
+```
+./Install-RustToolchain.sh --toolchain-version 1.55.0-dev --export-file Export-1.55.0-dev.ps1
+source ./Export-1.55.0-dev.ps1
+```
 
 #### Get source code of examples
 
