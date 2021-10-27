@@ -2,7 +2,9 @@
 param (
     [Parameter()]
     [String]
-    $ExportFile = ''
+    $ExportFile = '',
+    [String]
+    $ToolchainVersion = '1.56.0.1'
 )
 
 $ErrorActionPreference = "Stop"
@@ -48,10 +50,9 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
     InstallRustFmt
 }
 
-$Version="1.56.0.1"
 $Arch="x86_64-pc-windows-msvc"
-$RustDist="rust-${Version}-${Arch}"
-$RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${Version}/${RustDist}.zip"
+$RustDist="rust-${ToolchainVersion}-${Arch}"
+$RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
 $ToolchainDestinationDir="${HOME}/.rustup/toolchains/esp"
 $LlvmRelease="esp-12.0.1-20210914"
 $IdfToolsPath="${HOME}/.espressif"
