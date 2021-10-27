@@ -4,20 +4,25 @@ param (
     [String]
     $ToolchainVersion = '1.56.0.1',
     [String]
-    $BuildTarget = "xtensa-esp32-espidf"
+    $BuildTarget = "xtensa-esp32-espidf",
+    [String]
+    $InstallationMode = 'reinstall' # install, reinstall, uninstall
 )
 
 $ErrorActionPreference = "Stop"
 $RustStdDemo = "rust-esp32-std-demo"
 
 "Processing configuration:"
+"-BuildTarget      = ${BuildTarget}"
 "-ToolchainVersion = ${ToolchainVersion}"
 
 $ToolchainPrefix = "esp"
 $ToolchainName = "${ToolchainPrefix}-${ToolchainVersion}"
 
-./Instal-RustToolchain.ps1 `
-    -ToolchainVersion ${ToolchainVersion}
+./Install-RustToolchain.ps1 `
+    -InstallationMode ${InstallationMode} `
+    -ToolchainVersion ${ToolchainVersion} `
+    -ToolchainDestination "${HOME}/.rustup/toolchains/${ToolchainName}"
 
 if (-Not (Test-Path -Path ${RustStdDemo} -PathType Container)) {
     git clone https://github.com/ivmarkov/${RustStdDemo}.git
