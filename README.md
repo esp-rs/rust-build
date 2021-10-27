@@ -95,7 +95,7 @@ Export variables displayed at the end of the output from the script.
 
 ```sh
 Invoke-WebRequest https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip -OutFile rust-esp32-example.zip
-7z x rust-esp32-example.zip
+Expand-Archive rust-esp32-example.zip
 cd rust-esp32-example-main
 ```
 

@@ -6,7 +6,7 @@ param (
     [String]
     $ToolchainVersion = '1.56.0.1',
     [String]
-    $ToolchainDestination = "${HOME}/.rustup/toolchains/esp-$ToolchainVersion",
+    $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
     $InstallationMode = 'install' # reinstall, uninstall
 )
