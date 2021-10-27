@@ -78,7 +78,7 @@ function install_rust_nightly() {
 }
 
 function install_rustfmt() {
-    rustup component add rustfmt --toolchain stable
+    rustup component add rustfmt
 }
 
 set -e
@@ -87,7 +87,7 @@ set -e
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rust
 rustup toolchain list | grep nightly || install_rust_nightly
-rustfmt --version | grep stable || install_rustfmt
+rustfmt || install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
