@@ -16,13 +16,14 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
+$RustcMinimalMinorVersion="55"
 
 "Processing configuration:"
 "-InstalltationMode    = ${InstallationMode}"
 "-ToolchainVersion     = ${ToolchainVersion}"
 "-ToolchainDestination = ${ToolchainDestination}"
 
-function InstallRustup() {
+function InstallRust() {
     Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
     ./rustup-init.exe --default-toolchain stable -y
     $env:PATH+=";$env:USERPROFILE\.cargo\bin"
@@ -34,11 +35,17 @@ function InstallRustFmt() {
 }
 
 if (-Not (Get-Command rustup -ErrorAction SilentlyContinue)) {
-    InstallRustup
+    InstallRust
 }
 
 if ((rustup show | Select-String -Pattern stable).Length -eq 0) {
-    rustup toolchain install stable
+    InstallRust
+}
+
+if ((rustc --version).Substring(8,2) -lt $RustcMinimalMinorVersion) {
+    "rustc version is too low, requires 1.${RustcMinimalMinorVersion}"
+    "calling rustup"
+    InstallRust
 }
 
 # It seems there is a dependency on nightly for some reason only on Windows
