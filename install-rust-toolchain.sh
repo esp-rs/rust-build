@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default values
-TOOLCHAIN_VERSION="1.56.0.1"
+TOOLCHAIN_VERSION="1.56.0.2"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
