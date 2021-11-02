@@ -7,6 +7,7 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
+RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="cargo-pio espflash ldproxy"
@@ -89,6 +90,15 @@ set -e
 
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rust
+
+# Check minimal rustc version
+RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
+if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
+    echo "rustc version is too low, requires 1.${RUSTC_MINIMAL_MINOR_VERSION}"
+    echo "calling rustup"
+    install_rust
+fi
+
 command -v cargo || source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
