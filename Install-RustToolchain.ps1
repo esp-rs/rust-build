@@ -8,7 +8,8 @@ param (
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
-    $InstallationMode = 'install' # reinstall, uninstall
+    [ValidateSet("install", "reinstall", "uninstall")]
+    $InstallationMode = 'install'
 )
 
 $ErrorActionPreference = "Stop"
@@ -98,7 +99,7 @@ Expand-Archive .\${RustDist}.zip -DestinationPath ${ToolchainDestination}-tmp
 mv ${ToolchainDestination}-tmp/* ${ToolchainDestination}
 Remove-Item -Recurse -Force ${ToolchainDestination}-tmp
 "Toolchains:"
-ls
+rustup toolchain list
 Pop-Location
 
 "* installing ${IdfToolXtensaElfClang}"
@@ -118,6 +119,8 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
 
 "Install common dependencies"
 cargo install cargo-pio ldproxy
+# Install cargo-espflash from source code - required for support of --target option
+cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git
 
 "Add following command to PowerShell profile"
 $ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
