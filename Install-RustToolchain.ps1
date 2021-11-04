@@ -120,7 +120,7 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
 "Install common dependencies"
 cargo install cargo-pio ldproxy
 # Install cargo-espflash from source code - required for support of --target option
-cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git
+cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git -- branch fixes/target-arg
 
 "Add following command to PowerShell profile"
 $ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
