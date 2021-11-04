@@ -99,8 +99,8 @@ Export variables displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```
-./Install-RustToolchain.sh --toolchain-version 1.55.0-dev --export-file Export-1.55.0-dev.ps1
-source ./Export-1.55.0-dev.ps1
+./Install-RustToolchain.sh --toolchain-version 1.55.0-dev --export-file Export-1.56.0.1.ps1
+source ./Export-1.56.0.1.ps1
 ```
 
 #### Get source code of examples
