@@ -12,6 +12,7 @@ BUILD_TARGET="xtensa-esp32-espidf" # all, xtensa-esp32-espidf, xtensa-esp32s2-es
 INSTALLATION_MODE="reinstall" # install, reinstall, uninstall, skip
 TEST_MODE="compile" # compile, flash, monitor
 TEST_PORT="/dev/ttyUSB0"
+FEATURES="native" # space separated features of the project
 
 # Process positional arguments
 POSITIONAL=()
@@ -19,6 +20,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    -f|--features)
+      FEATURES="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -t|--toolchain-version)
       TOOLCHAIN_VERSION="$2"
       shift # past argument
@@ -59,6 +65,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
+echo "--features           = ${FEATURES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--target             = ${BUILD_TARGET}"
 echo "--test-mode          = ${TEST_MODE}"
@@ -103,18 +110,16 @@ fi
 if [ "${BUILD_TARGET}" == "all" ]; then
     for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
         echo "Building target: ${TARGET}"
-        cargo +${TOOLCHAIN_NAME} build --target ${TARGET}
+        cargo +${TOOLCHAIN_NAME} build --target ${TARGET} --features "${FEATURES}"
     done
 else
     echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}"
-    cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}
+    cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --features "${FEATURES}"
     ELF_IMAGE="target/${BUILD_TARGET}/debug/${RUST_STD_DEMO}"
     if [ "${TEST_MODE}" == "flash" ]; then
-        espflash "${TEST_PORT}" "${ELF_IMAGE}"
+        cargo espflash --target "${BUILD_TARGET}" --features ${FEATURES} "${TEST_PORT}"
     elif [ "${TEST_MODE}" == "monitor" ]; then
-        #espflash --monitor "${TEST_PORT}" "${ELF_IMAGE}"
-        espflash "${TEST_PORT}" "${ELF_IMAGE}"
-        espmonitor "${TEST_PORT}"
+        cargo espflash --monitor --target "${BUILD_TARGET}" --features "${FEATURES}" "${TEST_PORT}"
     fi
 fi
 

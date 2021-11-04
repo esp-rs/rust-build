@@ -13,13 +13,16 @@ param (
     [ValidateSet("build", "flash", "monitor")]
     $TestMode = "build",
     [String]
-    $TestPort = "COM5"
+    $TestPort = "COM5",
+    [string]
+    $Features = "native" # space separated list of features
 )
 
 $ErrorActionPreference = "Stop"
 $RustStdDemo = "rust-esp32-std-demo"
 
 "Processing configuration:"
+"-Features         = ${Features}"
 "-Target           = ${Target}"
 "-ToolchainVersion = ${ToolchainVersion}"
 "-TestMode         = ${TestMode}"
@@ -48,11 +51,11 @@ $env:RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
 $env:RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
 
 if ("build" -eq $TestMode) {
-    cargo +${ToolchainName} build --target ${Target}
+    cargo +${ToolchainName} build --target ${Target} --features "${Features}"
 } elseif ("flash" -eq $TestMode) {
-    "cargo +${ToolchainName} espflash --target ${Target} $TestPort"
-    cargo +${ToolchainName} espflash --target ${Target} $TestPort
+    "cargo +${ToolchainName} espflash --features '${Features}' --target ${Target} $TestPort "
+    cargo +${ToolchainName} espflash --features "${Features}" --target ${Target} $TestPort
 } elseif ("monitor" -eq $TestMode) {
-    cargo +${ToolchainName} espflash --monitor --target ${Target} $TestPort
+    cargo +${ToolchainName} espflash --monitor --features "${Features}" --target ${Target} $TestPort
 }
 Pop-Location
