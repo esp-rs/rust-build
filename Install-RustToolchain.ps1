@@ -8,7 +8,7 @@ param (
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
-    [ValidateSet("install", "reinstall", "uninstall")]
+    [ValidateSet("install", "reinstall", "uninstall", "export")]
     $InstallationMode = 'install'
 )
 
@@ -32,6 +32,17 @@ function InstallRustup() {
 
 function InstallRustFmt() {
     rustup component add rustfmt --toolchain=stable
+}
+
+function ExportVariables() {
+    "Add following command to PowerShell profile"
+    $ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
+    $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
+    $ExportContent
+
+    if ('' -ne $ExportFile) {
+        Out-File -FilePath $ExportFile -InputObject $ExportContent
+    }
 }
 
 if (-Not (Get-Command rustup -ErrorAction SilentlyContinue)) {
@@ -65,6 +76,12 @@ $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmRelea
 $LlvmArch="win64"
 $LlvmFile="xtensa-esp32-elf-llvm12_0_1-${LlvmRelease}-${LlvmArch}.zip"
 $LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmRelease}/${LlvmFile}"
+
+# Only export variables
+if ("export" -eq $InstallationMode) {
+    ExportVariables
+    Exit 0
+}
 
 if (("uninstall" -eq $InstallationMode) -or ("reinstall" -eq $InstallationMode)) {
     "Removing:"
@@ -122,11 +139,4 @@ cargo install cargo-pio ldproxy
 # Install cargo-espflash from source code - required for support of --target option
 cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git -- branch fixes/target-arg
 
-"Add following command to PowerShell profile"
-$ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
-$ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
-$ExportContent
-
-if ('' -ne $ExportFile) {
-    Out-File -FilePath $ExportFile -InputObject $ExportContent
-}
+ExportVariables
