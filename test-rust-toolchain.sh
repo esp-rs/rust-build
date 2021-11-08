@@ -8,8 +8,11 @@ if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
 TOOLCHAIN_PREFIX="esp"
-BUILD_TARGET="xtensa-esp32-espidf"
-INSTALLATION_MODE="reinstall" # install, reinstall, uninstall
+BUILD_TARGET="xtensa-esp32-espidf" # all, xtensa-esp32-espidf, xtensa-esp32s2-espidf, riscv32imc-esp-espidf
+INSTALLATION_MODE="reinstall" # install, reinstall, uninstall, skip
+TEST_MODE="compile" # compile, flash, monitor
+TEST_PORT="/dev/ttyUSB0"
+FEATURES="native" # space separated features of the project
 
 # Process positional arguments
 POSITIONAL=()
@@ -17,6 +20,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    -f|--features)
+      FEATURES="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -t|--toolchain-version)
       TOOLCHAIN_VERSION="$2"
       shift # past argument
@@ -37,6 +45,16 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -m|--test-mode)
+      TEST_MODE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -d|--test-port)
+      TEST_PORT="$2"
+      shift # past argument
+      shift # past value
+      ;;
     *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
       shift # past argument
@@ -47,8 +65,11 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
+echo "--features           = ${FEATURES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--target             = ${BUILD_TARGET}"
+echo "--test-mode          = ${TEST_MODE}"
+echo "--test-port          = ${TEST_PORT}"
 echo "--toolchain-prefix   = ${TOOLCHAIN_PREFIX}"
 echo "--toolchain-version  = ${TOOLCHAIN_VERSION}"
 
@@ -63,10 +84,13 @@ function source_cargo() {
     fi
 }
 
-./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
-    --export-file "${EXPORT_FILE}" \
-    --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
-    --toolchain-version ${TOOLCHAIN_VERSION}
+if [ "${INSTALLATION_MODE}" != "skip" ]; then
+    ./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
+        --export-file "${EXPORT_FILE}" \
+        --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
+        --toolchain-version ${TOOLCHAIN_VERSION}
+fi
+
 source "./${EXPORT_FILE}"
 command -v cargo || source_cargo
 
@@ -78,14 +102,24 @@ if [ ! -d "${RUST_STD_DEMO}" ]; then
 fi
 
 cd "${RUST_STD_DEMO}"
-export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
-export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
+if [ -z "${RUST_ESP32_STD_DEMO_WIFI_SSID}" ]; then
+    export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
+    export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
+fi
 
 if [ "${BUILD_TARGET}" == "all" ]; then
-  for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
-    echo "Building target: ${TARGET}"
-    cargo +${TOOLCHAIN_NAME} build --target ${TARGET}
-  done
+    for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
+        echo "Building target: ${TARGET}"
+        cargo +${TOOLCHAIN_NAME} build --target ${TARGET} --features "${FEATURES}"
+    done
 else
-  cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}
+    echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}"
+    cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --features "${FEATURES}"
+    ELF_IMAGE="target/${BUILD_TARGET}/debug/${RUST_STD_DEMO}"
+    if [ "${TEST_MODE}" == "flash" ]; then
+        cargo espflash --target "${BUILD_TARGET}" --features ${FEATURES} "${TEST_PORT}"
+    elif [ "${TEST_MODE}" == "monitor" ]; then
+        cargo espflash --monitor --target "${BUILD_TARGET}" --features "${FEATURES}" "${TEST_PORT}"
+    fi
 fi
+

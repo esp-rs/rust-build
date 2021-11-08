@@ -69,42 +69,42 @@ jobs:
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Test Rust toolchain by compiling STD demo
         run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }} --target ${{ github.event.inputs.target }}
-      - name: Prepare artifact for upload
-        working-directory: rust-esp32-std-demo/target/xtensa-esp32-espidf/debug/
-        run: zip ../../../../rust-esp32-std-demo-xtensa-esp32-espidf.zip rust-esp32-std-demo
-      - name: Prepare artifact for upload
-        working-directory: rust-esp32-std-demo/target/xtensa-esp32s2-espidf/debug/
-        run: zip ../../../../rust-esp32-std-demo-xtensa-esp32s2-espidf.zip rust-esp32-std-demo
-      - name: Prepare artifact for upload
-        working-directory: rust-esp32-std-demo/target/riscv32imc-esp-espidf/debug/
-        run: zip ../../../../rust-esp32-std-demo-riscv32imc-esp-espidf.zip rust-esp32-std-demo
-      - name: Upload Release Asset
-        id: upload-release-asset-esp32
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-demo-xtensa-esp32-espidf.zip
-          asset_name: rust-esp32-std-demo-xtensa-esp32-espidf.zip
-          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
-      - name: Upload Release Asset
-        id: upload-release-asset-esp32s2
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
-          asset_name: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
-          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
-      - name: Upload Release Asset
-        id: upload-release-asset-esp32c3
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
-          asset_name: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
-          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      # - name: Prepare artifact for upload
+      #   working-directory: rust-esp32-std-demo/target/xtensa-esp32-espidf/debug/
+      #   run: zip ../../../../rust-esp32-std-demo-xtensa-esp32-espidf.zip rust-esp32-std-demo
+      # - name: Prepare artifact for upload
+      #   working-directory: rust-esp32-std-demo/target/xtensa-esp32s2-espidf/debug/
+      #   run: zip ../../../../rust-esp32-std-demo-xtensa-esp32s2-espidf.zip rust-esp32-std-demo
+      # - name: Prepare artifact for upload
+      #   working-directory: rust-esp32-std-demo/target/riscv32imc-esp-espidf/debug/
+      #   run: zip ../../../../rust-esp32-std-demo-riscv32imc-esp-espidf.zip rust-esp32-std-demo
+      # - name: Upload Release Asset
+      #   id: upload-release-asset-esp32
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.get_release.outputs.upload_url }}
+      #     asset_path: rust-esp32-std-demo-xtensa-esp32-espidf.zip
+      #     asset_name: rust-esp32-std-demo-xtensa-esp32-espidf.zip
+      #     asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      # - name: Upload Release Asset
+      #   id: upload-release-asset-esp32s2
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.get_release.outputs.upload_url }}
+      #     asset_path: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
+      #     asset_name: rust-esp32-std-demo-xtensa-esp32s2-espidf.zip
+      #     asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      # - name: Upload Release Asset
+      #   id: upload-release-asset-esp32c3
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ needs.get_release.outputs.upload_url }}
+      #     asset_path: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
+      #     asset_name: rust-esp32-std-demo-riscv32imc-esp-espidf.zip
+      #     asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}

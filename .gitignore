@@ -1,3 +1,5 @@
 .DS_Store
 *.zip
 *.tar.xz
+export-*.sh
+Export-*.ps1

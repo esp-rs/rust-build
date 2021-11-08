@@ -33,12 +33,12 @@ jobs:
         with:
           ref: ${{ github.event.inputs.rust_build_branch }}
       - name: Set up Python
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-20.04' || matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
       - name: Setup Ninja
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-20.04' || matrix.os == 'windows-latest' }}
+        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Test Rust toolchain by compiling STD demo
         run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }}
