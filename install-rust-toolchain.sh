@@ -204,7 +204,7 @@ if [[ ! -z "${EXTRA_CRATES}" ]]; then
     echo "Installing additional extra crates: ${EXTRA_CRATES}"
     cargo install ${EXTRA_CRATES}
     # Install cargo-espflash from source code - required for support of --target option
-    cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git --branch fixes/target-arg
+    cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git
 fi
 
 echo "Add following command to ~/.zshrc"
