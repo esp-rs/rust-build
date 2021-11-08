@@ -38,8 +38,8 @@ Export variables displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.55.0-dev --export-file export-1.55.0-dev.sh
-source ./export-1.55.0-dev.sh
+./install-rust-toolchain.sh --toolchain-version 1.56.0.1 --export-file export-1.56.0.1.sh
+source ./export-1.56.0.1.sh
 ```
 
 #### Get source code of examples
