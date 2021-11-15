@@ -39,6 +39,8 @@ function ExportVariables() {
     "Add following command to PowerShell profile"
     $ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
     $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
+    # Workaround of https://github.com/espressif/esp-idf/issues/7910
+    $ExportContent+="`n" + '$env:PIP_USER="no"'
     $ExportContent
 
     if ('' -ne $ExportFile) {

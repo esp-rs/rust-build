@@ -210,9 +210,12 @@ fi
 echo "Add following command to ~/.zshrc"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+# Workaround of https://github.com/espressif/esp-idf/issues/7910
+echo export PIP_USER="no"
 
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
+    echo export PIP_USER="no" >> "${EXPORT_FILE}"
 fi
