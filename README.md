@@ -86,7 +86,7 @@ Tested OS: Windows 10 x64
 
 #### Prerequisites
 
-- Visual Studio - installed with option Desktop development with C++
+- Visual Studio - installed with option Desktop development with C++ - Windows 10 SDK
 
 #### Installation commands for PowerShell
 
@@ -99,7 +99,7 @@ Export variables displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```
-./Install-RustToolchain.sh --toolchain-version 1.55.0-dev --export-file Export-1.56.0.1.ps1
+./Install-RustToolchain.sh --toolchain-version 1.56.0.1 --export-file Export-1.56.0.1.ps1
 source ./Export-1.56.0.1.ps1
 ```
 
