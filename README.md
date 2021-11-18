@@ -86,7 +86,7 @@ Tested OS: Windows 10 x64
 
 #### Prerequisites
 
-- Visual Studio - installed with option Desktop development with C++ - Windows 10 SDK
+- Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
 
 #### Installation commands for PowerShell
 
