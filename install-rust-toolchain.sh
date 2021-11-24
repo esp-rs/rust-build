@@ -144,11 +144,11 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
