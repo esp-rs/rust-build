@@ -1,0 +1,82 @@
+name: Build src
+
+on:
+  workflow_dispatch:
+    inputs:
+      rust_build_branch:
+        description: 'Branch of rust-build to use'
+        required: true
+        default: 'main'
+      release_ver:
+        description: 'Release Version for generation'
+        required: true
+        default: '1.56.0.1'
+      rust_ver:
+        description: 'Version of esp rust to use'
+        required: true
+        default: '1.56.0'
+
+
+jobs:
+
+  build-src:
+    name: Build (idf) rust src for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        include:
+
+        - os: macos-latest
+          target_name: x86_64-apple-darwin
+          llvm_root_option: ''
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "rust-build"
+          ref: ${{ github.event.inputs.rust_build_branch }}
+      - uses: ./rust-build/.github/actions/util/setup-envs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./rust-build/.github/actions/tools/setup-python
+      - uses: ./rust-build/.github/actions/tools/setup-ninja
+      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+      - uses: ./rust-build/.github/actions/util/symlink-working-dir
+      - uses: ./rust-build/.github/actions/build/build-src
+
+
+  upload-archive:
+    name: Upload (idf) rust src
+    needs: [build-src]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest]
+        include:
+
+        - os: macos-latest
+          target_name: x86_64-apple-darwin
+          llvm_root_option: ''
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "rust-build"
+          ref: ${{ github.event.inputs.rust_build_branch }}
+      - uses: ./rust-build/.github/actions/util/setup-envs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Read Artifact - Src
+        uses: actions/download-artifact@v2
+        with: 
+          name: rust-src-${{ env.rust_ver }}-dev.tar.xz
+
+      - name: Rename file
+        shell: bash
+        run: |
+          mv rust-src-${{ env.rust_ver }}-dev.tar.xz rust-src-${{ env.release_ver }}.tar.xz
+          echo "asset_name=rust-src-${{ env.release_ver }}.tar.xz" >> $GITHUB_ENV
+
+      - uses: ./rust-build/.github/actions/util/upload
