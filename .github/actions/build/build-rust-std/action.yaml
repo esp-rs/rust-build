@@ -1,0 +1,58 @@
+name: 'Build Ruststd'
+description: 'Build the rust std Library'
+
+runs:
+  using: "composite"
+  steps:
+
+    # Run the Windows Build using powershell
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'windows')
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --dist-compression-formats='xz'
+
+    - name: Build with x.py - Standard Library
+      if: startsWith(matrix.os, 'windows')
+      # Note excluding src/doc breaks build of 1.55
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      run: python3 x.py build --exclude src/doc --stage 2 library/std
+
+    - name: Dist with x.py - Standard Library
+      if: startsWith(matrix.os, 'windows')
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      run: python3 x.py dist --stage 2 library/std
+
+
+    # Run Linux builds using bash
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --dist-compression-formats='xz'
+
+    - name: Build with x.py - Standard Library
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      # Note excluding src/doc breaks build of 1.55
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 x.py build --exclude src/doc --stage 2 library/std
+
+    - name: Dist with x.py - Standard Library
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 x.py dist --stage 2 library/std
+
+
+    # Save the result
+
+    - name: Save Artifact - Standard Library
+      uses: actions/upload-artifact@v2
+      with:
+        name: rust-std-${{ env.build_suffix }}.tar.xz
+        path: ${{ env.dist_dir }}/rust-std-${{ env.build_suffix }}.tar.xz
