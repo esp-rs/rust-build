@@ -120,7 +120,7 @@ fi
 source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
-rustfmt --version 2> /dev/null || install_rustfmt
+install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
