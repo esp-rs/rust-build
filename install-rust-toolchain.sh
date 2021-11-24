@@ -10,7 +10,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 CLEAR_DOWNLOAD_CACHE="NO"
-EXTRA_CRATES="cargo-espflash ldproxy"
+EXTRA_CRATES="ldproxy"
 
 # Process positional arguments
 POSITIONAL=()
@@ -81,10 +81,16 @@ function install_rust() {
 }
 
 function source_cargo() {
-    if [ ! -z "${CARGO_HOME}" ]; then
-        source ${CARGO_HOME}/env
+    if [ -e "${HOME}/.cargo/env" ]; then
+        source "${HOME}/.cargo/env"
+        export CARGO_HOME="${HOME}/.cargo/"
     else
-        source ${HOME}/.cargo/env
+        if [ ! -z "${CARGO_HOME}" ]; then
+            source ${CARGO_HOME}/env
+        else
+	    echo "Warning: Unable to source .cargo/env"
+            export CARGO_HOME="${HOME}/.cargo/"
+        fi
     fi
 }
 
@@ -111,7 +117,7 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     install_rust
 fi
 
-command -v cargo || source_cargo
+source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
 rustfmt --version 2> /dev/null || install_rustfmt
@@ -126,15 +132,23 @@ LLVM_RELEASE="esp-12.0.1-20210914"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
+    ESPFLASH_URL=""
+    ESPFLASH_BIN=""
     #LLVM_RELEASE="esp-12.0.1-20210823"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
+    ESPFLASH_URL=""
+    ESPFLASH_BIN=""
     #LLVM_RELEASE="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
@@ -212,6 +226,17 @@ else
     echo "already installed"
 fi
 
+if [[ ! -z "${ESPFLASH_URL}" ]]; then
+    if [[ ! -e "${ESPFLASH_BIN}" ]]; then
+        curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}"
+        chmod u+x "${ESPFLASH_BIN}"
+    fi
+    echo "Using cargo-espflash binary release"
+else
+    echo "Installing cargo-espflash from source code"
+    cargo install cargo-espflash
+fi
+
 if [[ ! -z "${EXTRA_CRATES}" ]]; then
     echo "Installing additional extra crates: ${EXTRA_CRATES}"
     cargo install ${EXTRA_CRATES}
@@ -229,3 +254,4 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
     echo export PIP_USER="no" >> "${EXPORT_FILE}"
 fi
+
