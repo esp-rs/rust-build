@@ -15,15 +15,16 @@ runs:
       with: 
         name: rust-std-${{ env.build_suffix }}.tar.xz
 
-    - name: Read Artifact - Cargo
-      uses: actions/download-artifact@v2
-      with: 
-        name: cargo-${{ env.build_suffix }}.tar.xz
-
     - name: Read Artifact - RustFmt
       uses: actions/download-artifact@v2
       with: 
         name: rustfmt-${{ env.build_suffix }}.tar.xz
+
+    - name: Read Artifact - Cargo
+      if: startsWith(matrix.os, 'windows')
+      uses: actions/download-artifact@v2
+      with: 
+        name: cargo-${{ env.build_suffix }}.tar.xz
 
     - name: Read Artifact - Src
       if: startsWith(matrix.os, 'windows')
