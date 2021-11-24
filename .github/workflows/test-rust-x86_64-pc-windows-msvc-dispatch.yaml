@@ -7,6 +7,10 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      toolchain_version:
+        description: 'Version of Rust IDF toolchain'
+        required: true
+        default: '1.56.0.1'
 
 jobs:
   build-idf-rust-examples:
@@ -15,27 +19,21 @@ jobs:
     strategy:
       matrix:
         os: [windows-latest]
-        include:
-        - os: windows-latest
-          ARCH: ''
-          TARGET: win-x64
-          ASSET_PATH: 'build/dist/esp.zip'
-          ASSET_NAME: 'rust-1.56.0-dev-x86_64-pc-windows-msvc.zip'
-          ASSET_CONTENT_TYPE: 'application/zip'
-          LLVM_ROOT_OPTION: ''
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust_build_branch }}
-      - name: Set up Python
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Setup Ninja
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Test Rust
+      - uses: ./.github/actions/tools/setup-python
+      - uses: ./.github/actions/tools/setup-ninja
+
+      # Work around the windows path issue
+      - name: Symlink the working dir
         shell: pwsh
-        run: .\Test-RustToolchain.ps1
+        run: New-Item -Path D:/build -ItemType SymbolicLink -Value ${{ github.workspace }}
+
+      - name: Test Rust toolchain by compiling STD demo
+        working-directory: D:/build
+        shell: pwsh
+        run: .\Test-RustToolchain.ps1 -ToolchainVersion ${{ github.event.inputs.toolchain_version }}

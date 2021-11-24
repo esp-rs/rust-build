@@ -19,27 +19,13 @@ jobs:
     strategy:
       matrix:
         os: [macos-latest]
-        include:
-        - os: macos-latest
-          ARCH: ''
-          TARGET: macos-x64
-          ASSET_PATH: 'build/dist/rust-1.56.0.1-x86_64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0.1-x86_64-apple-darwin.tar.xz'
-          ASSET_CONTENT_TYPE: 'application/x-tar'
-          LLVM_ROOT_OPTION: ''
+
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust_build_branch }}
-      - name: Set up Python
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Setup Ninja
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@master
+      - uses: ./.github/actions/tools/setup-python
+      - uses: ./.github/actions/tools/setup-ninja
       - name: Test Rust toolchain by compiling STD demo
         run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }}
-

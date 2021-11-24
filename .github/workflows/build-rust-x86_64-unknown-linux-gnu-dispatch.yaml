@@ -1,93 +1,102 @@
-name: build-rust-ubuntu-dispatch
+name: Build ubuntu-latest x86_64
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      rust_build_branch:
+        description: 'Branch of rust-build to use'
+        required: true
+        default: 'main'
+      release_ver:
+        description: 'Release Version for generation'
+        required: true
+        default: '1.56.0.1'
+      rust_ver:
+        description: 'Version of esp rust to use'
+        required: true
+        default: '1.56.0'
 
+# We Break this down into individual jobs to avoid disk space issues
 jobs:
-  get_release:
-    # https://github.com/octokit/request-action
-    name: Get release
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.get_upload_url.outputs.url }}
-    steps:
-    - uses: octokit/request-action@v2.x
-      id: get_latest_release
-      with:
-        route: GET /repos/{owner}/{repo}/releases/latest
-        owner: esp-rs
-        repo: rust-build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: get upload url
-      id: get_upload_url
-      run: |
-        url=$(echo "$response" | jq -r '.upload_url')
-        echo "::set-output name=url::$url"
-      env:
-        response:  ${{ steps.get_latest_release.outputs.data }}
 
-  build-idf-rust:
-    name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
-    needs: get_release
+  build-rustc:
+    # Build the compiler / std library
+    name: Build (idf) rustc/std for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-18.04]
+        os: [ubuntu-latest]
         include:
-        - os: ubuntu-18.04
-          ARCH: ''
-          TARGET: linux-x64
-          ASSET_PATH: 'build/dist/rust-1.56.0-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_NAME: 'rust-1.56.0.1-dev-x86_64-unknown-linux-gnu.tar.xz'
-          ASSET_CONTENT_TYPE: 'application/x-tar'
-          LLVM_ROOT_OPTION: ''
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-        with:
-          repository: esp-rs/rust
-          ref: esp-1.56.0
-          submodules: true
-      - name: Set up Python
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.8'
-      - name: Setup Ninja
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
-        uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Free up 24GB of disk space
-        run: sudo rm -rf /usr/share/dotnet
-      - name: Prepare build
-        run: python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=rustfmt --dist-compression-formats='xz'
-      - name: Build with x.py - only components
-        if: ${{ matrix.os == 'windows-self-hosted' }}
-        run: |
-          python3 x.py build compiler/rustc src/tools/rustfmt library/std --stage 2
-          python3 x.py dist src --stage 2
-      - name: Build with x.py - dist packages
-        if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
-        run: python3 x.py dist --stage 2 --exclude src/doc
-        continue-on-error: true
-        # Excluding src/doc breaks build of 1.55
-        #run: python3 x.py dist --stage 2 --exclude src/doc
-      - name: Build with x.py - dist packages - continue on error - problem with Long path on Windows
-        if: ${{ matrix.os == 'windows-latest' }}
-        continue-on-error: true
-        run: python3 x.py dist --stage 2
-      - name: Build with x.py - dist packages - with cached LLVM
-        if: ${{ matrix.os == 'macos-m1-self-hosted' }}
-        run: python3 x.py dist --stage 2 --exclude src/doc --llvm-skip-rebuild TRUE
-      - name: Upload Release Asset
-        id: upload-release-asset
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: ${{ matrix.ASSET_PATH }}
-          asset_name: ${{ matrix.ASSET_NAME }}
-          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
 
+        - os: ubuntu-latest
+          target_name: x86_64-unknown-linux-gnu
+          llvm_root_option: ''
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "rust-build"
+          ref: ${{ github.event.inputs.rust_build_branch }}
+      - uses: ./rust-build/.github/actions/util/setup-envs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./rust-build/.github/actions/tools/setup-python
+      - uses: ./rust-build/.github/actions/tools/setup-ninja
+      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+      - uses: ./rust-build/.github/actions/util/symlink-working-dir
+      - uses: ./rust-build/.github/actions/build/build-rustc
+      - uses: ./rust-build/.github/actions/build/build-rust-std
+
+
+  build-tools:
+    # Build the tools - cargo / rustfmt
+    name: Build (idf) rust tools for ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+
+        - os: ubuntu-latest
+          target_name: x86_64-unknown-linux-gnu
+          llvm_root_option: ''
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "rust-build"
+          ref: ${{ github.event.inputs.rust_build_branch }}
+      - uses: ./rust-build/.github/actions/util/setup-envs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./rust-build/.github/actions/tools/setup-python
+      - uses: ./rust-build/.github/actions/tools/setup-ninja
+      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+      - uses: ./rust-build/.github/actions/util/symlink-working-dir
+      - uses: ./rust-build/.github/actions/build/build-tools
+
+
+  upload-archive:
+    # Uploads a merged archive
+    name: Upload (idf) rust release for ${{ matrix.os }}
+    needs: [build-rustc, build-tools]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+
+        - os: ubuntu-latest
+          target_name: x86_64-unknown-linux-gnu
+          llvm_root_option: ''
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          path: "rust-build"
+          ref: ${{ github.event.inputs.rust_build_branch }}
+      - uses: ./rust-build/.github/actions/util/setup-envs
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: ./rust-build/.github/actions/util/create-archive
+      - uses: ./rust-build/.github/actions/util/upload
