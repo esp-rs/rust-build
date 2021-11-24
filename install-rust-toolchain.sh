@@ -10,7 +10,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 CLEAR_DOWNLOAD_CACHE="NO"
-EXTRA_CRATES="cargo-pio espflash ldproxy"
+EXTRA_CRATES="cargo-espflash ldproxy"
 
 # Process positional arguments
 POSITIONAL=()
@@ -23,23 +23,33 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -e|--export-file)
-      EXPORT_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -t|--toolchain-version)
-      TOOLCHAIN_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
     -d|--toolchain-destination)
       TOOLCHAIN_DESTINATION_DIR="$2"
       shift # past argument
       shift # past value
       ;;
+    -e|--export-file)
+      EXPORT_FILE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -h|--cargo-home)
+      CARGO_HOME="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -i|--installation-mode)
       INSTALLATION_MODE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -r|--rustup-home)
+      RUSTUP_HOME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -t|--toolchain-version)
+      TOOLCHAIN_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -57,12 +67,14 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
-echo "--installation-mode     = ${INSTALLATION_MODE}"
+echo "--cargo-home            = ${CARGO_HOME}"
+echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 echo "--export-file           = ${EXPORT_FILE}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
+echo "--installation-mode     = ${INSTALLATION_MODE}"
+echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
-echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 
 function install_rust() {
     curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
@@ -203,8 +215,6 @@ fi
 if [[ ! -z "${EXTRA_CRATES}" ]]; then
     echo "Installing additional extra crates: ${EXTRA_CRATES}"
     cargo install ${EXTRA_CRATES}
-    # Install cargo-espflash from source code - required for support of --target option
-    cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git
 fi
 
 echo "Add following command to ~/.zshrc"
