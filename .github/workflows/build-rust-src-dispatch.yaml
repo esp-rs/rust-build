@@ -1,4 +1,4 @@
-name: Build macos-latest (darwin) x86_64
+name: Build src
 
 on:
   workflow_dispatch:
@@ -17,12 +17,10 @@ on:
         default: '1.56.0'
 
 
-# We Break this down into individual jobs to avoid disk space issues
 jobs:
 
-  build-rustc:
-    # Build the compiler / std library
-    name: Build (idf) rustc/std for ${{ matrix.os }}
+  build-src:
+    name: Build (idf) rust src for ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -45,42 +43,12 @@ jobs:
       - uses: ./rust-build/.github/actions/tools/setup-ninja
       - uses: ./rust-build/.github/actions/util/checkout-esp-rust
       - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      - uses: ./rust-build/.github/actions/build/build-rustc
-      - uses: ./rust-build/.github/actions/build/build-rust-std
-
-
-  build-tools:
-    # Build the tools - cargo / rustfmt
-    name: Build (idf) rust tools for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [macos-latest]
-        include:
-
-        - os: macos-latest
-          target_name: x86_64-apple-darwin
-          llvm_root_option: ''
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      - uses: ./rust-build/.github/actions/build/build-tools
+      - uses: ./rust-build/.github/actions/build/build-src
 
 
   upload-archive:
-    # Uploads a merged archive
-    name: Upload (idf) rust release for ${{ matrix.os }}
-    needs: [build-rustc, build-tools]
+    name: Upload (idf) rust src
+    needs: [build-src]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -99,5 +67,16 @@ jobs:
       - uses: ./rust-build/.github/actions/util/setup-envs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/util/create-archive
+
+      - name: Read Artifact - Src
+        uses: actions/download-artifact@v2
+        with: 
+          name: rust-src-${{ env.rust_ver }}-dev.tar.xz
+
+      - name: Rename file
+        shell: bash
+        run: |
+          mv rust-src-${{ env.rust_ver }}-dev.tar.xz rust-src-${{ env.release_ver }}.tar.xz
+          echo "asset_name=rust-src-${{ env.release_ver }}.tar.xz" >> $GITHUB_ENV
+
       - uses: ./rust-build/.github/actions/util/upload

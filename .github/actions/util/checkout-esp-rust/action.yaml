@@ -1,0 +1,14 @@
+name: 'Checkout Source'
+description: 'Downloads the Source for esp-rs/rust'
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        repository: esp-rs/rust
+        ref: esp-${{ env.rust_ver }}
+        submodules: true
+        path: "rust"
