@@ -40,5 +40,5 @@ runs:
     - name: Save Artifact - Src
       uses: actions/upload-artifact@v2
       with:
-        name: rust-src-${{ env.rust_ver }}-dev.tar.xz
-        path: ${{ env.dist_dir }}/rust-src-${{ env.rust_ver }}-dev.tar.xz
+        name: rust-src-${{ env.rust_version }}-dev.tar.xz
+        path: ${{ env.dist_dir }}/rust-src-${{ env.rust_version }}-dev.tar.xz

@@ -39,8 +39,8 @@ runs:
         cp -af ./rustfmt-${{ env.build_suffix }}/rustfmt-preview/* ./esp/
 
         # Copy in the rust-src content
-        tar -xvf ./rust-src-${{ env.rust_ver }}-dev.tar.xz
-        cp -af ./rust-src-${{ env.rust_ver }}-dev/rust-src/* ./esp/
+        tar -xvf ./rust-src-${{ env.rust_version }}-dev.tar.xz
+        cp -af ./rust-src-${{ env.rust_version }}-dev/rust-src/* ./esp/
 
         # Copy in the rustc content
         tar -xvf ./rustc-${{ env.build_suffix }}.tar.xz
