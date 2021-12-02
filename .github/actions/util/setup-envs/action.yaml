@@ -21,16 +21,16 @@ runs:
         echo "GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
 
         # esp rust version to checkout
-        echo "rust_ver=${{ github.event.inputs.rust_ver }}" >> $GITHUB_ENV
+        echo "rust_version=${{ github.event.inputs.rust_version }}" >> $GITHUB_ENV
 
         # Describes part of the file name generated during the build
-        echo "build_suffix=${{ github.event.inputs.rust_ver }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
+        echo "build_suffix=${{ github.event.inputs.rust_version }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
 
         # release version
-        echo "release_ver=${{ github.event.inputs.release_ver }}" >> $GITHUB_ENV
+        echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
 
         # release version
-        echo "archive_dir=rust-${{ github.event.inputs.rust_ver }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
+        echo "archive_dir=rust-${{ github.event.inputs.rust_version }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
 
     - name: Setup Env Variables - Windows
       if: startsWith(matrix.os, 'windows')
@@ -45,7 +45,7 @@ runs:
         echo "dist_dir=D:/rust/build/dist" >> $GITHUB_ENV
 
         # asset name for release
-        echo "asset_name=rust-${{ github.event.inputs.release_ver }}-${{ matrix.target_name }}.zip" >> $GITHUB_ENV
+        echo "asset_name=rust-${{ github.event.inputs.release_version }}-${{ matrix.target_name }}.zip" >> $GITHUB_ENV
 
 
     - name: Setup Env Variables - Unix
@@ -61,7 +61,7 @@ runs:
         echo "dist_dir=${{ github.workspace }}/rust/build/dist" >> $GITHUB_ENV
 
         # asset name for release
-        echo "asset_name=rust-${{ github.event.inputs.release_ver }}-${{ matrix.target_name }}.tar.xz" >> $GITHUB_ENV
+        echo "asset_name=rust-${{ github.event.inputs.release_version }}-${{ matrix.target_name }}.tar.xz" >> $GITHUB_ENV
 
         # Fixes issues when trying to do a dist with the src
         mkdir -p ${{ github.workspace }}/.cache/cargo
@@ -72,7 +72,7 @@ runs:
       run: |
         echo "rust_version: ${{ env.rust_version }}"
         echo "build_suffix: ${{ env.build_suffix }}"
-        echo "release_version: ${{ env.release_ver }}"
+        echo "release_version: ${{ env.release_version }}"
         echo "asset_name: ${{ env.asset_name }}"
         echo "work_dir: ${{ env.work_dir }}"
         echo "dist_dir: ${{ env.dist_dir }}"

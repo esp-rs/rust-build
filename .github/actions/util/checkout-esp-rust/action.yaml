@@ -9,6 +9,6 @@ runs:
       uses: actions/checkout@v2
       with:
         repository: esp-rs/rust
-        ref: esp-${{ env.rust_version }}
+        ref: esp-${{ env.release_version }}
         submodules: true
         path: "rust"

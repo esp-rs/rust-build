@@ -16,6 +16,6 @@ runs:
       uses: softprops/action-gh-release@v1
       with:
         tag_name:
-          v${{ env.release_ver }}
+          v${{ env.release_version }}
         files:
           ${{ env.asset_name }}
