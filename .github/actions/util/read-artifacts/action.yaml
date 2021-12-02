@@ -15,6 +15,11 @@ runs:
       with:
         name: rust-std-${{ env.build_suffix }}.tar.xz
 
+    - name: Read Artifact - Clippy
+      uses: actions/download-artifact@v2
+      with:
+        name: clippy-${{ env.build_suffix }}.tar.xz
+
     - name: Read Artifact - RustFmt
       uses: actions/download-artifact@v2
       with:

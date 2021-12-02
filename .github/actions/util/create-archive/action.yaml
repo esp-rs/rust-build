@@ -30,6 +30,10 @@ runs:
         tar -xvf ./rust-std-${{ env.build_suffix }}.tar.xz
         cp -af ./rust-std-${{ env.build_suffix }}/rust-std-${{ matrix.target_name }}/* ./esp/
 
+        # Copy in the clippy tool
+        tar -xvf ./clippy-${{ env.build_suffix }}.tar.xz
+        cp -af ./clippy-${{ env.build_suffix }}/clippy-preview/* ./esp/
+
         # Copy in the cargo tool
         tar -xvf ./cargo-${{ env.build_suffix }}.tar.xz
         cp -af ./cargo-${{ env.build_suffix }}/cargo/* ./esp/
@@ -62,6 +66,10 @@ runs:
         tar -xvf ./rust-std-${{ env.build_suffix }}.tar.xz
         cp -af ./rust-std-${{ env.build_suffix }}/* ./${{ env.archive_dir }}/
 
+        # Copy in the clippy tool
+        tar -xvf ./clippy-${{ env.build_suffix }}.tar.xz
+        cp -af ./clippy-${{ env.build_suffix }}/* ./${{ env.archive_dir }}/
+
         # Copy in the rustfmt tool
         tar -xvf ./rustfmt-${{ env.build_suffix }}.tar.xz
         cp -af ./rustfmt-${{ env.build_suffix }}/* ./${{ env.archive_dir }}/
@@ -75,6 +83,7 @@ runs:
         # Make sure the other components are recognised by the install script
         echo "rust-std-${{ matrix.target_name }}" >> ./${{ env.archive_dir }}/components
         echo "rustfmt-preview" >> ./${{ env.archive_dir }}/components
+        echo "clippy-preview" >> ./${{ env.archive_dir }}/components
 
         # Build the final tar
         tar -cJf ${{ env.asset_name }} ${{ env.archive_dir }}
