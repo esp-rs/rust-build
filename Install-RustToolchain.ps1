@@ -4,7 +4,7 @@ param (
     [String]
     $ExportFile = '',
     [String]
-    $ToolchainVersion = '1.56.0.1',
+    $ToolchainVersion = '1.57.0.0',
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]

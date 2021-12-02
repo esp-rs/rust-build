@@ -23,7 +23,7 @@ runs:
         # esp rust version to checkout
         echo "rust_ver=${{ github.event.inputs.rust_ver }}" >> $GITHUB_ENV
 
-        # Describes part of the file name generated during the build 
+        # Describes part of the file name generated during the build
         echo "build_suffix=${{ github.event.inputs.rust_ver }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
 
         # release version
@@ -70,9 +70,9 @@ runs:
 #    - name: Debug Output Env Variables
 #      shell: bash
 #      run: |
-#        echo "rust_ver: ${{ env.rust_ver }}"
+#        echo "rust_version: ${{ env.rust_ver }}"
 #        echo "build_suffix: ${{ env.build_suffix }}"
-#        echo "release_ver: ${{ env.release_ver }}"
+#        echo "release_version: ${{ env.release_ver }}"
 #        echo "asset_name: ${{ env.asset_name }}"
 #        echo "work_dir: ${{ env.work_dir }}"
 #        echo "dist_dir: ${{ env.dist_dir }}"

@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.56.0.1'
+        default: '1.57.0.0'
       target:
         description: 'Target to build (e.g. xtensa-esp32-espidf)'
         required: true
@@ -50,8 +50,8 @@ jobs:
         include:
         - os: macos-m1-self-hosted
           ARCH: ''
-          ASSET_PATH: 'build/dist/rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
+          ASSET_PATH: 'build/dist/rust-1.57.0-dev-aarch64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-1.57.0.0-aarch64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
