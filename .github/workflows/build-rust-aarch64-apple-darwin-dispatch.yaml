@@ -60,7 +60,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Prepare build
-        run: python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
+        run: arch -arm64 python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
       - name: Build with x.py - dist packages
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
         run: python3 x.py dist --stage 2
@@ -68,7 +68,7 @@ jobs:
         #run: python3 x.py dist --stage 2 --exclude src/doc
       - name: Build with x.py - dist packages - with cached LLVM
         if: ${{ matrix.os == 'macos-m1-self-hosted' }}
-        run: python3 x.py dist --stage 2 --llvm-skip-rebuild TRUE
+        run: arch -arm64 python3 x.py dist --stage 2 --llvm-skip-rebuild TRUE
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
