@@ -10,6 +10,8 @@ param (
     [ValidateSet("install", "reinstall", "uninstall", "skip")]
     $InstallationMode = 'reinstall',
     [String]
+    $LlvmVersion = "esp-12.0.1-20210914",
+    [String]
     [ValidateSet("build", "flash", "monitor")]
     $TestMode = "build",
     [String]
@@ -23,6 +25,7 @@ $RustStdDemo = "rust-esp32-std-demo"
 
 "Processing configuration:"
 "-Features         = ${Features}"
+"-LlvmVersion      = ${LlvmVersion}"
 "-Target           = ${Target}"
 "-ToolchainVersion = ${ToolchainVersion}"
 "-TestMode         = ${TestMode}"
@@ -35,6 +38,7 @@ $ExportFile="Export-Rust-${ToolchainName}.ps1"
 if ("skip" -ne $InstallationMode) {
     ./Install-RustToolchain.ps1 `
         -ExportFile ${ExportFile} `
+        -LlvmVersion ${LlvmVersion} `
         -InstallationMode ${InstallationMode} `
         -ToolchainVersion ${ToolchainVersion} `
         -ToolchainDestination "${HOME}/.rustup/toolchains/${ToolchainName}"
