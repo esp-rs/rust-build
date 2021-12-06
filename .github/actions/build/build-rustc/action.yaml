@@ -30,7 +30,13 @@ runs:
     # Run Linux builds using bash
 
     - name: Prepare build
-      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      if: startsWith(matrix.os, 'macos')
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --dist-compression-formats='xz' --set rust.jemalloc
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'ubuntu')
       working-directory: ${{ env.work_dir }}
       shell: bash
       run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --dist-compression-formats='xz'
