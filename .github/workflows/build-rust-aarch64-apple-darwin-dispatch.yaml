@@ -60,12 +60,13 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Prepare build
-        # ignore build failure - workaround for pkgbuild problems
         run: |
-          arch -arm64 python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc || echo "build finished"
+          arch -arm64 python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
       - name: Build with x.py - dist packages
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' }}
-        run: python3 x.py dist --stage 2
+        # ignore build failure - workaround for pkgbuild problems
+        run: |
+          python3 x.py dist --stage 2  || echo "build finished"
         # Excluding src/doc breaks build of 1.55
         #run: python3 x.py dist --stage 2 --exclude src/doc
       - name: Build with x.py - dist packages - with cached LLVM
