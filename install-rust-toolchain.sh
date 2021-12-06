@@ -9,6 +9,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
+LLVM_VERSION="esp-12.0.1-20210914"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy"
 
@@ -43,6 +44,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -l|--llvm-version)
+      LLVM_VERSION="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -r|--rustup-home)
       RUSTUP_HOME="$2"
       shift # past argument
@@ -72,6 +78,7 @@ echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 echo "--export-file           = ${EXPORT_FILE}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
+echo "--llvm-version          = ${LLVM_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
@@ -128,19 +135,17 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
 
-LLVM_RELEASE="esp-12.0.1-20210914"
-
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
-    #LLVM_RELEASE="esp-12.0.1-20210823"
+    #LLVM_VERSION="esp-12.0.1-20210823"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
-    #LLVM_RELEASE="esp-12.0.1-20210914"
+    #LLVM_VERSION="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
@@ -156,11 +161,13 @@ echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
-LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
+LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
+LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
+LLVM_DIST_URL="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}/${LLVM_FILE}"
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
-IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
+IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
 if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ] ; then
@@ -210,10 +217,11 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 fi
 
-echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
+echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
     if [ ! -f "${LLVM_FILE}" ]; then
-        curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
+        echo "** Downloading ${LLVM_DIST_URL}"
+        curl -LO "${LLVM_DIST_URL}"
     fi
     mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
     if [ ${ARCH} == "x86_64-apple-darwin" ] || [ ${ARCH} == "aarch64-apple-darwin" ] || [ ${ARCH} == "x86_64-unknown-linux-gnu" ] ; then

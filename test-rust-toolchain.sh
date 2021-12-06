@@ -10,6 +10,7 @@ fi
 TOOLCHAIN_PREFIX="esp"
 BUILD_TARGET="xtensa-esp32-espidf" # all, xtensa-esp32-espidf, xtensa-esp32s2-espidf, riscv32imc-esp-espidf
 INSTALLATION_MODE="reinstall" # install, reinstall, uninstall, skip
+LLVM_VERSION="esp-12.0.1-20210914"
 TEST_MODE="compile" # compile, flash, monitor
 TEST_PORT="/dev/ttyUSB0"
 FEATURES="native" # space separated features of the project
@@ -42,6 +43,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -i|--installation-mode)
       INSTALLATION_MODE="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -l|--llvm-version)
+      LLVM_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -87,6 +93,7 @@ function source_cargo() {
 if [ "${INSTALLATION_MODE}" != "skip" ]; then
     ./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
         --export-file "${EXPORT_FILE}" \
+        --llvm-version "${LLVM_VERSION}" \
         --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
         --toolchain-version ${TOOLCHAIN_VERSION}
 fi
