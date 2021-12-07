@@ -60,7 +60,7 @@ while [[ $# -gt 0 ]]; do
       shift # past value
       ;;
     -x|--clear-cache)
-      CLEAR_DOWNLOAD_CACHE="YES"
+      CLEAR_DOWNLOAD_CACHE="$2"
       shift
       ;;
     *)    # unknown option
