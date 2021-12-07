@@ -10,7 +10,7 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.57.0.0'
+        default: '1.57.0.2'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
