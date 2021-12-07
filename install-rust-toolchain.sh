@@ -137,7 +137,7 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-pc-windows-msvc"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
-    LLVM_ARCH="aarch64-apple-darwin"
+    LLVM_ARCH="${ARCH}"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
     #LLVM_VERSION="esp-12.0.1-20210823"
@@ -152,7 +152,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
-    # LLVM_ARCH="linux-aarch64"
+    LLVM_ARCH="${ARCH}"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
