@@ -49,7 +49,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          path: "rust-build"
           ref: ${{ github.event.inputs.rust_build_branch }}
       - uses: ./rust-build/.github/actions/util/setup-envs
         with:
@@ -61,8 +60,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: Install-RustToolchain.ps1
-          asset_name: Install-RustToolchain.ps1
+          asset_path: install-rust-toolchain.sh
+          asset_name: install-rust-toolchain.sh
           asset_content_type: text/plain
       - name: Upload PowerShell installer
         id: upload-powershell-installer
