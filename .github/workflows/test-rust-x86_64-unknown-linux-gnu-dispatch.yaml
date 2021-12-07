@@ -1,4 +1,4 @@
-name: Test Linux x86_64 - build of Rust examples 
+name: Test Linux x86_64 - build of Rust examples
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.57.0.0'
+        default: '1.57.0.2'
 
 jobs:
   build-idf-rust-examples:

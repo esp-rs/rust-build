@@ -2,7 +2,7 @@
 param (
     [Parameter()]
     [String]
-    $ToolchainVersion = '1.57.0.0',
+    $ToolchainVersion = '1.57.0.2',
     [String]
     [ValidateSet("xtensa-esp32-espidf", "xtensa-esp32s2-espidf", "xtensa-esp32s3-espidf", "riscv32imc-esp-espidf")]
     $Target = "xtensa-esp32-espidf",
@@ -10,7 +10,7 @@ param (
     [ValidateSet("install", "reinstall", "uninstall", "skip")]
     $InstallationMode = 'reinstall',
     [String]
-    $LlvmVersion = "esp-12.0.1-20210914",
+    $LlvmVersion = "esp-13.0.0-20211203",
     [String]
     [ValidateSet("build", "flash", "monitor")]
     $TestMode = "build",

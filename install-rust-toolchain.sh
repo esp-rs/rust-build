@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default values
-TOOLCHAIN_VERSION="1.57.0.0"
+TOOLCHAIN_VERSION="1.57.0.2"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -9,7 +9,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-12.0.1-20210914"
+LLVM_VERSION="esp-13.0.0-20211203"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy"
 
