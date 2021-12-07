@@ -14,6 +14,7 @@ LLVM_VERSION="esp-13.0.0-20211203"
 TEST_MODE="compile" # compile, flash, monitor
 TEST_PORT="/dev/ttyUSB0"
 FEATURES="native" # space separated features of the project
+CLEAR_CACHE="no"
 
 # Process positional arguments
 POSITIONAL=()
@@ -61,6 +62,10 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -x|--clear-cache)
+      CLEAR_CACHE="YES"
+      shift
+      ;;
     *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
       shift # past argument
@@ -71,6 +76,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
+echo "--clear-cache        = ${CLEAR_CACHE}"
 echo "--features           = ${FEATURES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--target             = ${BUILD_TARGET}"
@@ -92,6 +98,7 @@ function source_cargo() {
 
 if [ "${INSTALLATION_MODE}" != "skip" ]; then
     ./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
+        --clear-cache "${CLEAR_CACHE}" \
         --export-file "${EXPORT_FILE}" \
         --llvm-version "${LLVM_VERSION}" \
         --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
@@ -101,8 +108,11 @@ fi
 source "./${EXPORT_FILE}"
 command -v cargo || source_cargo
 
-
 RUST_STD_DEMO="rust-esp32-std-demo"
+
+if [ "${CLEAR_CACHE}" == "YES" ]; then
+    rm -rf "${RUST_STD_DEMO}"
+fi
 
 if [ ! -d "${RUST_STD_DEMO}" ]; then
     git clone https://github.com/ivmarkov/${RUST_STD_DEMO}.git
