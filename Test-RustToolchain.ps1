@@ -2,13 +2,15 @@
 param (
     [Parameter()]
     [String]
-    $ToolchainVersion = '1.56.0.1',
+    $ToolchainVersion = '1.57.0.2',
     [String]
     [ValidateSet("xtensa-esp32-espidf", "xtensa-esp32s2-espidf", "xtensa-esp32s3-espidf", "riscv32imc-esp-espidf")]
     $Target = "xtensa-esp32-espidf",
     [String]
     [ValidateSet("install", "reinstall", "uninstall", "skip")]
     $InstallationMode = 'reinstall',
+    [String]
+    $LlvmVersion = "esp-13.0.0-20211203",
     [String]
     [ValidateSet("build", "flash", "monitor")]
     $TestMode = "build",
@@ -23,6 +25,7 @@ $RustStdDemo = "rust-esp32-std-demo"
 
 "Processing configuration:"
 "-Features         = ${Features}"
+"-LlvmVersion      = ${LlvmVersion}"
 "-Target           = ${Target}"
 "-ToolchainVersion = ${ToolchainVersion}"
 "-TestMode         = ${TestMode}"
@@ -35,6 +38,7 @@ $ExportFile="Export-Rust-${ToolchainName}.ps1"
 if ("skip" -ne $InstallationMode) {
     ./Install-RustToolchain.ps1 `
         -ExportFile ${ExportFile} `
+        -LlvmVersion ${LlvmVersion} `
         -InstallationMode ${InstallationMode} `
         -ToolchainVersion ${ToolchainVersion} `
         -ToolchainDestination "${HOME}/.rustup/toolchains/${ToolchainName}"

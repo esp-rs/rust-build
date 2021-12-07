@@ -1,0 +1,81 @@
+name: 'Build Tools'
+description: 'Build the rustc tools'
+
+runs:
+  using: "composite"
+  steps:
+
+    # Run the Windows Build using powershell
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'windows')
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
+
+    - name: Build with x.py - Tools
+      if: startsWith(matrix.os, 'windows')
+      # Note excluding src/doc breaks build of 1.55
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      # We only want to do cargo for windows builds
+      run: python3 x.py build --exclude src/doc --stage 2 src/tools/clippy src/tools/rustfmt src/tools/cargo
+
+    - name: Dist with x.py - Tools
+      if: startsWith(matrix.os, 'windows')
+      # We include cargo to get around https://github.com/esp-rs/rust-build/issues/17
+      working-directory: ${{ env.work_dir }}
+      shell: pwsh
+      run: python3 x.py dist --stage 2 clippy rustfmt cargo
+
+
+    # Run Linux builds using bash
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'macos')
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
+
+    - name: Prepare build
+      if: startsWith(matrix.os, 'ubuntu')
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 src/bootstrap/configure.py ${{ matrix.llvm_root_option }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
+
+    - name: Build with x.py - Tools
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      # Note excluding src/doc breaks build of 1.55
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 x.py build --exclude src/doc --stage 2 src/tools/clippy src/tools/rustfmt
+
+    - name: Dist with x.py - Tools
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      # We include cargo to get around https://github.com/esp-rs/rust-build/issues/17
+      working-directory: ${{ env.work_dir }}
+      shell: bash
+      run: python3 x.py dist --stage 2 clippy rustfmt cargo
+
+
+    # Save the result
+
+    # We only want to do cargo for windows builds
+    - name: Save Artifact - Cargo
+      if: startsWith(matrix.os, 'windows')
+      uses: actions/upload-artifact@v2
+      with:
+        name: cargo-${{ env.build_suffix }}.tar.xz
+        path: ${{ env.dist_dir }}/cargo-${{ env.build_suffix }}.tar.xz
+
+    - name: Save Artifact - RustFmt
+      uses: actions/upload-artifact@v2
+      with:
+        name: rustfmt-${{ env.build_suffix }}.tar.xz
+        path: ${{ env.dist_dir }}/rustfmt-${{ env.build_suffix }}.tar.xz
+
+    - name: Save Artifact - Clippy
+      uses: actions/upload-artifact@v2
+      with:
+        name: clippy-${{ env.build_suffix }}.tar.xz
+        path: ${{ env.dist_dir }}/clippy-${{ env.build_suffix }}.tar.xz

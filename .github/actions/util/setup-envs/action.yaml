@@ -1,0 +1,78 @@
+name: 'Setup Env Variables - Rust Build'
+description: 'Setup Env Variables - Rust Build'
+
+# used for rust build
+
+inputs:
+  github_token:
+    # We can't use secrets directly in composite workflows
+    description: "Github secret token"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+
+    - name: Setup Env Variables - Common
+      shell: bash
+      run: |
+
+        # Set the github token as an env variable for use with uploads
+        echo "GITHUB_TOKEN=${{ inputs.github_token }}" >> $GITHUB_ENV
+
+        # esp rust version to checkout
+        echo "rust_version=${{ github.event.inputs.rust_version }}" >> $GITHUB_ENV
+
+        # Describes part of the file name generated during the build
+        echo "build_suffix=${{ github.event.inputs.rust_version }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
+
+        # release version
+        echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
+
+        # release version
+        echo "archive_dir=rust-${{ github.event.inputs.rust_version }}-dev-${{ matrix.target_name }}" >> $GITHUB_ENV
+
+    - name: Setup Env Variables - Windows
+      if: startsWith(matrix.os, 'windows')
+      shell: bash
+      run: |
+
+        # Working / Source direcory for Windows
+        # Symlinked to get around long path issues
+        echo "work_dir=D:/rust" >> $GITHUB_ENV
+
+        # The dist dir is where the final archives are stored during the build
+        echo "dist_dir=D:/rust/build/dist" >> $GITHUB_ENV
+
+        # asset name for release
+        echo "asset_name=rust-${{ github.event.inputs.release_version }}-${{ matrix.target_name }}.zip" >> $GITHUB_ENV
+
+
+    - name: Setup Env Variables - Unix
+      if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
+      shell: bash
+      run: |
+
+        # Working / Source direcory for Windows
+        # Symlinked to get around long path issues
+        echo "work_dir=${{ github.workspace }}/rust" >> $GITHUB_ENV
+
+        # The dist dir is where the final archives are stored during the build
+        echo "dist_dir=${{ github.workspace }}/rust/build/dist" >> $GITHUB_ENV
+
+        # asset name for release
+        echo "asset_name=rust-${{ github.event.inputs.release_version }}-${{ matrix.target_name }}.tar.xz" >> $GITHUB_ENV
+
+        # Fixes issues when trying to do a dist with the src
+        mkdir -p ${{ github.workspace }}/.cache/cargo
+        echo "CARGO_HOME=${{ github.workspace }}/.cache/cargo" >> $GITHUB_ENV
+
+    - name: Debug Output Env Variables
+      shell: bash
+      run: |
+        echo "rust_version: ${{ env.rust_version }}"
+        echo "build_suffix: ${{ env.build_suffix }}"
+        echo "release_version: ${{ env.release_version }}"
+        echo "asset_name: ${{ env.asset_name }}"
+        echo "work_dir: ${{ env.work_dir }}"
+        echo "dist_dir: ${{ env.dist_dir }}"

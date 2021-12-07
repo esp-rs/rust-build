@@ -4,9 +4,11 @@ param (
     [String]
     $ExportFile = '',
     [String]
-    $ToolchainVersion = '1.56.0.1',
+    $ToolchainVersion = '1.57.0.2',
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
+    [String]
+    $LlvmVersion = "esp-13.0.0-20211203",
     [String]
     [ValidateSet("install", "reinstall", "uninstall", "export")]
     $InstallationMode = 'install'
@@ -21,6 +23,7 @@ $RustcMinimalMinorVersion="55"
 
 "Processing configuration:"
 "-InstalltationMode    = ${InstallationMode}"
+"-LlvmVersion          = ${LlvmVersion}"
 "-ToolchainVersion     = ${ToolchainVersion}"
 "-ToolchainDestination = ${ToolchainDestination}"
 
@@ -37,7 +40,7 @@ function InstallRustFmt() {
 
 function ExportVariables() {
     "Add following command to PowerShell profile"
-    $ExportContent+="`n" + '$env:PATH+=";' + "${IdfToolXtensaElfClang}/bin/" + '"'
+    $ExportContent+="`n" + '$env:PATH="' + "${IdfToolXtensaElfClang}/bin/;" + '$env:PATH"'
     $ExportContent+="`n" + '$env:LIBCLANG_PATH="' + "${IdfToolXtensaElfClang}/bin/libclang.dll" + '"'
     # Workaround of https://github.com/espressif/esp-idf/issues/7910
     $ExportContent+="`n" + '$env:PIP_USER="no"'
@@ -79,12 +82,12 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
 $Arch="x86_64-pc-windows-msvc"
 $RustDist="rust-${ToolchainVersion}-${Arch}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
-$LlvmRelease="esp-12.0.1-20210914"
 $IdfToolsPath="${HOME}/.espressif"
-$IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmRelease}-${Arch}"
+$IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmVersion}-${Arch}"
 $LlvmArch="win64"
-$LlvmFile="xtensa-esp32-elf-llvm12_0_1-${LlvmRelease}-${LlvmArch}.zip"
-$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmRelease}/${LlvmFile}"
+$LlvmArtifactVersion=$LlvmVersion.Substring(4).Substring(0,6).Replace(".","_")
+$LlvmFile="xtensa-esp32-elf-llvm${LlvmArtifactVersion}-${LlvmVersion}-${LlvmArch}.zip"
+$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmVersion}/${LlvmFile}"
 
 # Only export variables
 if ("export" -eq $InstallationMode) {

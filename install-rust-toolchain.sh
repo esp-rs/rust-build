@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Default values
-TOOLCHAIN_VERSION="1.56.0.1"
+TOOLCHAIN_VERSION="1.57.0.2"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -9,8 +9,9 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
+LLVM_VERSION="esp-13.0.0-20211203"
 CLEAR_DOWNLOAD_CACHE="NO"
-EXTRA_CRATES="cargo-espflash ldproxy"
+EXTRA_CRATES="ldproxy"
 
 # Process positional arguments
 POSITIONAL=()
@@ -43,6 +44,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -l|--llvm-version)
+      LLVM_VERSION="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -r|--rustup-home)
       RUSTUP_HOME="$2"
       shift # past argument
@@ -72,6 +78,7 @@ echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 echo "--export-file           = ${EXPORT_FILE}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
+echo "--llvm-version          = ${LLVM_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
@@ -81,10 +88,16 @@ function install_rust() {
 }
 
 function source_cargo() {
-    if [ ! -z "${CARGO_HOME}" ]; then
-        source ${CARGO_HOME}/env
+    if [ -e "${HOME}/.cargo/env" ]; then
+        source "${HOME}/.cargo/env"
+        export CARGO_HOME="${HOME}/.cargo/"
     else
-        source ${HOME}/.cargo/env
+        if [ ! -z "${CARGO_HOME}" ]; then
+            source ${CARGO_HOME}/env
+        else
+	    echo "Warning: Unable to source .cargo/env"
+            export CARGO_HOME="${HOME}/.cargo/"
+        fi
     fi
 }
 
@@ -111,30 +124,41 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     install_rust
 fi
 
-command -v cargo || source_cargo
+source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
-rustfmt --version 2> /dev/null || install_rustfmt
+install_rustfmt
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="aarch64-apple-darwin"
+#ARCH="aarch64-unknown-linux-gnu"
 #ARCH="x86_64-apple-darwin"
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
 
-LLVM_RELEASE="esp-12.0.1-20210914"
-
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="aarch64-apple-darwin"
-    #LLVM_RELEASE="esp-12.0.1-20210823"
+    ESPFLASH_URL=""
+    ESPFLASH_BIN=""
+    #LLVM_VERSION="esp-12.0.1-20210823"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
-    #LLVM_RELEASE="esp-12.0.1-20210914"
+    ESPFLASH_URL=""
+    ESPFLASH_BIN=""
+    #LLVM_VERSION="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
+    # LLVM_ARCH="linux-aarch64"
+    ESPFLASH_URL=""
+    ESPFLASH_BIN=""
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
@@ -142,11 +166,13 @@ echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
-LLVM_FILE="xtensa-esp32-elf-llvm12_0_1-${LLVM_RELEASE}-${LLVM_ARCH}.tar.xz"
+LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
+LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
+LLVM_DIST_URL="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}/${LLVM_FILE}"
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
-IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_RELEASE}-${ARCH}"
+IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
 if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ] ; then
@@ -196,10 +222,11 @@ if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
     ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 fi
 
-echo -n "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} - "
+echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
 if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
     if [ ! -f "${LLVM_FILE}" ]; then
-        curl -LO "https://github.com/espressif/llvm-project/releases/download/${LLVM_RELEASE}/${LLVM_FILE}"
+        echo "** Downloading ${LLVM_DIST_URL}"
+        curl -LO "${LLVM_DIST_URL}"
     fi
     mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
     if [ ${ARCH} == "x86_64-apple-darwin" ] || [ ${ARCH} == "aarch64-apple-darwin" ] || [ ${ARCH} == "x86_64-unknown-linux-gnu" ] ; then
@@ -210,6 +237,17 @@ if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
     echo "done"
 else
     echo "already installed"
+fi
+
+if [[ ! -z "${ESPFLASH_URL}" ]]; then
+    if [[ ! -e "${ESPFLASH_BIN}" ]]; then
+        curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}"
+        chmod u+x "${ESPFLASH_BIN}"
+    fi
+    echo "Using cargo-espflash binary release"
+else
+    echo "Installing cargo-espflash from source code"
+    cargo install cargo-espflash
 fi
 
 if [[ ! -z "${EXTRA_CRATES}" ]]; then
@@ -229,3 +267,4 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
     echo export PIP_USER="no" >> "${EXPORT_FILE}"
 fi
+

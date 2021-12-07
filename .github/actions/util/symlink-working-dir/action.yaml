@@ -1,0 +1,15 @@
+name: 'SymLink the working directory'
+description: 'SymLink the working directory'
+
+runs:
+  using: "composite"
+  steps:
+
+      # Windows typically can have long path issues
+      # To get around this we create a link
+      # from D:/a/rust-build/rust-build/rust to D:/rust to shorten the build path
+
+    - name: Symlink working directory
+      shell: pwsh
+      if: startsWith(matrix.os, 'windows')
+      run: New-Item -Path ${{ env.work_dir }} -ItemType SymbolicLink -Value ${{ github.workspace }}/rust

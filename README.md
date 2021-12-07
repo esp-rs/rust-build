@@ -38,8 +38,8 @@ Export variables displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.56.0.1 --export-file export-1.56.0.1.sh
-source ./export-1.56.0.1.sh
+./install-rust-toolchain.sh --toolchain-version 1.57.0.0 --export-file export-esp-rust.sh
+source ./export-esp-rust.sh
 ```
 
 #### Get source code of examples
@@ -99,8 +99,8 @@ Export variables displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```
-./Install-RustToolchain.sh --toolchain-version 1.56.0.1 --export-file Export-1.56.0.1.ps1
-source ./Export-1.56.0.1.ps1
+./Install-RustToolchain.sh --toolchain-version 1.57.0.0 --export-file Export-EspRust.ps1
+source ./Export-EspRust.ps1
 ```
 
 #### Get source code of examples

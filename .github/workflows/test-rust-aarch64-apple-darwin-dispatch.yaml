@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.56.0.1'
+        default: '1.57.0.2'
       target:
         description: 'Target to build (e.g. xtensa-esp32-espidf)'
         required: true
@@ -47,13 +47,6 @@ jobs:
     strategy:
       matrix:
         os: [ macos-m1-self-hosted ]
-        include:
-        - os: macos-m1-self-hosted
-          ARCH: ''
-          ASSET_PATH: 'build/dist/rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.56.0-dev-aarch64-apple-darwin.tar.xz'
-          ASSET_CONTENT_TYPE: 'application/x-tar'
-          LLVM_ROOT_OPTION: ''
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -68,7 +61,8 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
       - name: Test Rust toolchain by compiling STD demo
-        run: ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }} --target ${{ github.event.inputs.target }}
+        run: |
+          ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }} --target ${{ github.event.inputs.target }} --clear-cache YES
       # - name: Prepare artifact for upload
       #   working-directory: rust-esp32-std-demo/target/xtensa-esp32-espidf/debug/
       #   run: zip ../../../../rust-esp32-std-demo-xtensa-esp32-espidf.zip rust-esp32-std-demo
