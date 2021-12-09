@@ -20,6 +20,8 @@ $ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
 $RustcMinimalMinorVersion="55"
+$EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
+$EspFlashBin="${env:USERPROFILE}\.cargo\bin\cargo-espflash.exe"
 
 "Processing configuration:"
 "-InstalltationMode    = ${InstallationMode}"
@@ -147,8 +149,12 @@ if (-Not (Test-Path -Path $IdfToolXtensaElfClang)) {
 }
 
 "Install common dependencies"
-cargo install cargo-pio ldproxy
-# Install cargo-espflash from source code - required for support of --target option
-cargo install cargo-espflash --git https://github.com/esp-rs/espflash.git
+cargo install ldproxy
+
+# Install espflash from binary archive
+if (-Not (Test-Path $EspFlashBin -PathType Leaf)) {
+    "** installing cargo-espflash from $EspFlashUrl to $EspFlashBin"
+    Invoke-WebRequest $EspFlashUrl -OutFile $EspFlashBin
+}
 
 ExportVariables
