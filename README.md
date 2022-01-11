@@ -9,7 +9,7 @@ This repository contains:
 The installation process of ready to use custom build of Rust and LLVM:
 
 * [macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64](#rust-on-xtensa-installation-for-macos-and-linux)
-* [Windows 10 x64](#rust-on-xtensa-installation-for-windows-x64)
+* [Windows 10, 11 x64](#rust-on-xtensa-installation-for-windows-x64)
 * [Podman/Docker](#rust-with-podman-or-docker)
 * Not supported: Linux arm64 - missing support in ESP-IDF - https://github.com/espressif/esp-idf/issues/6475
 
@@ -88,6 +88,7 @@ Tested OS: Windows 10 x64
 
 - Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
 
+![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 #### Installation commands for PowerShell
 
 ```sh
