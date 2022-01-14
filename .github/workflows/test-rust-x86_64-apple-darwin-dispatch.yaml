@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.57.0.2'
+        default: '1.58.0.0'
 
 jobs:
   build-idf-rust-examples:
