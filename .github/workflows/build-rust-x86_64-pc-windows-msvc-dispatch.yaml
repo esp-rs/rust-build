@@ -26,10 +26,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         include:
 
-        - os: windows-latest
+        - os: windows-2022
           target_name: x86_64-pc-windows-msvc
           llvm_root_option: ''
 
@@ -55,10 +55,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         include:
 
-        - os: windows-latest
+        - os: windows-2022
           target_name: x86_64-pc-windows-msvc
           llvm_root_option: ''
 
@@ -82,10 +82,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         include:
 
-        - os: windows-latest
+        - os: windows-2022
           target_name: x86_64-pc-windows-msvc
           llvm_root_option: ''
 
@@ -107,15 +107,16 @@ jobs:
 
   upload-archive:
     # Uploads a merged archive
+    if: ${{ false }}
     name: Upload (idf) rust release for ${{ matrix.os }}
     needs: [build-rustc, build-tools, build-src]
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         include:
 
-        - os: windows-latest
+        - os: windows-2022
           target_name: x86_64-pc-windows-msvc
           llvm_root_option: ''
 
