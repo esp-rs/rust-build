@@ -24,7 +24,7 @@ runs:
       if: startsWith(matrix.os, 'windows')
       working-directory: ${{ env.work_dir }}
       shell: pwsh
-      run: python3 x.py dist --stage 2 compiler/rustc
+      run: python3 x.py dist
 
 
     # Run Linux builds using bash

@@ -46,87 +46,87 @@ jobs:
       - uses: ./rust-build/.github/actions/util/checkout-esp-rust
       - uses: ./rust-build/.github/actions/util/symlink-working-dir
       - uses: ./rust-build/.github/actions/build/build-rustc
-      - uses: ./rust-build/.github/actions/build/build-rust-std
+      #- uses: ./rust-build/.github/actions/build/build-rust-std
 
 
-  build-tools:
-    # Build the tools - cargo / rustfmt
-    name: Build (idf) rust tools for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022]
-        include:
+  # build-tools:
+  #   # Build the tools - cargo / rustfmt
+  #   name: Build (idf) rust tools for ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-2022
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      - uses: ./rust-build/.github/actions/build/build-tools
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/tools/setup-python
+  #     - uses: ./rust-build/.github/actions/tools/setup-ninja
+  #     - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+  #     - uses: ./rust-build/.github/actions/util/symlink-working-dir
+  #     - uses: ./rust-build/.github/actions/build/build-tools
 
 
-  build-src:
-    name: Build (idf) rust src for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022]
-        include:
+  # build-src:
+  #   name: Build (idf) rust src for ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-2022
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      # Build the src - This is only bundled in with the windows build
-      - uses: ./rust-build/.github/actions/build/build-src
-        if: startsWith(matrix.os, 'windows')
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/tools/setup-python
+  #     - uses: ./rust-build/.github/actions/tools/setup-ninja
+  #     - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+  #     - uses: ./rust-build/.github/actions/util/symlink-working-dir
+  #     # Build the src - This is only bundled in with the windows build
+  #     - uses: ./rust-build/.github/actions/build/build-src
+  #       if: startsWith(matrix.os, 'windows')
 
-  upload-archive:
-    # Uploads a merged archive
-    if: ${{ false }}
-    name: Upload (idf) rust release for ${{ matrix.os }}
-    needs: [build-rustc, build-tools, build-src]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-2022]
-        include:
+  # upload-archive:
+  #   # Uploads a merged archive
+  #   if: ${{ false }}
+  #   name: Upload (idf) rust release for ${{ matrix.os }}
+  #   needs: [build-rustc, build-tools, build-src]
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-2022
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/util/create-archive
-      - uses: ./rust-build/.github/actions/util/upload
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/util/create-archive
+  #     - uses: ./rust-build/.github/actions/util/upload
