@@ -41,6 +41,9 @@ jobs:
       - uses: ./rust-build/.github/actions/util/setup-envs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get free disk space before clean up
+        shell: pwsh
+        run: Get-WmiObject -Class Win32_logicaldisk
       # - name: List biggest objects
       #   shell: pwsh
       #   run: |
@@ -64,6 +67,9 @@ jobs:
           Write-Host $err
           Remove-Item "$Env:Programfiles\Unity Hub" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
           Write-Host $err
+      - name: Get free disk space after clean up
+        shell: pwsh
+        run: Get-WmiObject -Class Win32_logicaldisk
       - uses: ./rust-build/.github/actions/tools/setup-python
       - uses: ./rust-build/.github/actions/tools/setup-ninja
       - uses: ./rust-build/.github/actions/util/checkout-esp-rust
