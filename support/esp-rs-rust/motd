@@ -1,3 +1,9 @@
 ==============================================================================
 =           Container image with ESP-IDF, Rust compiler                      =
 ==============================================================================
+
+Build example:
+
+cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test
+cd test
+cargo build --features "native"
