@@ -39,6 +39,11 @@ USER rust
 ENTRYPOINT [ "/opt/esp/entrypoint.sh" ]
 CMD "/bin/bash"
 
+
+USER root
+RUN apt-get install -y pkg-config
+USER rust
+
 RUN cargo install cargo-generate
 
 # # Add repositories with examples
