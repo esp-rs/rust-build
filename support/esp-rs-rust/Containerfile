@@ -1,0 +1,60 @@
+FROM ubuntu:20.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV LC_ALL=C.UTF-8
+ENV LANG=C.UTF-8
+ENV RUSTUP_HOME=/opt/rustup
+ENV CARGO_HOME=/opt/cargo
+ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/bin/:$PATH
+
+RUN apt-get update \
+    && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3
+
+RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
+USER rust
+WORKDIR /opt
+
+COPY install-rust-toolchain.sh .
+RUN ./install-rust-toolchain.sh --extra-crates "" --clear-cache "YES"
+
+RUN mkdir -p .espressif/frameworks/; \
+  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
+
+USER root
+RUN apt-get install -y python3-pip
+USER rust
+
+# Install esp32 toolchain. Other toolchains: esp32s3, esp32s2, esp32c3, esp32
+RUN cd .espressif/frameworks/esp-idf-master; \
+  ./install.sh esp32
+
+ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
+COPY support/esp-rs-rust/entrypoint.sh /opt/esp/entrypoint.sh
+COPY support/esp-rs-rust/motd /etc/motd
+
+USER root
+RUN apt-get install -y libusb-1.0-0 libssl-dev
+USER rust
+
+ENTRYPOINT [ "/opt/esp/entrypoint.sh" ]
+CMD "/bin/bash"
+
+RUN cargo install cargo-generate
+
+# # Add repositories with examples
+# RUN if [ ! -e /opt/rust-esp32-example ]; then git clone https://github.com/espressif/rust-esp32-example.git /opt/rust-esp32-example; fi \
+#     && git clone https://github.com/ivmarkov/rust-esp32-std-demo.git /opt/rust-esp32-std-demo
+
+# # Test builds
+# RUN cd /opt/rust-esp32-example \
+#     && . $IDF_PATH/export.sh \
+#     && idf.py build \
+#     && idf.py fullclean
+
+# ENV RUST_ESP32_STD_DEMO_WIFI_SSID=rust
+# ENV RUST_ESP32_STD_DEMO_WIFI_PASS=for-esp32
+
+# RUN cd /opt/rust-esp32-std-demo \
+#     && cargo +esp build \
+#     && cargo clean
+

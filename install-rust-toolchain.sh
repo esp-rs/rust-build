@@ -11,7 +11,7 @@ RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-13.0.0-20211203"
 CLEAR_DOWNLOAD_CACHE="NO"
-EXTRA_CRATES="ldproxy"
+EXTRA_CRATES="ldproxy cargo-espflash"
 
 # Process positional arguments
 POSITIONAL=()
@@ -110,6 +110,15 @@ function install_rustfmt() {
     rustup component add rustfmt --toolchain nightly
 }
 
+function clear_download_cache() {
+  echo "Removing cached dist files:"
+  echo " - ${RUST_SRC_DIST}.tar.xz"
+  rm -f "${RUST_SRC_DIST}.tar.xz"
+
+  echo " - ${LLVM_FILE}"
+  rm -f "${LLVM_FILE}"
+}
+
 set -e
 #set -v
 
@@ -185,11 +194,7 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
 
     if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
-        echo " - ${RUST_SRC_DIST}.tar.xz"
-        rm -f "${RUST_SRC_DIST}.tar.xz"
-
-        echo " - ${LLVM_FILE}"
-        rm -f "${LLVM_FILE}"
+        clear_download_cache
     fi
 
     if [ "${INSTALLATION_MODE}" == "uninstall" ]; then
@@ -245,14 +250,15 @@ if [[ ! -z "${ESPFLASH_URL}" ]]; then
         chmod u+x "${ESPFLASH_BIN}"
     fi
     echo "Using cargo-espflash binary release"
-else
-    echo "Installing cargo-espflash from source code"
-    cargo install cargo-espflash
 fi
 
 if [[ ! -z "${EXTRA_CRATES}" ]]; then
     echo "Installing additional extra crates: ${EXTRA_CRATES}"
     cargo install ${EXTRA_CRATES}
+fi
+
+if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+    clear_download_cache
 fi
 
 echo "Add following command to ~/.zshrc"
