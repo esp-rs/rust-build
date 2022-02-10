@@ -12,26 +12,37 @@ ENV USER=rust
 
 RUN apt-get update \
     && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
-    pkg-config
+    pkg-config libtinfo5
 
 RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
 USER rust
 WORKDIR /opt
 
 COPY install-rust-toolchain.sh .
-RUN ./install-rust-toolchain.sh --extra-crates "cargo-generate" --clear-cache "YES"
+RUN ./install-rust-toolchain.sh --extra-crates "cargo-generate" --clear-cache "YES" --export-file /opt/rust-export.sh
 
-#RUN mkdir -p .espressif/frameworks/; \
-#  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
+RUN mkdir -p .espressif/frameworks/; \
+  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
 
 # Install esp32 toolchain. Other toolchains: esp32s3, esp32s2, esp32c3, esp32
-#RUN cd .espressif/frameworks/esp-idf-master; \
-#  ./install.sh esp32
+ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
+RUN cd .espressif/frameworks/esp-idf-master; \
+  ./install.sh esp32
 
-RUN cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
+#RUN cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
+
+RUN git clone https://github.com/espressif/rust-esp32-example.git
 
 COPY support/esp-rs-rust/entrypoint.sh /opt/esp/entrypoint.sh
 COPY support/esp-rs-rust/motd /etc/motd
 
 ENTRYPOINT [ "/opt/esp/entrypoint.sh" ]
 CMD "/bin/bash"
+
+# Compile the example, this will cache .embuild and .espressif including crates
+#RUN cd test \
+#  && cargo build --features "native"
+
+#RUN cd rust-esp32-example \
+#  && . /opt/esp/entrypoint.sh \
+#  && idf.py build
