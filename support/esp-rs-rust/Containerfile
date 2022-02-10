@@ -7,8 +7,8 @@ ENV RUSTUP_HOME=/opt/rustup
 ENV CARGO_HOME=/opt/cargo
 ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/bin/:$PATH
 ENV USER=rust
-ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
-ENV ESP_IDF_TOOLS_INSTALL_DIR=custom:/opt/.espressif
+#ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
+#ENV ESP_IDF_TOOLS_INSTALL_DIR=custom:/opt/.espressif
 
 RUN apt-get update \
     && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
@@ -19,20 +19,19 @@ USER rust
 WORKDIR /opt
 
 COPY install-rust-toolchain.sh .
-RUN ./install-rust-toolchain.sh --extra-crates "" --clear-cache "YES"
+RUN ./install-rust-toolchain.sh --extra-crates "cargo-generate" --clear-cache "YES"
 
-RUN mkdir -p .espressif/frameworks/; \
-  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
+#RUN mkdir -p .espressif/frameworks/; \
+#  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
 
 # Install esp32 toolchain. Other toolchains: esp32s3, esp32s2, esp32c3, esp32
-RUN cd .espressif/frameworks/esp-idf-master; \
-  ./install.sh esp32
-#RUN "/opt/.espressif/python_env/idf5.0_py3.8_env/bin/python" "/opt/.espressif/esp-idf-master/tools/idf_tools.py" "--idf-path" "/opt/.espressif/esp-idf-master" "--tools-json" "/opt/.espressif/frameworks/esp-idf-master/tools/tools.json" "install" "cmake"
+#RUN cd .espressif/frameworks/esp-idf-master; \
+#  ./install.sh esp32
+
+RUN cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
 
 COPY support/esp-rs-rust/entrypoint.sh /opt/esp/entrypoint.sh
 COPY support/esp-rs-rust/motd /etc/motd
 
 ENTRYPOINT [ "/opt/esp/entrypoint.sh" ]
 CMD "/bin/bash"
-
-RUN cargo install cargo-generate
