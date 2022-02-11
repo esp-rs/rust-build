@@ -3,10 +3,10 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-ENV RUSTUP_HOME=/opt/rustup
-ENV CARGO_HOME=/opt/cargo
-ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/bin/:$PATH
-ENV USER=rust
+#ENV RUSTUP_HOME=/opt/rustup
+#ENV CARGO_HOME=/opt/cargo
+#ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/bin/:$PATH
+#ENV USER=rust
 #ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
 #ENV ESP_IDF_TOOLS_INSTALL_DIR=custom:/opt/.espressif
 
@@ -14,24 +14,23 @@ RUN apt-get update \
     && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
     pkg-config libtinfo5
 
-RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
+#RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
+RUN adduser --disabled-password --gecos "" rust
 USER rust
-WORKDIR /opt
+WORKDIR /home/rust
 
 COPY install-rust-toolchain.sh .
-RUN ./install-rust-toolchain.sh --extra-crates "cargo-generate" --clear-cache "YES" --export-file /opt/rust-export.sh
+COPY test-rust-toolchain.sh .
+RUN ./install-rust-toolchain.sh --extra-crates "ldproxy cargo-generate" --clear-cache "YES" --export-file /home/rust/export-rust.sh
+# RUN ./test-rust-toolchain.sh --extra-crates "ldproxy" --clear-cache "YES" --export-file /home/rust/export-rust.sh
 
-RUN mkdir -p .espressif/frameworks/; \
-  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
+# RUN mkdir -p .espressif/frameworks/; \
+#  git clone --branch master -q --depth 1 --shallow-submodules --recursive https://github.com/espressif/esp-idf.git .espressif/frameworks/esp-idf-master
 
 # Install esp32 toolchain. Other toolchains: esp32s3, esp32s2, esp32c3, esp32
-ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
-RUN cd .espressif/frameworks/esp-idf-master; \
-  ./install.sh esp32
-
-#RUN cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
-
-RUN git clone https://github.com/espressif/rust-esp32-example.git
+#ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
+#RUN cd .espressif/frameworks/esp-idf-master; \
+#  ./install.sh esp32
 
 COPY support/esp-rs-rust/entrypoint.sh /opt/esp/entrypoint.sh
 COPY support/esp-rs-rust/motd /etc/motd
@@ -39,9 +38,18 @@ COPY support/esp-rs-rust/motd /etc/motd
 ENTRYPOINT [ "/opt/esp/entrypoint.sh" ]
 CMD "/bin/bash"
 
+ENV USER=rust
+ENV HOME=/home/rust
+RUN . /opt/esp/entrypoint.sh \
+  && cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name rust-project --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
+
+#RUN git clone https://github.com/espressif/rust-esp32-example.git
+
+
 # Compile the example, this will cache .embuild and .espressif including crates
-#RUN cd test \
-#  && cargo build --features "native"
+RUN . /opt/esp/entrypoint.sh \
+  && cd rust-project \
+  && cargo build --features "native"
 
 #RUN cd rust-esp32-example \
 #  && . /opt/esp/entrypoint.sh \
