@@ -43,13 +43,17 @@ ENV HOME=/home/rust
 RUN . /opt/esp/entrypoint.sh \
   && cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name rust-project --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
 
+# Some patches that should be moved to the tooling
+RUN echo '[patch.crates-io] ' >> rust-project/Cargo.toml
+RUN echo 'embuild = { git="https://github.com/ivmarkov/embuild.git" }' >> rust-project/Cargo.toml
+RUN sed -i -e 's!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/xtensa-esp32-elf-clang/!g' /home/rust/export-rust.sh
 #RUN git clone https://github.com/espressif/rust-esp32-example.git
 
 
 # Compile the example, this will cache .embuild and .espressif including crates
 RUN . /opt/esp/entrypoint.sh \
-  && cd rust-project \
-  && cargo build --features "native"
+   && cd rust-project \
+   && cargo build --features "native"
 
 #RUN cd rust-esp32-example \
 #  && . /opt/esp/entrypoint.sh \
