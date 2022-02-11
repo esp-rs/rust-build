@@ -1,4 +1,4 @@
-FROM ubuntu:22.04
+git FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
@@ -53,7 +53,7 @@ RUN sed -i -e 's!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/!esp-13.0.0-20211
 # Compile the example, this will cache .embuild and .espressif including crates
 RUN . /opt/esp/entrypoint.sh \
    && cd rust-project \
-   && cargo build --features "native"
+   && cargo build --features "native" --release
 
 #RUN cd rust-esp32-example \
 #  && . /opt/esp/entrypoint.sh \

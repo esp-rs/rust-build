@@ -3,11 +3,13 @@
 ==============================================================================
 
 Build sample project:
-
 cd rust-project
-cargo build --features "native"
+cargo build --features "native" --release
 
 Create new project:
 cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test
 cd test
-cargo build --features "native"
+cargo build --features "native" --release
+
+Location of the binary produced by build:
+rust-project/target/xtensa-esp32-espidf/release/rust-project
