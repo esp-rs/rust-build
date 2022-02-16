@@ -4,12 +4,10 @@
 
 Build sample project:
 cd rust-project
-cargo build --features "native" --release
+cargo +esp build --example ledc-simple --release --target xtensa-esp32-espidf
 
-Create new project:
-cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name test
-cd test
-cargo build --features "native" --release
+Source code location:
+rust-project/examples/ledc-simple.rs
 
 Location of the binary produced by build:
-rust-project/target/xtensa-esp32-espidf/release/rust-project
+target/xtensa-esp32-espidf/release/examples/ledc-simple

@@ -40,8 +40,13 @@ CMD "/bin/bash"
 
 ENV USER=rust
 ENV HOME=/home/rust
-RUN . /opt/esp/entrypoint.sh \
-  && cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name rust-project --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
+
+# Examples from template
+#RUN . /opt/esp/entrypoint.sh \
+#  && cargo generate --vcs none --git https://github.com/esp-rs/esp-idf-template cargo --name rust-project --define mcu=esp32 --define toolchain=esp --define espidfver=v5.0 --define std=true
+
+# Examples from esp-idf-hal
+RUN git clone https://github.com/georgik/esp-idf-hal.git rust-project
 
 # Some patches that should be moved to the tooling
 RUN echo '[patch.crates-io] ' >> rust-project/Cargo.toml
@@ -51,9 +56,14 @@ RUN sed -i -e 's!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/!esp-13.0.0-20211
 
 
 # Compile the example, this will cache .embuild and .espressif including crates
+#RUN . /opt/esp/entrypoint.sh \
+#   && cd rust-project \
+#   && cargo +esp build --features "native" --release
+
+# Compile esp-idf-hal examples
 RUN . /opt/esp/entrypoint.sh \
-   && cd rust-project \
-   && cargo build --features "native" --release
+  && cd rust-project \
+  && cargo +esp build --example ledc-simple --release --target xtensa-esp32-espidf
 
 #RUN cd rust-esp32-example \
 #  && . /opt/esp/entrypoint.sh \
