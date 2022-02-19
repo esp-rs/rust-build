@@ -72,7 +72,9 @@ jobs:
         run: Get-WmiObject -Class Win32_logicaldisk
       - uses: ./rust-build/.github/actions/tools/setup-python
       - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+      - name: Shallow Rust clone
+        run: git clone --recursive --depth 1 --shallow-submodules https://github.com/esp-rs/rust.git rust
+      # - uses: ./rust-build/.github/actions/util/checkout-esp-rust
       - uses: ./rust-build/.github/actions/util/symlink-working-dir
       - uses: ./rust-build/.github/actions/build/build-rustc
       #- uses: ./rust-build/.github/actions/build/build-rust-std
