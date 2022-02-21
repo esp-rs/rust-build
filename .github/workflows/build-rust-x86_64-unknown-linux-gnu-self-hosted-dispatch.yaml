@@ -47,7 +47,7 @@ jobs:
     steps:
       - name: Build with Podman
         run: |
-          podman machine start
+          podman machine ps || podman machine start
           podman run --name rust-linux ubuntu-builder ./build.sh
           podman copy rust-linux:rust/dist dist 
           podman container rm rust-linux
