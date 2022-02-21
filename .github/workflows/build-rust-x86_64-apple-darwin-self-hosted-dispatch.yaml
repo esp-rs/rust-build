@@ -68,8 +68,8 @@ jobs:
       - name: Prepare build
         run: |
           python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
-      - name: Build with x.py - dist packages - with cached LLVM
-        run: python3 x.py dist --stage 2
+      - name: Build with x.py - dist packages
+        run: python3 x.py dist --stage 2 || echo "Ignoring pkg failure"
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
