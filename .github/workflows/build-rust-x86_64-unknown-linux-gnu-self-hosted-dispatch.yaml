@@ -63,7 +63,7 @@ jobs:
       - name: Build Rust
         run: |
           podman run --name rust-linux ubuntu-builder ./build.sh
-          podman copy rust-linux:rust/dist dist
+          podman cp rust-linux:rust/dist dist
       - name: Clean up
         run: |
           podman container rm rust-linux
