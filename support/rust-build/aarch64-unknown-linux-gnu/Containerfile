@@ -10,4 +10,4 @@ RUN apt-get update \
 RUN adduser --disabled-password --gecos "" rust
 USER rust
 WORKDIR /home/rust
-
+COPY build.sh /home/rust/build.sh
