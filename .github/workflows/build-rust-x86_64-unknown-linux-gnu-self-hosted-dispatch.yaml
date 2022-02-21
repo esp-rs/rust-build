@@ -73,7 +73,7 @@ jobs:
       - name: Build Rust
         run: |
           podman run --name rust-linux ubuntu-builder ./build.sh
-          podman cp rust-linux:rust/dist dist
+          podman cp rust-linux:rust/build/dist dist
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
