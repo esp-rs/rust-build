@@ -53,6 +53,7 @@ jobs:
       - name: Initialize Podman
         run: |
           podman ps >/dev/null 2>/dev/null || podman machine start
+          podman stop rust-linux || echo "ok"
           podman container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
         uses: actions/checkout@v2
