@@ -8,6 +8,18 @@ on:
         description: 'Upload final artifacts to Release?'
         required: true
         default: 'no'
+      rust_build_branch:
+        description: 'Branch of rust-build to use'
+        required: true
+        default: 'main'
+      release_version:
+        description: 'Release Version for generation'
+        required: true
+        default: '1.58.0.0'
+      rust_version:
+        description: 'Version of esp rust to use'
+        required: true
+        default: '1.58.0'
 
 jobs:
   get_release:
@@ -43,22 +55,19 @@ jobs:
         os: [ windows-x86_64-self-hosted ]
         include:
         - os: windows-x86_64-self-hosted
-          ARCH: ''
-          TARGET: win-x64
-          ASSET_PATH: 'build/dist/rust-1.58.0-dev-x86_64-pc-windows-msvc.tar.xz'
-          ASSET_NAME: 'rust-1.58.0.0-x86_64-pc-windows-msvc.tar.xz'
+          ASSET_PATH: 'build/dist/rust-{{ github.event.inputs.rust_version }}-dev-x86_64-pc-windows-msvc.tar.xz'
+          ASSET_NAME: 'rust-{{ github.event.inputs.release_version }}-x86_64-pc-windows-msvc.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
-          LLVM_ROOT_OPTION: ''
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
           repository: esp-rs/rust
-          ref: esp-1.58.0.0
+          ref: esp-{{ github.event.inputs.release_version }}
           submodules: true
       - name: Prepare build
         run: |
-          python3 src/bootstrap/configure.py ${{ matrix.LLVM_ROOT_OPTION }} --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
+          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
       - name: Build with x.py - dist packages - with cached LLVM
         if: ${{ matrix.os == 'windows-x86_64-self-hosted' }}
         run: python3 x.py dist --stage 2

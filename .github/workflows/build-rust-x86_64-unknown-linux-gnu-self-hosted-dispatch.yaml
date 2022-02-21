@@ -8,6 +8,18 @@ on:
         description: 'Upload final artifacts to Release?'
         required: true
         default: 'no'
+      rust_build_branch:
+        description: 'Branch of rust-build to use'
+        required: true
+        default: 'main'
+      release_version:
+        description: 'Release Version for generation'
+        required: true
+        default: '1.58.0.0'
+      rust_version:
+        description: 'Version of esp rust to use'
+        required: true
+        default: '1.58.0'
 
 jobs:
   get_release:
@@ -43,12 +55,9 @@ jobs:
         os: [ macos-x86_64-self-hosted ]
         include:
         - os: macos-x86_64-self-hosted
-          ARCH: ''
-          TARGET: win-x64
-          ASSET_PATH: 'build/dist/rust-1.58.0-dev-x86_64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-1.58.0.0-x86_64-apple-darwin.tar.xz'
+          ASSET_PATH: 'build/dist/rust-{{ github.event.inputs.rust_version }}-dev-x86_64-apple-darwin.tar.xz'
+          ASSET_NAME: 'rust-{{ github.event.inputs.release_version }}-x86_64-apple-darwin.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
-          LLVM_ROOT_OPTION: ''
     steps:
       - name: Initialize Podman
         run: |
@@ -65,11 +74,6 @@ jobs:
         run: |
           podman run --name rust-linux ubuntu-builder ./build.sh
           podman cp rust-linux:rust/dist dist
-      - name: Clean up
-        run: |
-          podman container rm rust-linux
-          podman machine stop
-          rm -rf dist
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
@@ -81,4 +85,9 @@ jobs:
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Clean up
+        run: |
+          podman container rm rust-linux
+          podman machine stop
+          rm -rf dist
 
