@@ -2,7 +2,12 @@
 name: build-rust-aarch64-linux-dispatch
 
 on:
-  workflow_dispatch
+  workflow_dispatch:
+    inputs:
+      upload_artifacts:
+        description: 'Upload final artifacts to Release?'
+        required: true
+        default: 'no'
 
 jobs:
   get_release:
@@ -45,24 +50,34 @@ jobs:
           ASSET_CONTENT_TYPE: 'application/x-tar'
           LLVM_ROOT_OPTION: ''
     steps:
-      - name: Build with Podman
+      - name: Initialize Podman
         run: |
           podman ps >/dev/null 2>/dev/null || podman machine start
+          podman container rm rust-linux || echo "Container name rust-linux is available"
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Build construction container
+        run: |
+          cd support/rust-build/aarch64-unknown-linux-gnu
+          podman build -t ubuntu-builder  .
+      - name: Build Rust
+        run: |
           podman run --name rust-linux ubuntu-builder ./build.sh
-          podman cp rust-linux:rust/dist dist
-          podman container rm rust-linux
-          podman machine stop
+          podman copy rust-linux:rust/dist dist
       - name: Clean up
         run: |
+          podman container rm rust-linux
+          podman machine stop
           rm -rf dist
-      # - name: Upload Release Asset
-      #   id: upload-release-asset
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ needs.get_release.outputs.upload_url }}
-      #     asset_path: ${{ matrix.ASSET_PATH }}
-      #     asset_name: ${{ matrix.ASSET_NAME }}
-      #     asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Upload Release Asset
+        if: github.event.inputs.upload_artifacts == 'yes'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: ${{ matrix.ASSET_PATH }}
+          asset_name: ${{ matrix.ASSET_NAME }}
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
 

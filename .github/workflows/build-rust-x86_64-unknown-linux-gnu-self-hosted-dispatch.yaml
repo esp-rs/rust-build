@@ -54,6 +54,8 @@ jobs:
         run: |
           podman ps >/dev/null 2>/dev/null || podman machine start
           podman container rm rust-linux || echo "Container name rust-linux is available"
+      - name: Checkout repository
+        uses: actions/checkout@v2
       - name: Build construction container
         run: |
           cd support/rust-build/x86_64-unknown-linux-gnu
