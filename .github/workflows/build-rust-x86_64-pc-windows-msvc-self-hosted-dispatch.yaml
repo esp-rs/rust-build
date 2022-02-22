@@ -65,10 +65,16 @@ jobs:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: true
+      - name: Map local long path to new drive
+        id: map_path
+        shell: pwsh
+        run: subst "R:" "$env:GITHUB_WORKSPACE" || "Already mounted"
       - name: Prepare build
+        working-directory: "R:"
         run: |
           python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
-      - name: Build with x.py - dist packages - with cached LLVM
+      - name: Build with x.py - dist packages
+        working-directory: "R:"
         if: ${{ matrix.os == 'windows-x86_64-self-hosted' }}
         run: python3 x.py dist --stage 2
       - name: Upload Release Asset
@@ -82,4 +88,8 @@ jobs:
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Unmount local drive
+        id: unount_path
+        shell: pwsh
+        run: subst "R:" /D || "Already unmounted"
 
