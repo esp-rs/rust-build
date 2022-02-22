@@ -90,4 +90,3 @@ jobs:
           podman container rm rust-linux
           podman machine stop
           rm -rf dist
-

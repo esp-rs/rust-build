@@ -81,4 +81,3 @@ jobs:
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
-
