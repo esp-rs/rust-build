@@ -67,7 +67,7 @@ jobs:
           submodules: true
       - name: Prepare build
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
+          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
       - name: Build with x.py - dist packages - with cached LLVM
         if: ${{ matrix.os == 'windows-x86_64-self-hosted' }}
         run: python3 x.py dist --stage 2
