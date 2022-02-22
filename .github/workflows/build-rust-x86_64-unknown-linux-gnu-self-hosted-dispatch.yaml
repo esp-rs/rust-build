@@ -23,7 +23,7 @@ on:
       rust_target:
         description: 'Target triple'
         required: true
-        default: 'x86_64-unknown-gnu-linux'
+        default: 'x86_64-unknown-linux-gnu'
 
 jobs:
   get_release:
