@@ -71,7 +71,6 @@ jobs:
           submodules: true
       - name: Map local long path to new drive
         id: map_path
-        shell: pwsh
         run: subst "R:" "$env:GITHUB_WORKSPACE" || "Already mounted"
       - name: Prepare build
         working-directory: "R:"
@@ -94,6 +93,5 @@ jobs:
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Unmount local drive
         id: unount_path
-        shell: pwsh
         run: subst "R:" /D || "Already unmounted"
 
