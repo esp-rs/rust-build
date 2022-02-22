@@ -71,8 +71,8 @@ jobs:
           submodules: true
       - name: Map local long path to new drive
         id: map_path
-        shell: powershell
-        run: subst "R:" "$env:GITHUB_WORKSPACE" || "Already mounted"
+        continue-on-error: true
+        run: subst "R:" "$env:GITHUB_WORKSPACE"
       - name: Prepare build
         working-directory: "R:"
         run: |
@@ -94,6 +94,6 @@ jobs:
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Unmount local drive
         id: unount_path
-        shell: powershell
-        run: subst "R:" /D || "Already unmounted"
+        continue-on-error: true
+        run: subst "R:" /D
 
