@@ -20,6 +20,10 @@ on:
         description: 'Version of esp rust to use'
         required: true
         default: '1.59.0'
+      rust_target:
+        description: 'Target triple'
+        required: true
+        default: 'aarch64-unknown-linux-gnu'
 
 jobs:
   get_release:
@@ -55,8 +59,8 @@ jobs:
         os: [ macos-m1-self-hosted ]
         include:
         - os: macos-m1-self-hosted
-          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.rust_version }}-dev-aarch64-apple-darwin.tar.xz'
-          ASSET_NAME: 'rust-${{ github.event.inputs.release_version }}-aarch64-apple-darwin.tar.xz'
+          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.rust_version }}-dev-${{ github.event.inputs.rust_target }}.tar.xz'
+          ASSET_NAME: 'rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
       - name: Initialize Podman
@@ -68,7 +72,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Build construction container
         run: |
-          cd support/rust-build/aarch64-unknown-linux-gnu
+          cd support/rust-build/${{ github.event.inputs.rust_target }}
           podman build -t ubuntu-builder  .
       - name: Build Rust
         run: |
