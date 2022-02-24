@@ -10,11 +10,11 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.58.0.0'
+        default: '1.59.0.0'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
-        default: '1.58.0'
+        default: '1.59.0'
 
 
 # We Break this down into individual jobs to avoid disk space issues
@@ -26,10 +26,10 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-latest]
+        os: [windows-2022]
         include:
 
-        - os: windows-latest
+        - os: windows-2022
           target_name: x86_64-pc-windows-msvc
           llvm_root_option: ''
 
@@ -41,91 +41,123 @@ jobs:
       - uses: ./rust-build/.github/actions/util/setup-envs
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Get free disk space before clean up
+        shell: pwsh
+        run: Get-WmiObject -Class Win32_logicaldisk
+      # - name: List biggest objects
+      #   shell: pwsh
+      #   run: |
+      #     $path = "$Env:Programfiles"
+      #     $colItems = Get-ChildItem $path | Where-Object {$_.PSIsContainer -eq $true} | Sort-Object
+      #     foreach ($i in $colItems)
+      #     {
+      #         $subFolderItems = Get-ChildItem $i.FullName -recurse -force | Where-Object {$_.PSIsContainer -eq $false} | Measure-Object -property Length -sum | Select-Object Sum
+      #         $i.FullName + " -- " + "{0:N2}" -f ($subFolderItems.sum / 1MB) + " MB"
+      #     }
+      - name: Remove unused tools to get some additional space
+        shell: pwsh
+        run: |
+          Remove-Item "$Env:Programfiles\Azure Cosmos DB Emulator" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+          Write-Host $err
+          Remove-Item "$Env:Programfiles\LLVM" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+          Write-Host $err
+          Remove-Item "$Env:Programfiles\MongoDB" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+          Write-Host $err
+          Remove-Item "$Env:Programfiles\TortoiseSVN" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+          Write-Host $err
+          Remove-Item "$Env:Programfiles\Unity Hub" -Recurse -Force -ErrorAction SilentlyContinue -ErrorVariable err
+          Write-Host $err
+      - name: Get free disk space after clean up
+        shell: pwsh
+        run: Get-WmiObject -Class Win32_logicaldisk
       - uses: ./rust-build/.github/actions/tools/setup-python
       - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+      - name: Shallow Rust clone
+        run: git clone --recursive --depth 1 --shallow-submodules https://github.com/esp-rs/rust.git rust
+      # - uses: ./rust-build/.github/actions/util/checkout-esp-rust
       - uses: ./rust-build/.github/actions/util/symlink-working-dir
       - uses: ./rust-build/.github/actions/build/build-rustc
-      - uses: ./rust-build/.github/actions/build/build-rust-std
+      #- uses: ./rust-build/.github/actions/build/build-rust-std
 
 
-  build-tools:
-    # Build the tools - cargo / rustfmt
-    name: Build (idf) rust tools for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        include:
+  # build-tools:
+  #   # Build the tools - cargo / rustfmt
+  #   name: Build (idf) rust tools for ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-latest
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      - uses: ./rust-build/.github/actions/build/build-tools
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/tools/setup-python
+  #     - uses: ./rust-build/.github/actions/tools/setup-ninja
+  #     - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+  #     - uses: ./rust-build/.github/actions/util/symlink-working-dir
+  #     - uses: ./rust-build/.github/actions/build/build-tools
 
 
-  build-src:
-    name: Build (idf) rust src for ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        include:
+  # build-src:
+  #   name: Build (idf) rust src for ${{ matrix.os }}
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-latest
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      # Build the src - This is only bundled in with the windows build
-      - uses: ./rust-build/.github/actions/build/build-src
-        if: startsWith(matrix.os, 'windows')
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/tools/setup-python
+  #     - uses: ./rust-build/.github/actions/tools/setup-ninja
+  #     - uses: ./rust-build/.github/actions/util/checkout-esp-rust
+  #     - uses: ./rust-build/.github/actions/util/symlink-working-dir
+  #     # Build the src - This is only bundled in with the windows build
+  #     - uses: ./rust-build/.github/actions/build/build-src
+  #       if: startsWith(matrix.os, 'windows')
 
-  upload-archive:
-    # Uploads a merged archive
-    name: Upload (idf) rust release for ${{ matrix.os }}
-    needs: [build-rustc, build-tools, build-src]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [windows-latest]
-        include:
+  # upload-archive:
+  #   # Uploads a merged archive
+  #   if: ${{ false }}
+  #   name: Upload (idf) rust release for ${{ matrix.os }}
+  #   needs: [build-rustc, build-tools, build-src]
+  #   runs-on: ${{ matrix.os }}
+  #   strategy:
+  #     matrix:
+  #       os: [windows-2022]
+  #       include:
 
-        - os: windows-latest
-          target_name: x86_64-pc-windows-msvc
-          llvm_root_option: ''
+  #       - os: windows-2022
+  #         target_name: x86_64-pc-windows-msvc
+  #         llvm_root_option: ''
 
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/util/create-archive
-      - uses: ./rust-build/.github/actions/util/upload
+  #   steps:
+  #     - uses: actions/checkout@v2
+  #       with:
+  #         path: "rust-build"
+  #         ref: ${{ github.event.inputs.rust_build_branch }}
+  #     - uses: ./rust-build/.github/actions/util/setup-envs
+  #       with:
+  #         github_token: ${{ secrets.GITHUB_TOKEN }}
+  #     - uses: ./rust-build/.github/actions/util/create-archive
+  #     - uses: ./rust-build/.github/actions/util/upload

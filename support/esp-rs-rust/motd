@@ -1,0 +1,13 @@
+==============================================================================
+=           Container image with ESP-IDF, Rust compiler                      =
+==============================================================================
+
+Build sample project:
+cd rust-project
+cargo +esp build --example ledc-simple --release --target xtensa-esp32-espidf
+
+Source code location:
+rust-project/examples/ledc-simple.rs
+
+Location of the binary produced by build:
+target/xtensa-esp32-espidf/release/examples/ledc-simple
