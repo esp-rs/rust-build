@@ -22,6 +22,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+    -c|--extra-crates)
+      EXTRA_CRATES="$2"
+      shift # past argument
+      shift # past value
+      ;; 
     -f|--features)
       FEATURES="$2"
       shift # past argument
@@ -78,6 +83,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 echo "Processing configuration:"
 echo "--clear-cache        = ${CLEAR_CACHE}"
 echo "--features           = ${FEATURES}"
+echo "--extra-crates       = ${EXTRA_CRATES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--target             = ${BUILD_TARGET}"
 echo "--test-mode          = ${TEST_MODE}"
@@ -99,6 +105,7 @@ function source_cargo() {
 if [ "${INSTALLATION_MODE}" != "skip" ]; then
     ./install-rust-toolchain.sh --installation-mode ${INSTALLATION_MODE} \
         --clear-cache "${CLEAR_CACHE}" \
+        --extra-crates "${EXTRA_CRATES}" \
         --export-file "${EXPORT_FILE}" \
         --llvm-version "${LLVM_VERSION}" \
         --toolchain-destination "${RUSTUP_HOME}/toolchains/${TOOLCHAIN_NAME}" \
