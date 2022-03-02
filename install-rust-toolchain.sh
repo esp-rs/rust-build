@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Default values
 TOOLCHAIN_VERSION="1.59.0.0"
