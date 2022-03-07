@@ -244,17 +244,19 @@ else
     echo "already installed"
 fi
 
-if [[ ! -z "${ESPFLASH_URL}" ]]; then
-    if [[ ! -e "${ESPFLASH_BIN}" ]]; then
+if [[ ! -z "${EXTRA_CRATES}" ]]; then
+  for CRATE in "${EXTRA_CRATES}"; do
+    echo "Installing additional extra crate: ${CRATE}"
+    if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
+      if [[ ! -e "${ESPFLASH_BIN}" ]]; then
         curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}"
         chmod u+x "${ESPFLASH_BIN}"
+      fi
+      echo "Using cargo-espflash binary release"
+    else
+      cargo install ${CRATE}
     fi
-    echo "Using cargo-espflash binary release"
-fi
-
-if [[ ! -z "${EXTRA_CRATES}" ]]; then
-    echo "Installing additional extra crates: ${EXTRA_CRATES}"
-    cargo install ${EXTRA_CRATES}
+  done
 fi
 
 if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
