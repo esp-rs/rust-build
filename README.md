@@ -148,7 +148,11 @@ rustup target add riscv32i-unknown-none-elf
 
 ### Rust with Podman or Docker
 
-Alternatively you might build the project in the container where image already contains pre-installed Rust and ESP-IDF.
+Alternatively, you might build the project in the container where the image already contains pre-installed Rust and ESP-IDF.
+
+There are two different images published to Dockerhub: 
+- [idf-rust](https://hub.docker.com/r/espressif/idf-rust) - contains only the toolchain.
+- [idf-rust-examples](https://hub.docker.com/r/espressif/idf-rust-examples) - includes two examples: [rust-esp32-example](https://github.com/espressif/rust-esp32-example) and [rust-esp32-std-demo](https://github.com/ivmarkov/rust-esp32-std-demo).
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
 
@@ -162,6 +166,6 @@ Docker (does not support flashing from container):
 docker run -it espressif/idf-rust-examples
 ```
 
-Then follow instructions displayed on the screen.
+If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
 
 
