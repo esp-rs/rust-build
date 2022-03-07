@@ -245,7 +245,7 @@ else
 fi
 
 if [[ ! -z "${EXTRA_CRATES}" ]]; then
-  for CRATE in "${EXTRA_CRATES}"; do
+  for CRATE in ${EXTRA_CRATES}; do
     echo "Installing additional extra crate: ${CRATE}"
     if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
       if [[ ! -e "${ESPFLASH_BIN}" ]]; then
