@@ -8,10 +8,9 @@ This repository contains:
 
 The installation process of ready to use custom build of Rust and LLVM:
 
-* [macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64](#rust-on-xtensa-installation-for-macos-and-linux)
-* [Windows 10, 11 x64](#rust-on-xtensa-installation-for-windows-x64)
+* [macOS M1 aarch64, macOS x86_64, Linux x86_64, Linux aarch64](#rust-on-xtensa-installation-for-macos-and-linux)
+* [Windows 10, 11 x86_64](#rust-on-xtensa-installation-for-windows-x64)
 * [Podman/Docker](#rust-with-podman-or-docker)
-* Not supported: Linux arm64 - missing support in ESP-IDF - https://github.com/espressif/esp-idf/issues/6475
 
 ## Installation
 
@@ -20,8 +19,6 @@ The installation process of ready to use custom build of Rust and LLVM:
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
 Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
-
-Tested OS: macOS Big Sur M1, macOS Big Sur x86_64, Linux x86_64
 
 #### Prerequisites
 
@@ -82,13 +79,12 @@ Following instructions are specific for ESP32 and ESP32-S series based on Xtensa
 
 Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](esp32-c3).
 
-Tested OS: Windows 10 x64
-
 #### Prerequisites
 
 - Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
+
 #### Installation commands for PowerShell
 
 ```sh
