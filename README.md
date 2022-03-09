@@ -8,13 +8,14 @@ This repository contains:
 
 The installation process of ready to use custom build of Rust and LLVM:
 
-* [macOS M1 aarch64, macOS x86_64, Linux x86_64, Linux aarch64](#rust-on-xtensa-installation-for-macos-and-linux)
+* [macOS M1 aarch64, macOS x86_64](#rust-on-xtensa-installation-for-macos)
+* [Linux x86_64, Linux aarch64](#rust-on-xtensa-installation-for-linux)
 * [Windows 10, 11 x86_64](#rust-on-xtensa-installation-for-windows-x64)
 * [Podman/Docker](#rust-with-podman-or-docker)
 
 ## Installation
 
-### Rust on Xtensa Installation for macOS and Linux
+### Rust on Xtensa Installation for macOS
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
@@ -23,6 +24,36 @@ Instructions for ESP-C series based on RISC-V architecture are described in docu
 #### Prerequisites
 
 - rustup - https://rustup.rs/
+
+#### Installation commands
+
+```sh
+./install-rust-toolchain.sh
+```
+
+Export variables displayed at the end of the script.
+
+Installation of different version of toolchain:
+
+```
+./install-rust-toolchain.sh --toolchain-version 1.59.0.0 --export-file export-esp-rust.sh
+source ./export-esp-rust.sh
+```
+
+### Rust on Xtensa Installation for Linux
+
+Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
+
+Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
+
+#### Prerequisites
+
+- rustup - https://rustup.rs/
+- dependencies (command for Ubuntu/Debian):
+
+```sh
+apt-get install -y git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
+```
 
 #### Installation commands
 
