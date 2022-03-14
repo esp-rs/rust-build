@@ -27,4 +27,4 @@ jobs:
         with:
           context: support/idf-rust-examples
           push: true
-          tags: espressif/idf-rust-examples:latest,espressif/idf-rust-examples:1.59.0.0,espressif/idf-rust-examples:1.59
+          tags: espressif/idf-rust-examples:latest,espressif/idf-rust-examples:1.59.0.1,espressif/idf-rust-examples:1.59
