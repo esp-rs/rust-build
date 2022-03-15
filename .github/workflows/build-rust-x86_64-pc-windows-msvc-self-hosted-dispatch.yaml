@@ -72,9 +72,13 @@ jobs:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: true
+      - name: Unmount local drive
+        id: unount_path_before
+        continue-on-error: true
+        run: subst "R:" /D
       - name: Map local long path to new drive
         id: map_path
-        continue-on-error: true
+        shell: pwsh
         run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
         working-directory: "R:"
