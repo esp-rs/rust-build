@@ -17,7 +17,7 @@ runs:
       if: startsWith(matrix.os, 'windows')
       working-directory: ${{ env.work_dir }}
       shell: pwsh
-      run: python3 x.py dist --stage 2 src
+      run: python3 x.py dist dist rust-src
 
 
     # Run Linux builds using bash
@@ -38,7 +38,7 @@ runs:
       if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')
       working-directory: ${{ env.work_dir }}
       shell: bash
-      run: python3 x.py dist --stage 2 src
+      run: python3 x.py dist rust-src
 
 
     # Save the result
