@@ -75,7 +75,7 @@ jobs:
       - name: Map local long path to new drive
         id: map_path
         continue-on-error: true
-        run: subst "R:" "$env:GITHUB_WORKSPACE"
+        run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
         working-directory: "R:"
         run: |
