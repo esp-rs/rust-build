@@ -92,7 +92,7 @@ jobs:
         shell: pwsh
         working-directory: "R:/build/dist"
         run: |
-          $env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1"
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
