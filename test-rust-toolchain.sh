@@ -3,7 +3,7 @@
 set -e
 
 # Default values
-TOOLCHAIN_VERSION="1.59.0.0"
+TOOLCHAIN_VERSION="1.59.0.1"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -15,6 +15,7 @@ TEST_MODE="compile" # compile, flash, monitor
 TEST_PORT="/dev/ttyUSB0"
 FEATURES="native" # space separated features of the project
 CLEAR_CACHE="no"
+EXTRA_CRATES="ldproxy"
 
 # Process positional arguments
 POSITIONAL=()
@@ -26,7 +27,7 @@ while [[ $# -gt 0 ]]; do
       EXTRA_CRATES="$2"
       shift # past argument
       shift # past value
-      ;; 
+      ;;
     -f|--features)
       FEATURES="$2"
       shift # past argument

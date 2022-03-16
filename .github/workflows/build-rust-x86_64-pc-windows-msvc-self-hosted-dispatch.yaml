@@ -15,7 +15,7 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.59.0.0'
+        default: '1.59.0.1'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
@@ -72,10 +72,14 @@ jobs:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: true
+      - name: Unmount local drive
+        id: unount_path_before
+        continue-on-error: true
+        run: subst "R:" /D
       - name: Map local long path to new drive
         id: map_path
-        continue-on-error: true
-        run: subst "R:" "$env:GITHUB_WORKSPACE"
+        shell: pwsh
+        run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
         working-directory: "R:"
         run: |
@@ -85,9 +89,10 @@ jobs:
         continue-on-error: true
         run: python3 x.py dist --stage 2
       - name: Repackage binary
+        shell: pwsh
         working-directory: "R:/build/dist"
         run: |
-          $env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1"
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
