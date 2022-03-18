@@ -113,13 +113,13 @@ function install_rustfmt() {
 function clear_download_cache() {
   echo "Removing cached dist files:"
   echo " - ${RUST_DIST}"
-  rm -f "${RUST_DIST}"
+  rm -rf "${RUST_DIST}"
 
   echo " - ${RUST_DIST}.tar.xz"
   rm -f "${RUST_DIST}.tar.xz"
 
   echo " - ${RUST_SRC_DIST}"
-  rm -f "${RUST_SRC_DIST}"
+  rm -rf "${RUST_SRC_DIST}"
 
   echo " - ${RUST_SRC_DIST}.tar.xz"
   rm -f "${RUST_SRC_DIST}.tar.xz"
