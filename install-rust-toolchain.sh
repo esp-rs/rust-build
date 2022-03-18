@@ -112,6 +112,9 @@ function install_rustfmt() {
 
 function clear_download_cache() {
   echo "Removing cached dist files:"
+  echo " - ${RUST_DIST}.tar.xz"
+  rm -f "${RUST_DIST}.tar.xz"
+
   echo " - ${RUST_SRC_DIST}.tar.xz"
   rm -f "${RUST_SRC_DIST}.tar.xz"
 
@@ -125,6 +128,8 @@ set -e
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rust
 
+source_cargo
+
 # Check minimal rustc version
 RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
 if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
@@ -133,7 +138,6 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     install_rust
 fi
 
-source_cargo
 rustup toolchain list | grep stable || install_rust_toolchain stable
 rustup toolchain list | grep nightly || install_rust_toolchain nightly
 install_rustfmt
@@ -234,11 +238,7 @@ if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
         curl -LO "${LLVM_DIST_URL}"
     fi
     mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
-    if [ ${ARCH} == "x86_64-apple-darwin" ] || [ ${ARCH} == "aarch64-apple-darwin" ] || [ ${ARCH} == "x86_64-unknown-linux-gnu" ] ; then
-        tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
-    else
-        tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}"
-    fi
+    tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
     echo "done"
 else
     echo "already installed"
