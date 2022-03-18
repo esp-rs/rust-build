@@ -12,7 +12,7 @@ ENV LANG=C.UTF-8
 
 RUN apt-get update \
     && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
-    pkg-config libtinfo5
+    pkg-config libtinfo5 libssl1.1
 
 #RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
 RUN adduser --disabled-password --gecos "" rust
@@ -51,7 +51,6 @@ RUN git clone https://github.com/georgik/esp-idf-hal.git rust-project
 # Some patches that should be moved to the tooling
 RUN echo '[patch.crates-io] ' >> rust-project/Cargo.toml
 RUN echo 'embuild = { git="https://github.com/ivmarkov/embuild.git" }' >> rust-project/Cargo.toml
-RUN sed -i -e 's!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/!esp-13.0.0-20211203-aarch64-unknown-linux-gnu/xtensa-esp32-elf-clang/!g' /home/rust/export-rust.sh
 #RUN git clone https://github.com/espressif/rust-esp32-example.git
 
 
