@@ -27,4 +27,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: espressif/idf-rust:latest,espressif/idf-rust:1.59.0.1,espressif/idf-rust:1.59
+          tags: espressif/idf-rust:latest,espressif/idf-rust:1.60.0.0,espressif/idf-rust:1.59
