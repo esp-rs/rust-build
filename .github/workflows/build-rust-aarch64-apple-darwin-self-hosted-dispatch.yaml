@@ -19,7 +19,7 @@ on:
       rust_version:
         description: 'Version of esp rust to use'
         required: true
-        default: '1.60.0'
+        default: 'nightly'
       rust_target:
         description: 'Target triple'
         required: true

@@ -3,7 +3,7 @@
 # Stop on error
 $ErrorActionPreference = "Stop"
 
-$RustVersion="1.60.0-dev"
+$RustVersion="nightly"
 $ReleaseVersion="1.60.0.0"
 
 if (Test-Path -Path esp -PathType Container) {
