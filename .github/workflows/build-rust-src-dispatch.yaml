@@ -14,7 +14,7 @@ on:
       rust_version:
         description: 'Version of esp rust to use'
         required: true
-        default: '1.60.0'
+        default: 'nightly'
 
 
 jobs:
@@ -71,12 +71,11 @@ jobs:
       - name: Read Artifact - Src
         uses: actions/download-artifact@v2
         with:
-          name: rust-src-${{ env.rust_version }}-dev.tar.xz
+          name: rust-src-${{ env.rust_version }}.tar.xz
 
-      - name: Rename file
+      - name: Set asset name
         shell: bash
         run: |
-          mv rust-src-${{ env.rust_version }}-dev.tar.xz rust-src-${{ env.release_version }}.tar.xz
           echo "asset_name=rust-src-${{ env.release_version }}.tar.xz" >> $GITHUB_ENV
 
       - uses: ./rust-build/.github/actions/util/upload
