@@ -59,7 +59,7 @@ jobs:
         os: [ windows-x86_64-self-hosted ]
         include:
         - os: windows-x86_64-self-hosted
-          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
+          ASSET_PATH: 'rust/build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
           ASSET_NAME: 'rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
           ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
