@@ -116,6 +116,13 @@ Instructions for ESP-C series based on RISC-V architecture are described in docu
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
+Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+choco install cmake git ninja windows-sdk-10.0
+```
+
 #### Installation commands for PowerShell
 
 ```sh
