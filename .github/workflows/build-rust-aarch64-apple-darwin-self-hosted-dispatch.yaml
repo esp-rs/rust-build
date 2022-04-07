@@ -59,7 +59,7 @@ jobs:
         os: [ macos-m1-self-hosted ]
         include:
         - os: macos-m1-self-hosted
-          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.rust_version }}-dev-${{ github.event.inputs.rust_target }}.tar.xz'
+          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.rust_version }}-${{ github.event.inputs.rust_target }}.tar.xz'
           ASSET_NAME: 'rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
