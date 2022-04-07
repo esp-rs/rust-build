@@ -120,7 +120,7 @@ Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
 
 ```
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco install cmake git microsoft-visual-cpp-build-tools ninja windows-sdk-10.0
+choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
 ```
 
 #### Installation commands for PowerShell
