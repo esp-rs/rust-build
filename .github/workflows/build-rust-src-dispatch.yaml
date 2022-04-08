@@ -6,7 +6,7 @@ on:
       upload_artifacts:
         description: 'Upload final artifacts to Release?'
         required: true
-        default: 'no'
+        default: 'yes'
       rust_build_branch:
         description: 'Branch of rust-build to use'
         required: true
@@ -63,7 +63,7 @@ jobs:
         with:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
-          submodules: false
+          submodules: true
           path: "rust"
       - name: Setup Ninja
         uses: seanmiddleditch/gha-setup-ninja@master
