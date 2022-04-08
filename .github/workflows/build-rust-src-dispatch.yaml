@@ -54,7 +54,7 @@ jobs:
         os: [ ubuntu-latest ]
         include:
         - os: ubuntu-latest
-          ASSET_PATH: 'rust/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz'
+          ASSET_PATH: 'rust/build/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz'
           ASSET_NAME: 'rust-src-${{ github.event.inputs.release_version }}.tar.xz'
           ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
