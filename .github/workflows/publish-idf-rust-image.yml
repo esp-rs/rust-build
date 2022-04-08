@@ -18,7 +18,7 @@ on:
       rust_minor_version:
         description: 'Release minor version - 2 places for tag'
         required: true
-        default: '1.60.0'
+        default: '1.60'
 
 jobs:
   push_to_registry:
