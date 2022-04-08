@@ -135,16 +135,16 @@ fi
 if [ "${BUILD_TARGET}" == "all" ]; then
     for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
         echo "Building target: ${TARGET}"
-        cargo +${TOOLCHAIN_NAME} build --target ${TARGET} --features "${FEATURES}"
+        cargo +${TOOLCHAIN_NAME} build --target ${TARGET} --release --features "${FEATURES}"
     done
 else
     echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}"
-    cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --features "${FEATURES}"
+    cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --release --features "${FEATURES}"
     ELF_IMAGE="target/${BUILD_TARGET}/debug/${RUST_STD_DEMO}"
     if [ "${TEST_MODE}" == "flash" ]; then
-        cargo espflash --target "${BUILD_TARGET}" --features ${FEATURES} "${TEST_PORT}"
+        cargo +${TOOLCHAIN_NAME} espflash --target "${BUILD_TARGET}" --release --features ${FEATURES} "${TEST_PORT}"
     elif [ "${TEST_MODE}" == "monitor" ]; then
-        cargo espflash --monitor --target "${BUILD_TARGET}" --features "${FEATURES}" "${TEST_PORT}"
+        cargo +${TOOLCHAIN_NAME} espflash --monitor --target "${BUILD_TARGET}" --release --features "${FEATURES}" "${TEST_PORT}"
     fi
 fi
 
