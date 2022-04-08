@@ -15,11 +15,11 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.59.0.1'
+        default: '1.60.0.0'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
-        default: '1.59.0'
+        default: 'nightly'
       rust_target:
         description: 'Target triple'
         required: true
@@ -59,7 +59,7 @@ jobs:
         os: [ windows-x86_64-self-hosted ]
         include:
         - os: windows-x86_64-self-hosted
-          ASSET_PATH: 'build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
+          ASSET_PATH: 'rust/build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
           ASSET_NAME: 'rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip'
           ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
@@ -83,7 +83,7 @@ jobs:
       - name: Prepare build
         working-directory: "R:"
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
+          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'
       - name: Build with x.py - dist packages
         working-directory: "R:"
         continue-on-error: true

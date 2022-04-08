@@ -1,8 +1,12 @@
-name: Build src
+name: build-rust-src-dispatch
 
 on:
   workflow_dispatch:
     inputs:
+      upload_artifacts:
+        description: 'Upload final artifacts to Release?'
+        required: true
+        default: 'yes'
       rust_build_branch:
         description: 'Branch of rust-build to use'
         required: true
@@ -10,73 +14,75 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.59.0.1'
+        default: '1.60.0.0'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
-        default: '1.59.0'
-
+        default: 'nightly'
 
 jobs:
+  get_release:
+    # https://github.com/octokit/request-action
+    name: Get release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.get_upload_url.outputs.url }}
+    steps:
+    - uses: octokit/request-action@v2.x
+      id: get_release
+      with:
+        route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
+        owner: esp-rs
+        repo: rust-build
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: get upload url
+      id: get_upload_url
+      run: |
+        url=$(echo "$response" | jq -r '.upload_url')
+        echo "::set-output name=url::$url"
+      env:
+        response:  ${{ steps.get_release.outputs.data }}
 
-  build-src:
-    name: Build (idf) rust src for ${{ matrix.os }}
+  build-idf-rust:
+    name: Build IDF Rust for ${{ matrix.os }}
+    # needs: create_release
+    needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ ubuntu-latest ]
         include:
-
         - os: ubuntu-latest
-          target_name: x86_64-unknown-linux-gnu
-          llvm_root_option: ''
-
+          ASSET_PATH: 'rust/build/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz'
+          ASSET_NAME: 'rust-src-${{ github.event.inputs.release_version }}.tar.xz'
+          ASSET_CONTENT_TYPE: 'application/x-tar'
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
         with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./rust-build/.github/actions/tools/setup-python
-      - uses: ./rust-build/.github/actions/tools/setup-ninja
-      - uses: ./rust-build/.github/actions/util/checkout-esp-rust
-      - uses: ./rust-build/.github/actions/util/symlink-working-dir
-      - uses: ./rust-build/.github/actions/build/build-src
-
-
-  upload-archive:
-    name: Upload (idf) rust src
-    needs: [build-src]
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        os: [ubuntu-latest]
-        include:
-
-        - os: ubuntu-latest
-          target_name: x86_64-unknown-linux-gnu
-          llvm_root_option: ''
-
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          path: "rust-build"
-          ref: ${{ github.event.inputs.rust_build_branch }}
-      - uses: ./rust-build/.github/actions/util/setup-envs
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Read Artifact - Src
-        uses: actions/download-artifact@v2
-        with:
-          name: rust-src-${{ env.rust_version }}-dev.tar.xz
-
-      - name: Rename file
-        shell: bash
+          repository: esp-rs/rust
+          ref: esp-${{ github.event.inputs.release_version }}
+          submodules: true
+          path: "rust"
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
+      - name: Configure Rust project
+        working-directory: rust
         run: |
-          mv rust-src-${{ env.rust_version }}-dev.tar.xz rust-src-${{ env.release_version }}.tar.xz
-          echo "asset_name=rust-src-${{ env.release_version }}.tar.xz" >> $GITHUB_ENV
-
-      - uses: ./rust-build/.github/actions/util/upload
+          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --dist-compression-formats='xz'
+      - name: Build Rust src dist
+        working-directory: rust
+        run: |
+          python3 x.py dist rust-src
+      - name: Upload Release Asset
+        if: github.event.inputs.upload_artifacts == 'yes'
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.get_release.outputs.upload_url }}
+          asset_path: ${{ matrix.ASSET_PATH }}
+          asset_name: ${{ matrix.ASSET_NAME }}
+          asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}

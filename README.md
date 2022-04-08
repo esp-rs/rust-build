@@ -36,7 +36,7 @@ Export variables displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.59.0.1 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.60.0.0 --export-file export-esp-rust.sh
 source ./export-esp-rust.sh
 ```
 
@@ -66,7 +66,7 @@ Export variables displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.59.0.1 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.60.0.0 --export-file export-esp-rust.sh
 source ./export-esp-rust.sh
 ```
 
@@ -116,6 +116,13 @@ Instructions for ESP-C series based on RISC-V architecture are described in docu
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
+Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
+
+```
+Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
+choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
+```
+
 #### Installation commands for PowerShell
 
 ```sh
@@ -127,7 +134,7 @@ Export variables displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```
-./Install-RustToolchain.sh --toolchain-version 1.59.0.1 --export-file Export-EspRust.ps1
+./Install-RustToolchain.sh --toolchain-version 1.60.0.0 --export-file Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 

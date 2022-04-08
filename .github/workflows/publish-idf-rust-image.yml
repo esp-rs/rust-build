@@ -7,6 +7,18 @@ on:
         description: 'Branch with test scripts'
         required: true
         default: 'main'
+      release_version:
+        description: 'Release version - long 4 places for tag'
+        required: true
+        default: '1.60.0.0'
+      rust_patch_version:
+        description: 'Release patch version for generation - 3 places for tag'
+        required: true
+        default: '1.60.0'
+      rust_minor_version:
+        description: 'Release minor version - 2 places for tag'
+        required: true
+        default: '1.60'
 
 jobs:
   push_to_registry:
@@ -27,4 +39,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: espressif/idf-rust:latest,espressif/idf-rust:1.59.0.1,espressif/idf-rust:1.59
+          tags: espressif/idf-rust:latest,espressif/idf-rust:${{ github.event.inputs.release_version }},espressif/idf-rust:${{ github.event.inputs.rust_patch_version }},espressif/idf-rust:${{ github.event.inputs.rust_minor_version }}
