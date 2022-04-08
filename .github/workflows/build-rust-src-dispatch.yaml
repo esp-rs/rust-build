@@ -65,6 +65,8 @@ jobs:
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: false
           path: "rust"
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja@master
       - name: Configure Rust project
         working-directory: rust
         run: |
