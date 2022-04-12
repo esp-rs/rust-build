@@ -18,7 +18,7 @@ CLEAR_CACHE="no"
 EXTRA_CRATES="ldproxy"
 export ESP_IDF_VERSION="release/v4.4"
 PROJECT="rust-esp32-std-demo"
-PROJECT_URL="https://github.com/ivmarkov/${PROJECT}.git"
+PROJECT_REPO="https://github.com/ivmarkov/${PROJECT}.git"
 
 # Process positional arguments
 POSITIONAL=()
@@ -81,8 +81,8 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -u|--project-url)
-      PROJECT_URL="$2"
+    -u|--project-repo)
+      PROJECT_REPO="$2"
       shift # past argument
       shift # past value
       ;;
@@ -106,7 +106,7 @@ echo "--esp-idf            = ${ESP_IDF_VERSION}"
 echo "--extra-crates       = ${EXTRA_CRATES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--project            = ${PROJECT}"
-echo "--project-url        = ${PROJECT_URL}"
+echo "--project-repo       = ${PROJECT_REPO}"
 echo "--target             = ${BUILD_TARGET}"
 echo "--test-mode          = ${TEST_MODE}"
 echo "--test-port          = ${TEST_PORT}"
@@ -143,7 +143,7 @@ if [ "${CLEAR_CACHE}" == "YES" ]; then
 fi
 
 if [ ! -d "${PROJECT}" ]; then
-    git clone ${PROJECT_URL} ${PROJECT}
+    git clone ${PROJECT_REPO} ${PROJECT}
 fi
 
 cd "${PROJECT}"
