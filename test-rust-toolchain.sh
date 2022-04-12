@@ -16,6 +16,7 @@ TEST_PORT="/dev/ttyUSB0"
 FEATURES="native" # space separated features of the project
 CLEAR_CACHE="no"
 EXTRA_CRATES="ldproxy"
+export ESP_IDF_VERSION="release/v4.4"
 
 # Process positional arguments
 POSITIONAL=()
@@ -30,6 +31,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -f|--features)
       FEATURES="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -e|--esp-idf)
+      export ESP_IDF_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -84,6 +90,7 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 echo "Processing configuration:"
 echo "--clear-cache        = ${CLEAR_CACHE}"
 echo "--features           = ${FEATURES}"
+echo "--esp-idf            = ${ESP_IDF_VERSION}"
 echo "--extra-crates       = ${EXTRA_CRATES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
 echo "--target             = ${BUILD_TARGET}"
