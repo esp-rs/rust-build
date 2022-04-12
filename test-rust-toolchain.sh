@@ -17,6 +17,8 @@ FEATURES="native" # space separated features of the project
 CLEAR_CACHE="no"
 EXTRA_CRATES="ldproxy"
 export ESP_IDF_VERSION="release/v4.4"
+PROJECT="rust-esp32-std-demo"
+PROJECT_URL="https://github.com/ivmarkov/${PROJECT}.git"
 
 # Process positional arguments
 POSITIONAL=()
@@ -29,6 +31,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -d|--test-port)
+      TEST_PORT="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -f|--features)
       FEATURES="$2"
       shift # past argument
@@ -36,11 +43,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     -e|--esp-idf)
       export ESP_IDF_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -t|--toolchain-version)
-      TOOLCHAIN_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -69,8 +71,18 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -d|--test-port)
-      TEST_PORT="$2"
+    -p|--project)
+      PROJECT="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -t|--toolchain-version)
+      TOOLCHAIN_VERSION="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -u|--project-url)
+      PROJECT_URL="$2"
       shift # past argument
       shift # past value
       ;;
@@ -93,6 +105,8 @@ echo "--features           = ${FEATURES}"
 echo "--esp-idf            = ${ESP_IDF_VERSION}"
 echo "--extra-crates       = ${EXTRA_CRATES}"
 echo "--installation-mode  = ${INSTALLATION_MODE}"
+echo "--project            = ${PROJECT}"
+echo "--project-url        = ${PROJECT_URL}"
 echo "--target             = ${BUILD_TARGET}"
 echo "--test-mode          = ${TEST_MODE}"
 echo "--test-port          = ${TEST_PORT}"
@@ -123,21 +137,26 @@ fi
 source "./${EXPORT_FILE}"
 command -v cargo || source_cargo
 
-RUST_STD_DEMO="rust-esp32-std-demo"
-
+# Prepare project
 if [ "${CLEAR_CACHE}" == "YES" ]; then
-    rm -rf "${RUST_STD_DEMO}"
+    rm -rf "${PROJECT}"
 fi
 
-if [ ! -d "${RUST_STD_DEMO}" ]; then
-    git clone https://github.com/ivmarkov/${RUST_STD_DEMO}.git
+if [ ! -d "${PROJECT}" ]; then
+    git clone ${PROJECT_URL} ${PROJECT}
 fi
 
-cd "${RUST_STD_DEMO}"
-if [ -z "${RUST_ESP32_STD_DEMO_WIFI_SSID}" ]; then
-    export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
-    export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
-fi
+cd "${PROJECT}"
+
+# Project specific setup
+case ${PROJECT} in
+    rust-esp32-std-demo)
+        if [ -z "${RUST_ESP32_STD_DEMO_WIFI_SSID}" ]; then
+            export RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
+            export RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
+        fi
+    ;;
+esac
 
 if [ "${BUILD_TARGET}" == "all" ]; then
     for TARGET in xtensa-esp32-espidf xtensa-esp32s2-espidf riscv32imc-esp-espidf; do
@@ -147,7 +166,7 @@ if [ "${BUILD_TARGET}" == "all" ]; then
 else
     echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}"
     cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --release --features "${FEATURES}"
-    ELF_IMAGE="target/${BUILD_TARGET}/debug/${RUST_STD_DEMO}"
+    ELF_IMAGE="target/${BUILD_TARGET}/release/${RUST_STD_DEMO}"
     if [ "${TEST_MODE}" == "flash" ]; then
         cargo +${TOOLCHAIN_NAME} espflash --target "${BUILD_TARGET}" --release --features ${FEATURES} "${TEST_PORT}"
     elif [ "${TEST_MODE}" == "monitor" ]; then
