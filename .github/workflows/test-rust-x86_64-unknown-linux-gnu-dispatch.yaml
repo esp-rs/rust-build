@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        target: [ xtensa-esp32-espidf, xtensa-esp32s2-espidf, xtensa-esp32s2-espidf, riscv32imc-esp-espidf ]
+        target: [ xtensa-esp32-espidf, xtensa-esp32s2-espidf, xtensa-esp32s3-espidf, riscv32imc-esp-espidf ]
       fail-fast: false
 
     steps:
