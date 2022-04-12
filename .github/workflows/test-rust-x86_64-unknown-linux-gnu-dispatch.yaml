@@ -53,6 +53,6 @@ jobs:
         run: |
           ./test-rust-toolchain.sh --toolchain-version ${{ github.event.inputs.toolchain_version }} \
           --project ${{ github.event.inputs.project }} \
-          --project-url ${{ github.event.inputs.project-url }} \
+          --project-repo ${{ github.event.inputs.project_repo }} \
           --target ${{ matrix.target }} \
           --features ${{ github.event.inputs.features }}
