@@ -34,7 +34,7 @@ on:
 
 jobs:
   build-idf-rust-examples:
-    name: Build IDF Rust Project {{ matrix.target }}
+    name: Build IDF Rust Project
     runs-on: ubuntu-latest
     strategy:
       matrix:
