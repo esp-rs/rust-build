@@ -4,107 +4,47 @@ This repository contains:
 - workflows for building Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
 - binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
 
-## Quick start
+## Table of Contents
+- [Xtensa Installation](#xtensa-installation)
+  - [Linux and macOS](#linux-and-macos)
+    - [Prerequisites](#prerequisites)
+    - [Installation commands](#installation-commands)
+  - [Windows x64](#windows-x64)
+    - [Prerequisites](#prerequisites-1)
+    - [Installation commands for PowerShell](#installation-commands-for-powershell)
+- [RiscV Installation](#riscv-installation)
+- [Building projects](#building-projects)
+    - [Cargo Aproach](#cargo-aproach)
+    - [Idf Aproach](#idf-aproach)
+- [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
+## Xtensa Installation
 
-The installation process of ready to use custom build of Rust and LLVM:
-
-* [macOS M1 aarch64, macOS x86_64](#rust-on-xtensa-installation-for-macos)
-* [Linux x86_64, Linux aarch64](#rust-on-xtensa-installation-for-linux)
-* [Windows 10, 11 x86_64](#rust-on-xtensa-installation-for-windows-x64)
-* [Podman/Docker](#rust-with-podman-or-docker)
-
-## Installation
-
-### Rust on Xtensa Installation for macOS
-
-Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
-
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
-
-#### Prerequisites
-
-- rustup - https://rustup.rs/
-
-#### Installation commands
-
-```sh
-./install-rust-toolchain.sh
-```
-
-Export variables displayed at the end of the script.
-
-Installation of different version of toolchain:
-
-```
-./install-rust-toolchain.sh --toolchain-version 1.60.0.0 --export-file export-esp-rust.sh
-source ./export-esp-rust.sh
-```
-
-### Rust on Xtensa Installation for Linux
+### Linux and macOS
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
 Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
 
 #### Prerequisites
-
-- rustup - https://rustup.rs/
-- dependencies (command for Ubuntu/Debian):
-
-```sh
-apt-get install -y git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
-```
+- Linux:
+  - rustup - https://rustup.rs/
+  - dependencies (command for Ubuntu/Debian):
+    ```sh
+    apt-get install -y git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
+    ```
+- macOs:
+  - rustup - https://rustup.rs/
 
 #### Installation commands
 
 ```sh
 ./install-rust-toolchain.sh
 ```
+> Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
 Export variables displayed at the end of the script.
 
-Installation of different version of toolchain:
-
-```
-./install-rust-toolchain.sh --toolchain-version 1.60.0.0 --export-file export-esp-rust.sh
-source ./export-esp-rust.sh
-```
-
-#### Get source code of examples
-
-```
-curl -LO "https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip"
-unzip main.zip
-cd rust-esp32-example-main
-```
-
-#### Select architecture for the build
-
-For the ESP32 - default (Xtensa architecture):
-
-```sh
-idf.py set-target esp32
-```
-
-For the ESP32-S2 (Xtensa architecture):
-
-```sh
-idf.py set-target esp32s2
-```
-
-For the ESP32-S3 (Xtensa architecture):
-
-```sh
-idf.py set-target esp32s3
-```
-
-#### Build and flash
-
-```sh
-idf.py build flash
-```
-
-### Rust on Xtensa Installation for Windows x64
+### Windows x64
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
@@ -138,41 +78,8 @@ Installation of different version of toolchain:
 source ./Export-EspRust.ps1
 ```
 
-#### Get source code of examples
-
-```sh
-Invoke-WebRequest https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip -OutFile rust-esp32-example.zip
-Expand-Archive rust-esp32-example.zip
-cd rust-esp32-example-main
-```
-
-#### Select architecture for the build
-
-For the ESP32 - default (Xtensa architecture):
-
-```sh
-idf.py set-target esp32
-```
-
-For the ESP32-S2 (Xtensa architecture):
-
-```sh
-idf.py set-target esp32s2
-```
-
-For the ESP32-S3 (Xtensa architecture):
-
-```sh
-idf.py set-target esp32s3
-```
-
-#### Build and flash
-
-```sh
-idf.py build flash
-```
-
-### ESP32-C3
+## RiscV Installation
+Following instructions are specific for ESP32-C based on RiscV architecture.
 
 Install the RISCV target for Rust:
 
@@ -180,7 +87,54 @@ Install the RISCV target for Rust:
 rustup target add riscv32i-unknown-none-elf
 ```
 
-### Rust with Podman or Docker
+## Building projects
+#### Cargo Aproach
+1. Get example source code
+    ```sh
+    git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
+    cd rust-esp32-std-demo/
+    ```
+2. Build and flash:
+    ```sh
+    cargo espflash --target <TARGET> <SERIAL>
+    ```
+    Where `TARGET` can be:
+    - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
+    - `xtensa-esp32s2-espidf` for the ESP32-S2(Xtensa architecture).
+    - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
+    - `riscv32imc-esp-espidf` for the ESP32-C3(RiscV architecture).
+
+    And `SERIAL>` is the serial port connected to the target device.
+    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also offers the openning a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+#### Idf Aproach
+
+1. Get example source code
+   - Linux and macOS:
+    ```sh
+    curl -LO "https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip"
+    unzip main.zip
+    cd rust-esp32-example-main
+    ```
+    - Windows:
+    ```sh
+    Invoke-WebRequest https://github.com/espressif/rust-esp32-example/archive/refs/heads/main.zip -OutFile rust-esp32-example.zip
+    Expand-Archive rust-esp32-example.zip
+    cd rust-esp32-example-main
+    ```
+2. Select architecture for the build
+    ```sh
+    idf.py set-target <TARGET>
+    ```
+    Where `TARGET` can be:
+    - `esp32` for the ESP32(Xtensa architecture). [Default]
+    - `esp32s2` for the ESP32-S2(Xtensa architecture).
+    - `esp32s3` for the ESP32-S3(Xtensa architecture).
+3. Build and flash
+    ```sh
+    idf.py build flash
+    ```
+
+## Podman/Docker Rust ESP environment
 
 Alternatively, you might build the project in the container where the image already contains pre-installed Rust and ESP-IDF.
 
