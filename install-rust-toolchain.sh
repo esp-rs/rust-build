@@ -287,7 +287,13 @@ if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
     clear_download_cache
 fi
 
-echo "Add following command to your default shell profile. Eg: ~/.bashrc, ~/.zshrc"
+PROFILE_NAME="your default shell"
+if grep -q "zsh" <<< "$SHELL"; then
+  PROFILE_NAME=~/.zshrc
+elif grep -q "bash" <<< "$SHELL"; then
+  PROFILE_NAME=~/.bashrc
+fi
+echo "Add following command to $PROFILE_NAME"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 # Workaround of https://github.com/espressif/esp-idf/issues/7910
