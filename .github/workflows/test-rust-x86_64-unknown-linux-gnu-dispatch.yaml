@@ -38,7 +38,7 @@ on:
 
 jobs:
   build-idf-rust-examples:
-    name: Build IDF Rust Project
+    name: Build IDF Rust Project - ${{ github.event.inputs.runs_on }}
     runs-on: ${{ github.event.inputs.runs_on }}
     strategy:
       matrix:
