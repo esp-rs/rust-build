@@ -54,12 +54,30 @@ Push-Location ${RustStdDemo}
 $env:RUST_ESP32_STD_DEMO_WIFI_SSID="rust"
 $env:RUST_ESP32_STD_DEMO_WIFI_PASS="for-esp32"
 
+$CargoParameters = @("+${ToolchainName}")
+
 if ("build" -eq $TestMode) {
-    cargo +${ToolchainName} build --target ${Target} --features "${Features}"
+    $CargoParameters += 'build'
 } elseif ("flash" -eq $TestMode) {
-    "cargo +${ToolchainName} espflash --features '${Features}' --target ${Target} $TestPort "
-    cargo +${ToolchainName} espflash --features "${Features}" --target ${Target} $TestPort
+    $CargoParameters += "espflash"
 } elseif ("monitor" -eq $TestMode) {
-    cargo +${ToolchainName} espflash --monitor --features "${Features}" --target ${Target} $TestPort
+    $CargoParameters += "espflash"
+    $CargoParameters += "--monitor"
 }
+
+$CargoParameters += "--target"
+$CargoParameters += "${Target}"
+
+if ("" -ne $Features) {
+    $CargoParameters += "--features"
+    $CargoParameters += "${Features}"
+}
+
+if (("flash" -eq $TestMode) -or ("monitor" -eq $TestMode)) {
+  $CargoParameters += "${TestPort}"
+}
+
+"cargo $CargoParameters"
+cargo $CargoParameters
+
 Pop-Location
