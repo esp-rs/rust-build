@@ -17,7 +17,7 @@ param (
     [String]
     $TestPort = "COM5",
     [string]
-    $Features = "native" # space separated list of features
+    $Features = "" # space separated list of features
 )
 
 $ErrorActionPreference = "Stop"

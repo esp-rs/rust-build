@@ -21,7 +21,7 @@ ENV RUST_ESP32_STD_DEMO_WIFI_SSID=rust
 ENV RUST_ESP32_STD_DEMO_WIFI_PASS=for-esp32
 
 RUN cd /opt/rust-esp32-std-demo \
-    && cargo +esp build --features "native" \
+    && cargo +esp build \
     && cargo clean
 
 WORKDIR /opt/
