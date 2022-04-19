@@ -7,7 +7,7 @@ on:
       upload_artifacts:
         description: 'Upload final artifacts to Release?'
         required: true
-        default: 'no'
+        default: 'yes'
       rust_build_branch:
         description: 'Branch of rust-build to use'
         required: true
