@@ -5,6 +5,7 @@ This repository contains:
 - binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
 
 ## Table of Contents
+
 - [Xtensa Installation](#xtensa-installation)
   - [Linux and macOS](#linux-and-macos)
     - [Prerequisites](#prerequisites)
@@ -14,16 +15,18 @@ This repository contains:
     - [Installation commands for PowerShell](#installation-commands-for-powershell)
 - [RiscV Installation](#riscv-installation)
 - [Building projects](#building-projects)
-    - [Cargo Aproach](#cargo-aproach)
-    - [Idf Aproach](#idf-aproach)
+    - [Cargo first approach](#cargo-first-approach)
+    - [Idf first approach](#idf-first-approach)
 - [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
+- [Devcontainers](#devcontainers)
+
 ## Xtensa Installation
 
 ### Linux and macOS
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](#esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described in [RiscV section](#riscv-installation).
 
 #### Prerequisites
 - Linux:
@@ -39,13 +42,13 @@ No prerequisites are needed for macOS
 ```
 > Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
-Export variables displayed at the end of the script.
+Export variables are displayed at the end of the script.
 
 ### Windows x64
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in document for [ESP32-C3](esp32-c3).
+Instructions for ESP-C series based on RISC-V architecture are described  in [RiscV section](#riscv-installation).
 
 #### Prerequisites
 
@@ -66,7 +69,7 @@ choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
 ./Install-RustToolchain.ps1
 ```
 
-Export variables displayed at the end of the output from the script.
+Export variables are displayed at the end of the output from the script.
 
 Installation of different version of toolchain:
 
@@ -85,7 +88,7 @@ rustup target add riscv32i-unknown-none-elf
 ```
 
 ## Building projects
-#### Cargo first aproach
+#### Cargo first approach
 1. Get example source code
     ```sh
     git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
@@ -101,9 +104,9 @@ rustup target add riscv32i-unknown-none-elf
     - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
     - `riscv32imc-esp-espidf` for the ESP32-C3(RiscV architecture).
 
-    And `SERIAL>` is the serial port connected to the target device.
-    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also offers the openning a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
-#### Idf first aproach
+    And `SERIAL` is the serial port connected to the target device.
+    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+#### Idf first approach
 
 1. Get example source code
     ```sh
@@ -143,8 +146,9 @@ docker run -it espressif/idf-rust-examples
 ```
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
-### Devcontainers
-There is also the option to use an integration with Visual Studio Code using [remote containers](https://code.visualstudio.com/docs/remote/containers). With this method,
+## Devcontainers
+
+There is also the option to integrate with Visual Studio Code using [remote containers](https://code.visualstudio.com/docs/remote/containers). With this method,
 we would have a fully working environment to build projects in Rust for ESP boards
-in VScode alongside useful settings and extension, for more information,
+in VScode alongside useful settings and extensions, for more information,
 please, refer to [esp-rs-devcontainer](https://github.com/SergioGasquez/esp-rs-devcontainer).
