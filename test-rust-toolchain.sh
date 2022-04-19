@@ -148,6 +148,9 @@ fi
 
 cd "${PROJECT}"
 
+# Left over from other target might cause failure in the build, it's better to start from the scratch
+cargo clean
+
 # Project specific setup
 case ${PROJECT} in
     rust-esp32-std-demo)
@@ -164,7 +167,7 @@ if [ "${BUILD_TARGET}" == "all" ]; then
         cargo +${TOOLCHAIN_NAME} build --target ${TARGET} --release --features "${FEATURES}"
     done
 else
-    echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}"
+    echo "cargo +${TOOLCHAIN_NAME} build --target ${BUILD_TARGET}" --features "${FEATURES}"
     cargo +${TOOLCHAIN_NAME} build --target "${BUILD_TARGET}" --release --features "${FEATURES}"
     ELF_IMAGE="target/${BUILD_TARGET}/release/${RUST_STD_DEMO}"
     if [ "${TEST_MODE}" == "flash" ]; then
