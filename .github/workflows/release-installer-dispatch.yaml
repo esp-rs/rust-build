@@ -29,10 +29,9 @@ jobs:
     - uses: octokit/request-action@v2.x
       id: get_release
       with:
-        route: GET /repos/{owner}/{repo}/releases/tag/{version}
+        route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
         owner: esp-rs
         repo: rust-build
-        version: v${{ github.event.inputs.release_version }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: get upload url
