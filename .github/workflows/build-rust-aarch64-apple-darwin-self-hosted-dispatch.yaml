@@ -15,7 +15,7 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.60.0.0'
+        default: '1.60.0.1'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
@@ -34,11 +34,12 @@ jobs:
       upload_url: ${{ steps.get_upload_url.outputs.url }}
     steps:
     - uses: octokit/request-action@v2.x
-      id: get_latest_release
+      id: get_release
       with:
-        route: GET /repos/{owner}/{repo}/releases/latest
+        route: GET /repos/{owner}/{repo}/releases/tag/{version}
         owner: esp-rs
         repo: rust-build
+        version: v${{ github.event.inputs.release_version }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     - name: get upload url
@@ -47,7 +48,7 @@ jobs:
         url=$(echo "$response" | jq -r '.upload_url')
         echo "::set-output name=url::$url"
       env:
-        response:  ${{ steps.get_latest_release.outputs.data }}
+        response:  ${{ steps.get_release.outputs.data }}
 
   build-idf-rust:
     name: Build IDF Rust for ${{ matrix.os }}
