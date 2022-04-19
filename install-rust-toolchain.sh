@@ -13,13 +13,31 @@ LLVM_VERSION="esp-13.0.0-20211203"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy cargo-espflash"
 
+display_help() {
+  echo "Usage: install-rust-toolchain.sh <arguments>"
+  echo "Arguments: "
+  echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
+  echo "-d|--toolchain-destination      Toolchain instalation folder."
+  echo "-f|--export-file                Destination of the export file generated."
+  echo "-c|--cargo-home                 Cargo path"
+  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: insatll"
+  echo "-l|--llvm-version               LLVM version"
+  echo "-r|--rustup-home                Path to .rustup"
+  echo "-t|--toolchain-version          Rust toolchain version"
+  echo "-x|--clear-cache                Removes cached distribution files"
+}
+
 # Process positional arguments
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-    -c|--extra-crates)
+    -h|--help)
+      display_help
+      exit 1
+      ;;
+    -e|--extra-crates)
       EXTRA_CRATES="$2"
       shift # past argument
       shift # past value
@@ -29,12 +47,12 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -e|--export-file)
+    -f|--export-file)
       EXPORT_FILE="$2"
       shift # past argument
       shift # past value
       ;;
-    -h|--cargo-home)
+    -o|--cargo-home)
       CARGO_HOME="$2"
       shift # past argument
       shift # past value
@@ -269,7 +287,13 @@ if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
     clear_download_cache
 fi
 
-echo "Add following command to ~/.zshrc"
+PROFILE_NAME="your default shell"
+if grep -q "zsh" <<< "$SHELL"; then
+  PROFILE_NAME=~/.zshrc
+elif grep -q "bash" <<< "$SHELL"; then
+  PROFILE_NAME=~/.bashrc
+fi
+echo "Add following command to $PROFILE_NAME"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 # Workaround of https://github.com/espressif/esp-idf/issues/7910
