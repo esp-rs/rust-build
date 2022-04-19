@@ -36,7 +36,6 @@ jobs:
     - uses: octokit/request-action@v2.x
       id: get_release
       with:
-      with:
         route: GET /repos/{owner}/{repo}/releases/tag/v${{ github.event.inputs.release_version }}
         owner: esp-rs
         repo: rust-build
