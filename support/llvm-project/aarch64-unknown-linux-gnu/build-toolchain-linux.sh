@@ -4,7 +4,7 @@ set -e
 
 AVAILABLE_MEMORY=`awk '/MemAvailable/ { printf "%.0f \n", $2/1024 }' /proc/meminfo`
 if [ "$AVAILABLE_MEMORY" -lt "6000" ]; then 
-    echo "Insufficient memory for -j8 build. Increase memory or decrease number of processes for cmake"
+    echo "Insufficient memory for -j4 build. Increase memory or decrease number of processes for cmake"
     exit 1
 fi
 
@@ -27,7 +27,7 @@ cp ../clangwrap.cpp ${INSTALLPREFIX}
 mkdir build
 cd build
 cmake ../llvm -DLLVM_TARGETS_TO_BUILD="AArch64" -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD=Xtensa -DCMAKE_BUILD_TYPE=Release -DLLVM_EXTERNAL_CLANG_SOURCE_DIR=../clang -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;"
-cmake --build . -- -j8
+cmake --build . -- -j4
 rm ../llvm/test/tools/llvm-ar/error-opening-permission.test
 rm ../llvm/test/tools/llvm-elfabi/fail-file-write.test
 
