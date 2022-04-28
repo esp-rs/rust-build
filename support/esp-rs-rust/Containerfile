@@ -5,7 +5,7 @@ ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
 #ENV RUSTUP_HOME=/opt/rustup
 #ENV CARGO_HOME=/opt/cargo
-#ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-13.0.0-20211203-x86_64-unknown-linux-gnu/bin/:$PATH
+#ENV PATH=/opt/cargo/bin:/opt/rustup/bin:/opt/esp/tools/xtensa-esp32-elf-clang/esp-14.0.0-20220415-x86_64-unknown-linux-gnu/bin/:$PATH
 #ENV USER=rust
 #ENV IDF_PATH=/opt/.espressif/frameworks/esp-idf-master
 #ENV ESP_IDF_TOOLS_INSTALL_DIR=custom:/opt/.espressif
@@ -51,13 +51,6 @@ RUN git clone https://github.com/georgik/esp-idf-hal.git rust-project
 # Some patches that should be moved to the tooling
 RUN echo '[patch.crates-io] ' >> rust-project/Cargo.toml
 RUN echo 'embuild = { git="https://github.com/ivmarkov/embuild.git" }' >> rust-project/Cargo.toml
-#RUN git clone https://github.com/espressif/rust-esp32-example.git
-
-
-# Compile the example, this will cache .embuild and .espressif including crates
-#RUN . /opt/esp/entrypoint.sh \
-#   && cd rust-project \
-#   && cargo +esp build --features "native" --release
 
 # Compile esp-idf-hal examples
 RUN . /opt/esp/entrypoint.sh \

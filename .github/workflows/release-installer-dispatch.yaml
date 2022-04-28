@@ -10,7 +10,7 @@ on:
       release_version:
         description: 'Release Version for generation'
         required: true
-        default: '1.60.0.0'
+        default: '1.60.0.1'
       rust_version:
         description: 'Version of esp rust to use'
         required: true
@@ -27,9 +27,9 @@ jobs:
       upload_url: ${{ steps.get_upload_url.outputs.url }}
     steps:
     - uses: octokit/request-action@v2.x
-      id: get_latest_release
+      id: get_release
       with:
-        route: GET /repos/{owner}/{repo}/releases/latest
+        route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
         owner: esp-rs
         repo: rust-build
       env:
@@ -40,7 +40,7 @@ jobs:
         url=$(echo "$response" | jq -r '.upload_url')
         echo "::set-output name=url::$url"
       env:
-        response:  ${{ steps.get_latest_release.outputs.data }}
+        response:  ${{ steps.get_release.outputs.data }}
 
   upload-installers:
     name: Upload installation scripts

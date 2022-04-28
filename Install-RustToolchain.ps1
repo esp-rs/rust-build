@@ -4,11 +4,11 @@ param (
     [String]
     $ExportFile = '',
     [String]
-    $ToolchainVersion = '1.60.0.0',
+    $ToolchainVersion = '1.60.0.1',
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
-    $LlvmVersion = "esp-13.0.0-20211203",
+    $LlvmVersion = "esp-14.0.0-20220415",
     [String]
     [ValidateSet("install", "reinstall", "uninstall", "export")]
     $InstallationMode = 'install'

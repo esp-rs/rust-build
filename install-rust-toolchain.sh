@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Default values
-TOOLCHAIN_VERSION="1.60.0.0"
+TOOLCHAIN_VERSION="1.60.0.1"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -9,7 +9,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-13.0.0-20211203"
+LLVM_VERSION="esp-14.0.0-20220415"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy cargo-espflash"
 
@@ -172,18 +172,18 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-apple-darwin"
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
+LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="${ARCH}"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
-    #LLVM_VERSION="esp-12.0.1-20210823"
+    # LLVM artifact is stored as part of Rust release
+    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
-    #LLVM_ARCH="x86_64-apple-darwin"
     LLVM_ARCH="macos"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
-    #LLVM_VERSION="esp-12.0.1-20210914"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
@@ -192,6 +192,8 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
     ESPFLASH_URL=""
     ESPFLASH_BIN=""
+    # LLVM artifact is stored as part of Rust release
+    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
@@ -205,7 +207,7 @@ RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
-LLVM_DIST_URL="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}/${LLVM_FILE}"
+LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi

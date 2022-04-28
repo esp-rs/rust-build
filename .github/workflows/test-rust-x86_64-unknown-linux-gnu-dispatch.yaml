@@ -1,4 +1,4 @@
-name: Test Linux x86_64 - build of Rust examples
+name: Test Rust examples on specific host
 
 on:
   workflow_dispatch:
@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.60.0.0'
+        default: '1.60.0.1'
       esp_idf_version:
         description: 'Version of ESP-IDF for the build'
         required: true
@@ -25,17 +25,21 @@ on:
         default: 'https://github.com/ivmarkov/rust-esp32-std-demo.git'
       features:
         description: 'Features for the build, space separated list'
-        required: true
-        default: 'native'
+        required: false
+        default: ''
       test_mode:
         description: 'Testing mode: build, flash, monitor'
         required: true
         default: 'build'
+      runs_on:
+        description: 'runs_on Github runner name'
+        required: true
+        default: 'ubuntu-latest'
 
 jobs:
   build-idf-rust-examples:
-    name: Build IDF Rust Project
-    runs-on: ubuntu-latest
+    name: Build IDF Rust Project - ${{ github.event.inputs.runs_on }}
+    runs-on: ${{ github.event.inputs.runs_on }}
     strategy:
       matrix:
         target: [ xtensa-esp32-espidf, xtensa-esp32s2-espidf, xtensa-esp32s3-espidf, riscv32imc-esp-espidf ]
@@ -55,4 +59,4 @@ jobs:
           --project ${{ github.event.inputs.project }} \
           --project-repo ${{ github.event.inputs.project_repo }} \
           --target ${{ matrix.target }} \
-          --features ${{ github.event.inputs.features }}
+          --features "${{ github.event.inputs.features }}"
