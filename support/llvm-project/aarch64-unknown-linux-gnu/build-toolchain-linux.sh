@@ -38,21 +38,22 @@ else
     exit 1
 fi
 
+
+g++ -std=c++11 ${INSTALLPREFIX}/clangwrap.cpp -o ${CLANG_XTENSA_TOOLCHAIN}/bin/xtensa-esp32-elf-clang
+
 cd ..
+cp build/bin/xtensa-esp32-elf-clang ${CLANG_XTENSA_TOOLCHAIN}/bin/xtensa-esp32-elf-clang++
 
-g++ -std=c++11 clangwrap.cpp -o ${CLANG_XTENSA_TOOLCHAIN}/bin/xtensa-esp32-elf-clang
-cp ${CLANG_XTENSA_TOOLCHAIN}/bin/xtensa-esp32-elf-clang ${CLANG_XTENSA_TOOLCHAIN}/bin/xtensa-esp32-elf-clang++
-
-mv build/bin/clang ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/clang++ ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/clang-14 ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/clang-tidy ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/clang-format ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/scan-build ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/bin/llvm-config ${CLANG_XTENSA_TOOLCHAIN}/bin/
-mv build/libexec/* ${CLANG_XTENSA_TOOLCHAIN}/libexec/
-mv build/lib/clang ${CLANG_XTENSA_TOOLCHAIN}/lib/
-mv build/lib/libclang.* ${CLANG_XTENSA_TOOLCHAIN}/lib/
+cp build/bin/clang ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/clang++ ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/clang-14 ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/clang-tidy ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/clang-format ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/scan-build ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/bin/llvm-config ${CLANG_XTENSA_TOOLCHAIN}/bin/
+cp build/libexec/* ${CLANG_XTENSA_TOOLCHAIN}/libexec/
+cp -r build/lib/clang ${CLANG_XTENSA_TOOLCHAIN}/lib/clang
+cp build/lib/libclang.* ${CLANG_XTENSA_TOOLCHAIN}/lib/
 #mv xtensa-esp32-elf-clang* ${CLANG_XTENSA_TOOLCHAIN}/bin/
 
 cd ..
