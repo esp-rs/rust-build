@@ -110,7 +110,7 @@ function source_cargo() {
         source "${HOME}/.cargo/env"
         export CARGO_HOME="${HOME}/.cargo/"
     else
-        if [ ! -z "${CARGO_HOME}" ]; then
+        if [ -n "${CARGO_HOME}" ] && [ -e "${CARGO_HOME}/env" ]; then
             source ${CARGO_HOME}/env
         else
 	    echo "Warning: Unable to source .cargo/env"
