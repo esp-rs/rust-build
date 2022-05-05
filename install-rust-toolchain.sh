@@ -188,6 +188,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
     ESPFLASH_URL=""
