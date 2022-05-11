@@ -280,7 +280,7 @@ fi
 # - RISCV - requires just additional target for ESP32C3
 # - Xtensa - requires custom built toolchain with Xtensa support for ESP32, ESP32S2, ESP32S3
 if [ "${BUILD_TARGET}" == "esp32c3" ]; then
-    rustup component add rust-src --toolchain "nightly-${ARCH}"
+    rustup component add rust-src --toolchain nightly
 else
     install_rust_xtensa_toolchain
 fi
