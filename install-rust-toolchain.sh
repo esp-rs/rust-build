@@ -7,6 +7,7 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
+BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-14.0.0-20220415"
@@ -16,10 +17,11 @@ EXTRA_CRATES="ldproxy cargo-espflash"
 display_help() {
   echo "Usage: install-rust-toolchain.sh <arguments>"
   echo "Arguments: "
-  echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
-  echo "-d|--toolchain-destination      Toolchain instalation folder."
-  echo "-f|--export-file                Destination of the export file generated."
+  echo "-b|--build-target               Comma separated list of targets [esp32, esp32s2, esp32s3, esp32c3]"
   echo "-c|--cargo-home                 Cargo path"
+  echo "-d|--toolchain-destination      Toolchain instalation folder."
+  echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
+  echo "-f|--export-file                Destination of the export file generated."
   echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: insatll"
   echo "-l|--llvm-version               LLVM version"
   echo "-r|--rustup-home                Path to .rustup"
@@ -37,13 +39,18 @@ while [[ $# -gt 0 ]]; do
       display_help
       exit 1
       ;;
-    -e|--extra-crates)
-      EXTRA_CRATES="$2"
+    -b|--build-target)
+      BUILD_TARGET="$2"
       shift # past argument
       shift # past value
       ;;
     -d|--toolchain-destination)
       TOOLCHAIN_DESTINATION_DIR="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -e|--extra-crates)
+      EXTRA_CRATES="$2"
       shift # past argument
       shift # past value
       ;;
@@ -79,7 +86,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     -x|--clear-cache)
       CLEAR_DOWNLOAD_CACHE="$2"
-      shift
+      shift # past argument
+      shift # past value
       ;;
     *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
@@ -91,6 +99,7 @@ done
 set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
+echo "--build-target          = ${BUILD_TARGET}"
 echo "--cargo-home            = ${CARGO_HOME}"
 echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 echo "--export-file           = ${EXPORT_FILE}"
@@ -126,6 +135,33 @@ function install_rust_toolchain() {
 function install_rustfmt() {
     rustup component add rustfmt --toolchain stable
     rustup component add rustfmt --toolchain nightly
+}
+
+function install_rust_xtensa_toolchain() {
+    if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
+        echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
+        echo "Please, remove the directory before new installation."
+        exit 1
+    fi
+
+
+    if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
+        mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
+        if [ ! -f ${RUST_DIST}.tar.xz ]; then
+            echo "** downloading: ${RUST_DIST_URL}"
+            curl -LO "${RUST_DIST_URL}"
+            mkdir -p ${RUST_DIST}
+            tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
+        fi
+        ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+
+        if [ ! -f ${RUST_SRC_DIST}.tar.xz ]; then
+            curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
+            mkdir -p ${RUST_SRC_DIST}
+            tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
+        fi
+        ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+    fi
 }
 
 function clear_download_cache() {
@@ -174,25 +210,32 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-pc-windows-msvc"
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 
+# Extra crates binary download support
+ESPFLASH_URL=""
+ESPFLASH_BIN=""
+LDPROXY_URL=""
+LDPROXY_BIN=""
+ESPMONITOR_BIN=""
+ESPMONITOR_URL=""
+
+# Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="${ARCH}"
-    ESPFLASH_URL=""
-    ESPFLASH_BIN=""
     # LLVM artifact is stored as part of Rust release
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     LLVM_ARCH="macos"
-    ESPFLASH_URL=""
-    ESPFLASH_BIN=""
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
+    ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
-    ESPFLASH_URL=""
-    ESPFLASH_BIN=""
     # LLVM artifact is stored as part of Rust release
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
@@ -233,29 +276,13 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
-    echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
-    echo "Please, remove the directory before new installation."
-    exit 1
-fi
-
-
-if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
-    mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
-    if [ ! -f ${RUST_DIST}.tar.xz ]; then
-        echo "** downloading: ${RUST_DIST_URL}"
-        curl -LO "${RUST_DIST_URL}"
-        mkdir -p ${RUST_DIST}
-        tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
-    fi
-    ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
-
-    if [ ! -f ${RUST_SRC_DIST}.tar.xz ]; then
-        curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
-        mkdir -p ${RUST_SRC_DIST}
-        tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
-    fi
-    ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+# Install toolchain
+# - RISCV - requires just additional target for ESP32C3
+# - Xtensa - requires custom built toolchain with Xtensa support for ESP32, ESP32S2, ESP32S3
+if [ "${BUILD_TARGET}" == "esp32c3" ]; then
+    rustup target add riscv32i-unknown-none-elf
+else
+    install_rust_xtensa_toolchain
 fi
 
 echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
@@ -280,6 +307,20 @@ if [[ ! -z "${EXTRA_CRATES}" ]]; then
         chmod u+x "${ESPFLASH_BIN}"
       fi
       echo "Using cargo-espflash binary release"
+    elif [ "${CRATE}" = "ldproxy" ] && [[ ! -z "${LDPROXY_URL}" ]]; then
+      if [[ ! -e "${LDPROXY_BIN}" ]]; then
+        curl -L "${LDPROXY_URL}" -o "${LDPROXY_BIN}.xz"
+        unxz "${LDPROXY_BIN}.xz"
+        chmod u+x "${LDPROXY_BIN}"
+      fi
+      echo "Using ldproxy binary release"
+    elif [ "${CRATE}" = "espmonitor" ] && [[ ! -z "${ESPMONITOR_URL}" ]]; then
+      if [[ ! -e "${ESPMONITOR_BIN}" ]]; then
+        curl -L "${ESPMONITOR_URL}" -o "${ESPMONITOR_BIN}.xz"
+        unxz "${ESPMONITOR_BIN}.xz"
+        chmod u+x "${ESPMONITOR_BIN}"
+      fi
+      echo "Using espmonitor binary release"
     else
       cargo install ${CRATE}
     fi
