@@ -7,7 +7,7 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 
-BUILD_TARGET="esp32,esp32s2,esp32s3"
+BUILD_TARGET="esp32 esp32s2 esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-14.0.0-20220415"
@@ -17,7 +17,7 @@ EXTRA_CRATES="ldproxy cargo-espflash"
 display_help() {
   echo "Usage: install-rust-toolchain.sh <arguments>"
   echo "Arguments: "
-  echo "-b|--build-target               Comma separated list of targets [esp32, esp32s2, esp32s3, esp32c3]"
+  echo "-b|--build-target               White space separated list of targets [esp32, esp32s2, esp32s3, esp32c3]"
   echo "-c|--cargo-home                 Cargo path"
   echo "-d|--toolchain-destination      Toolchain instalation folder."
   echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
