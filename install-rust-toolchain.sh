@@ -79,7 +79,8 @@ while [[ $# -gt 0 ]]; do
       ;;
     -x|--clear-cache)
       CLEAR_DOWNLOAD_CACHE="$2"
-      shift
+      shift # past argument
+      shift # past value
       ;;
     *)    # unknown option
       POSITIONAL+=("$1") # save it in an array for later
