@@ -223,8 +223,12 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="${ARCH}"
     # LLVM artifact is stored as part of Rust release
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     LLVM_ARCH="macos"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
+    ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
