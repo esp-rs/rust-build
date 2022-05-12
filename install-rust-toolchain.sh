@@ -240,7 +240,7 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zipp"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
 fi
 
@@ -304,7 +304,7 @@ if [[ ! -z "${EXTRA_CRATES}" ]]; then
     if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
       if [[ ! -e "${ESPFLASH_BIN}" ]]; then
         curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}.zip"
-        unzip "${ESPFLASH_BIN}.zip"
+        unzip "${ESPFLASH_BIN}.zip" -d "${CARGO_HOME}/bin/"
         rm "${ESPFLASH_BIN}.zip"
         chmod u+x "${ESPFLASH_BIN}"
       fi
