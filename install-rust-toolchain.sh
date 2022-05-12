@@ -227,7 +227,7 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     LLVM_ARCH="macos"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
@@ -240,7 +240,7 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
+    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zipp"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
 fi
 
@@ -303,7 +303,9 @@ if [[ ! -z "${EXTRA_CRATES}" ]]; then
     echo "Installing additional extra crate: ${CRATE}"
     if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
       if [[ ! -e "${ESPFLASH_BIN}" ]]; then
-        curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}"
+        curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}.zip"
+        unzip "${ESPFLASH_BIN}.zip"
+        rm "${ESPFLASH_BIN}.zip"
         chmod u+x "${ESPFLASH_BIN}"
       fi
       echo "Using cargo-espflash binary release"
