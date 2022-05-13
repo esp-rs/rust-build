@@ -239,9 +239,7 @@ function install_extra_crates() {
                 fi
                 echo "Using espmonitor binary release"
             else
-                # DEBUG UNCOMMENT!!
-                # cargo install ${CRATE}
-                echo "DEBUG UNCOMENT"
+                cargo install ${CRATE}
             fi
         done
     fi
@@ -359,28 +357,28 @@ for BOARD in "${ESP_BOARDS[@]}"; do
     fi
 done
 
-if [ "${RISCV_INSTALLED}" == "true" ]  && [ ${XTENSA_INSTALLED} == "false" ]; then
-    install_extra_crates
-    exit 0
-fi
 
-echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
-if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
-    if [ ! -f "${LLVM_FILE}" ]; then
-        echo "** Downloading ${LLVM_DIST_URL}"
-        curl -LO "${LLVM_DIST_URL}"
+if [ ${XTENSA_INSTALLED} == "true" ]; then
+    echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
+    if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
+        if [ ! -f "${LLVM_FILE}" ]; then
+            echo "** Downloading ${LLVM_DIST_URL}"
+            curl -LO "${LLVM_DIST_URL}"
+        fi
+        mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
+        tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
+        echo "done"
+    else
+        echo "already installed"
     fi
-    mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
-    tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
-    echo "done"
-else
-    echo "already installed"
 fi
 
 install_extra_crates
 
-if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
-    clear_download_cache
+if [ ${XTENSA_INSTALLED} == "true" ]; then
+    if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+        clear_download_cache
+    fi
 fi
 
 if [ "${ESP_IDF_VERSION}" != "" ]; then
@@ -409,20 +407,23 @@ elif grep -q "bash" <<< "$SHELL"; then
 fi
 
 echo "Add following command to $PROFILE_NAME"
-echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
-echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-# Workaround of https://github.com/espressif/esp-idf/issues/7910
-echo export PIP_USER="no"
+if [ ${XTENSA_INSTALLED} == "true" ]; then
+    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+    # Workaround of https://github.com/espressif/esp-idf/issues/7910
+    echo export PIP_USER="no"
+fi
 if [ "${ESP_IDF_VERSION}" != "" ]; then
     echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}
     echo source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh
 fi
-
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
-    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
-    echo export PIP_USER="no" >> "${EXPORT_FILE}"
+    if [ ${XTENSA_INSTALLED} == "true" ]; then
+        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
+        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
+        echo export PIP_USER="no" >> "${EXPORT_FILE}"
+    fi
     if [ "${ESP_IDF_VERSION}" != "" ]; then
         echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH} >> "${EXPORT_FILE}"
         echo "source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
