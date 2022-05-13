@@ -154,11 +154,6 @@ function source_cargo() {
     fi
 }
 
-# function install_rust_toolchain() {
-#     rustup toolchain install $1 --profile minimal --component rustfmt
-# }
-
-
 function install_rust_xtensa_toolchain() {
     if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
         echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
@@ -259,8 +254,6 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     echo "calling rustup"
     install_rustup
 fi
-
-# rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
