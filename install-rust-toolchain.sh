@@ -6,27 +6,33 @@ if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
-
-BUILD_TARGET="esp32 esp32s2 esp32s3"
+BUILD_TARGET="esp32,esp32s2,esp32s3"
+ESP_BOARDS=""
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-14.0.0-20220415"
+NIGHTLY_VERSION="nightly"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy cargo-espflash"
+ESP_IDF_VERSION=""
+MINIFIED_ESP_IDF="NO"
 
 display_help() {
   echo "Usage: install-rust-toolchain.sh <arguments>"
   echo "Arguments: "
-  echo "-b|--build-target               White space separated list of targets [esp32, esp32s2, esp32s3, esp32c3]"
+  echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
   echo "-c|--cargo-home                 Cargo path"
   echo "-d|--toolchain-destination      Toolchain instalation folder."
   echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
   echo "-f|--export-file                Destination of the export file generated."
-  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: insatll"
+  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
   echo "-l|--llvm-version               LLVM version"
+  echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
+  echo "-n|--nightly-version            Nightly Rust toolchain version"
   echo "-r|--rustup-home                Path to .rustup"
-  echo "-t|--toolchain-version          Rust toolchain version"
-  echo "-x|--clear-cache                Removes cached distribution files"
+  echo "-s|--esp-idf-version            ESP-IDF version.When empty, no esp-idf is installed. Default: \"\""
+  echo "-t|--toolchain-version          Xtensa Rust toolchain version"
+  echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
 }
 
 # Process positional arguments
@@ -41,6 +47,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     -b|--build-target)
       BUILD_TARGET="$2"
+      IFS=',' read -r -a ESP_BOARDS <<< "$BUILD_TARGET"
       shift # past argument
       shift # past value
       ;;
@@ -74,8 +81,23 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -m|--minified-esp-idf)
+      MINIFIED_ESP_IDF="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -n|--nightly-version)
+      NIGHTLY_VERSION="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -r|--rustup-home)
       RUSTUP_HOME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -s|--esp-idf-version)
+      ESP_IDF_VERSION="$2"
       shift # past argument
       shift # past value
       ;;
@@ -102,16 +124,20 @@ echo "Processing configuration:"
 echo "--build-target          = ${BUILD_TARGET}"
 echo "--cargo-home            = ${CARGO_HOME}"
 echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
+echo "--esp-idf-version       = ${ESP_IDF_VERSION}"
 echo "--export-file           = ${EXPORT_FILE}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
 echo "--llvm-version          = ${LLVM_VERSION}"
+echo "--minified-esp-idf      = ${MINIFIED_ESP_IDF}"
+echo "--nightly-version       = ${NIGHTLY_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
 
-function install_rust() {
-    curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
+function install_rustup() {
+    curl https://sh.rustup.rs -sSf | bash -s -- \
+        --default-toolchain none --profile minimal -y
 }
 
 function source_cargo() {
@@ -128,14 +154,10 @@ function source_cargo() {
     fi
 }
 
-function install_rust_toolchain() {
-    rustup toolchain install $1
-}
+# function install_rust_toolchain() {
+#     rustup toolchain install $1 --profile minimal --component rustfmt
+# }
 
-function install_rustfmt() {
-    rustup component add rustfmt --toolchain stable
-    rustup component add rustfmt --toolchain nightly
-}
 
 function install_rust_xtensa_toolchain() {
     if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
@@ -182,11 +204,53 @@ function clear_download_cache() {
   rm -f "${LLVM_FILE}"
 }
 
+function install_rust_riscv_toolchain() {
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+    --default-toolchain ${NIGHTLY_VERSION} \
+    --component rust-src \
+    --profile minimal \
+    --target riscv32i-unknown-none-elf -y
+}
+
+function install_extra_crates() {
+    if [[ ! -z "${EXTRA_CRATES}" ]]; then
+        for CRATE in ${EXTRA_CRATES}; do
+            echo "Installing additional extra crate: ${CRATE}"
+            if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
+                if [[ ! -e "${ESPFLASH_BIN}" ]]; then
+                    curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}.zip"
+                    unzip "${ESPFLASH_BIN}.zip" -d "${CARGO_HOME}/bin/"
+                    rm "${ESPFLASH_BIN}.zip"
+                    chmod u+x "${ESPFLASH_BIN}"
+                fi
+                echo "Using cargo-espflash binary release"
+            elif [ "${CRATE}" = "ldproxy" ] && [[ ! -z "${LDPROXY_URL}" ]]; then
+                if [[ ! -e "${LDPROXY_BIN}" ]]; then
+                    curl -L "${LDPROXY_URL}" -o "${LDPROXY_BIN}.xz"
+                    unxz "${LDPROXY_BIN}.xz"
+                    chmod u+x "${LDPROXY_BIN}"
+                fi
+                echo "Using ldproxy binary release"
+            elif [ "${CRATE}" = "espmonitor" ] && [[ ! -z "${ESPMONITOR_URL}" ]]; then
+                if [[ ! -e "${ESPMONITOR_BIN}" ]]; then
+                    curl -L "${ESPMONITOR_URL}" -o "${ESPMONITOR_BIN}.xz"
+                    unxz "${ESPMONITOR_BIN}.xz"
+                    chmod u+x "${ESPMONITOR_BIN}"
+                fi
+                echo "Using espmonitor binary release"
+            else
+                # DEBUG UNCOMMENT!!
+                # cargo install ${CRATE}
+                echo "DEBUG UNCOMENT"
+            fi
+        done
+    fi
+}
 set -e
 #set -v
 
 # Check required tooling - rustc, rustfmt
-command -v rustup || install_rust
+command -v rustup || install_rustup
 
 source_cargo
 
@@ -195,19 +259,12 @@ RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
 if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     echo "rustc version is too low, requires 1.${RUSTC_MINIMAL_MINOR_VERSION}"
     echo "calling rustup"
-    install_rust
+    install_rustup
 fi
 
-rustup toolchain list | grep stable || install_rust_toolchain stable
-rustup toolchain list | grep nightly || install_rust_toolchain nightly
-install_rustfmt
+# rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
-#ARCH="aarch64-apple-darwin"
-#ARCH="aarch64-unknown-linux-gnu"
-#ARCH="x86_64-apple-darwin"
-#ARCH="x86_64-unknown-linux-gnu"
-#ARCH="x86_64-pc-windows-msvc"
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 
 # Extra crates binary download support
@@ -256,9 +313,11 @@ RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
+
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
+
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
@@ -280,13 +339,29 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-# Install toolchain
-# - RISCV - requires just additional target for ESP32C3
-# - Xtensa - requires custom built toolchain with Xtensa support for ESP32, ESP32S2, ESP32S3
-if [ "${BUILD_TARGET}" == "esp32c3" ]; then
-    rustup component add rust-src --toolchain nightly
-else
-    install_rust_xtensa_toolchain
+XTENSA_INSTALLED=false
+RISCV_INSTALLED=false
+for BOARD in "${ESP_BOARDS[@]}"; do
+    if [ "${BOARD}" == "esp32c3" ] && [ ${RISCV_INSTALLED} == "false" ]; then
+        install_rust_riscv_toolchain
+        RISCV_INSTALLED=true
+    elif ([ "${BOARD}" == "esp32" ] || [ "${BOARD}" == "esp32s3" ] || [ "${BOARD}" == "esp32s2" ]) && ([ ${XTENSA_INSTALLED} == "false" ]); then
+        install_rust_xtensa_toolchain
+        XTENSA_INSTALLED=true
+    elif [ "${BOARD}" == "all" ]; then
+        install_rust_riscv_toolchain
+        RISCV_INSTALLED=true
+        install_rust_xtensa_toolchain
+        XTENSA_INSTALLED=true
+    elif [ "${BOARD}" != "esp32" ] && [ "${BOARD}" != "esp32s3" ] && [ "${BOARD}" != "esp32s2" ] && [ "${BOARD}" != "esp32c3" ] && [ "${BOARD}" != "all" ]; then
+        echo "Incorrect build target: ${BOARD}"
+        exit 0
+    fi
+done
+
+if [ "${RISCV_INSTALLED}" == "true" ]  && [ ${XTENSA_INSTALLED} == "false" ]; then
+    install_extra_crates
+    exit 0
 fi
 
 echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
@@ -302,39 +377,28 @@ else
     echo "already installed"
 fi
 
-if [[ ! -z "${EXTRA_CRATES}" ]]; then
-  for CRATE in ${EXTRA_CRATES}; do
-    echo "Installing additional extra crate: ${CRATE}"
-    if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
-      if [[ ! -e "${ESPFLASH_BIN}" ]]; then
-        curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}.zip"
-        unzip "${ESPFLASH_BIN}.zip" -d "${CARGO_HOME}/bin/"
-        rm "${ESPFLASH_BIN}.zip"
-        chmod u+x "${ESPFLASH_BIN}"
-      fi
-      echo "Using cargo-espflash binary release"
-    elif [ "${CRATE}" = "ldproxy" ] && [[ ! -z "${LDPROXY_URL}" ]]; then
-      if [[ ! -e "${LDPROXY_BIN}" ]]; then
-        curl -L "${LDPROXY_URL}" -o "${LDPROXY_BIN}.xz"
-        unxz "${LDPROXY_BIN}.xz"
-        chmod u+x "${LDPROXY_BIN}"
-      fi
-      echo "Using ldproxy binary release"
-    elif [ "${CRATE}" = "espmonitor" ] && [[ ! -z "${ESPMONITOR_URL}" ]]; then
-      if [[ ! -e "${ESPMONITOR_BIN}" ]]; then
-        curl -L "${ESPMONITOR_URL}" -o "${ESPMONITOR_BIN}.xz"
-        unxz "${ESPMONITOR_BIN}.xz"
-        chmod u+x "${ESPMONITOR_BIN}"
-      fi
-      echo "Using espmonitor binary release"
-    else
-      cargo install ${CRATE}
-    fi
-  done
-fi
+install_extra_crates
 
 if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
     clear_download_cache
+fi
+
+if [ "${ESP_IDF_VERSION}" != "" ]; then
+    mkdir -p ${IDF_TOOLS_PATH}/frameworks/
+    git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
+        --recursive https://github.com/espressif/esp-idf.git \
+        ${IDF_TOOLS_PATH}/frameworks/esp-idf
+    python3 ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/idf_tools.py install cmake
+    for BOARD in "${ESP_BOARDS[@]}"; do
+        ${IDF_TOOLS_PATH}/frameworks/esp-idf/install.sh ${BOARD}
+    done
+    if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
+        rm -rf ${IDF_TOOLS_PATH}/dist
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/examples
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/esp_app_trace
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/test_idf_size
+    fi
 fi
 
 PROFILE_NAME="your default shell"
@@ -343,16 +407,24 @@ if grep -q "zsh" <<< "$SHELL"; then
 elif grep -q "bash" <<< "$SHELL"; then
   PROFILE_NAME=~/.bashrc
 fi
+
 echo "Add following command to $PROFILE_NAME"
 echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
 echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 # Workaround of https://github.com/espressif/esp-idf/issues/7910
 echo export PIP_USER="no"
+if [ "${ESP_IDF_VERSION}" != "" ]; then
+    echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}
+    echo source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh
+fi
 
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
     echo export PIP_USER="no" >> "${EXPORT_FILE}"
+    if [ "${ESP_IDF_VERSION}" != "" ]; then
+        echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH} >> "${EXPORT_FILE}"
+        echo "source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
+    fi
 fi
-
