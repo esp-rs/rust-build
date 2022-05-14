@@ -20,7 +20,7 @@ display_help() {
   echo "-d|--toolchain-destination      Toolchain instalation folder."
   echo "-f|--export-file                Destination of the export file generated."
   echo "-c|--cargo-home                 Cargo path"
-  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: insatll"
+  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
   echo "-l|--llvm-version               LLVM version"
   echo "-r|--rustup-home                Path to .rustup"
   echo "-t|--toolchain-version          Rust toolchain version"
