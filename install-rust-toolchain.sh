@@ -11,6 +11,8 @@ ESP_BOARDS=""
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-14.0.0-20220415"
+GCC_PATCH="esp-2021r2-patch3"
+GCC_VERSION="8_4_0-esp-2021r2-patch3"
 NIGHTLY_VERSION="nightly"
 CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy cargo-espflash"
@@ -197,6 +199,9 @@ function clear_download_cache() {
 
   echo " - ${LLVM_FILE}"
   rm -f "${LLVM_FILE}"
+
+  echo " - ${GCC_FILE}"
+  rm -f "${GCC_FILE}"
 }
 
 function install_rust_riscv_toolchain() {
@@ -257,6 +262,7 @@ fi
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 
 # Extra crates binary download support
 ESPFLASH_URL=""
@@ -269,16 +275,19 @@ ESPMONITOR_URL=""
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LLVM_ARCH="${ARCH}"
+    GCC_ARCH="macos"
     # LLVM artifact is stored as part of Rust release
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     LLVM_ARCH="macos"
+    GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
+    GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -288,10 +297,12 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     LLVM_ARCH="${ARCH}"
+    GCC_ARCH="linux-arm64"
     # LLVM artifact is stored as part of Rust release
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LLVM_ARCH="win64"
+    GCC_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
 fi
@@ -305,11 +316,21 @@ LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g'
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
+
+GCC_FILE="xtensa-esp32-elf-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
+GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
+
+echo "GCC_FILE ${GCC_FILE}"
+echo "GCC_DIST_URL ${GCC_DIST_URL}"
+
+
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
 
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
+IDF_TOOL_XTENSA_ELF_GCC="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-gcc/${GCC_VERSION}-${ARCH}"
+
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
 if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ] ; then
@@ -320,6 +341,9 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
 
     echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
+
+    echo " - ${IDF_TOOL_XTENSA_ELF_GCC}"
+    rm -rf "${IDF_TOOL_XTENSA_ELF_GCC}"
 
     if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
         clear_download_cache
@@ -364,6 +388,24 @@ if [ ${XTENSA_INSTALLED} == "true" ]; then
     else
         echo "already installed"
     fi
+
+    if [ "${ESP_IDF_VERSION}" == "" ]; then
+        echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
+        if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
+            if [ ! -f "${GCC_FILE}" ]; then
+                echo "** Downloading ${GCC_DIST_URL}"
+                curl -LO "${GCC_DIST_URL}"
+            fi
+            mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
+            echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
+            pwd
+            tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
+            echo "done"
+        else
+            echo "already installed"
+        fi
+    fi
+
 fi
 
 install_extra_crates
@@ -401,7 +443,11 @@ fi
 
 echo "Add following command to $PROFILE_NAME"
 if [ ${XTENSA_INSTALLED} == "true" ]; then
-    echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
+    if [ "${ESP_IDF_VERSION}" == "" ]; then
+        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
+    else
+        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
+    fi
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
     # Workaround of https://github.com/espressif/esp-idf/issues/7910
     echo export PIP_USER="no"
@@ -413,7 +459,11 @@ fi
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     if [ ${XTENSA_INSTALLED} == "true" ]; then
-        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
+        if [ "${ESP_IDF_VERSION}" == "" ]; then
+            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
+        else
+            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
+        fi
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
         echo export PIP_USER="no" >> "${EXPORT_FILE}"
     fi
