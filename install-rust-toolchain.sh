@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Default values
-TOOLCHAIN_VERSION="1.60.0.1"
+TOOLCHAIN_VERSION="1.61.0.0"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -298,9 +298,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
+    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
     LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
