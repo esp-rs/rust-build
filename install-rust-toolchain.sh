@@ -261,6 +261,14 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
 fi
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
+
+# Possible values of ARCH
+#ARCH="aarch64-apple-darwin"
+#ARCH="aarch64-unknown-linux-gnu"
+#ARCH="x86_64-apple-darwin"
+#ARCH="x86_64-unknown-linux-gnu"
+#ARCH="x86_64-pc-windows-msvc"
+
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 
