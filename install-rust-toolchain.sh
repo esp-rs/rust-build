@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
-set -v
+#set -v
 
 # Default values
 TOOLCHAIN_VERSION="1.61.0.0"
@@ -20,6 +20,7 @@ CLEAR_DOWNLOAD_CACHE="NO"
 EXTRA_CRATES="ldproxy cargo-espflash"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
+IS_XTENSA_INSTALLED=0
 
 display_help() {
   echo "Usage: install-rust-toolchain.sh <arguments>"
@@ -408,12 +409,13 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-if [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
+if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
     install_rust_riscv_toolchain
 fi
 
-if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
+if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[$|,|\ ] ]]; then
     install_rust_xtensa_toolchain
+    IS_XTENSA_INSTALLED=1
 fi
 
 install_llvm_clang
@@ -432,7 +434,7 @@ elif grep -q "bash" <<< "$SHELL"; then
 fi
 
 echo "Add following command to $PROFILE_NAME"
-if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
+if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     if [ "${ESP_IDF_VERSION}" == "" ]; then
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
     else
@@ -450,7 +452,7 @@ fi
 
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
-    if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
+    if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
         if [ "${ESP_IDF_VERSION}" == "" ]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
         else
