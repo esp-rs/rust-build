@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+set -e
+set -v
+
 # Default values
 TOOLCHAIN_VERSION="1.61.0.0"
 if [ -z "${RUSTUP_HOME}" ]; then
@@ -7,7 +10,6 @@ if [ -z "${RUSTUP_HOME}" ]; then
 fi
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
-ESP_BOARDS=""
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
 LLVM_VERSION="esp-14.0.0-20220415"
@@ -49,7 +51,6 @@ while [[ $# -gt 0 ]]; do
       ;;
     -b|--build-target)
       BUILD_TARGET="$2"
-      IFS=',' read -r -a ESP_BOARDS <<< "$BUILD_TARGET"
       shift # past argument
       shift # past value
       ;;
@@ -156,13 +157,32 @@ function source_cargo() {
     fi
 }
 
+function install_esp_idf() {
+    if [ "${ESP_IDF_VERSION}" == "" ]; then
+        return
+    fi
+
+    mkdir -p ${IDF_TOOLS_PATH}/frameworks/
+    git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
+        --recursive https://github.com/espressif/esp-idf.git \
+        ${IDF_TOOLS_PATH}/frameworks/esp-idf
+    python3 ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/idf_tools.py install cmake
+    ${IDF_TOOLS_PATH}/frameworks/esp-idf/install.sh "${BUILD_TARGET}"
+    if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
+        rm -rf ${IDF_TOOLS_PATH}/dist
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/examples
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/esp_app_trace
+        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/test_idf_size
+    fi
+}
+
 function install_rust_xtensa_toolchain() {
     if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
         echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
         echo "Please, remove the directory before new installation."
         exit 1
     fi
-
 
     if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
         mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
@@ -181,6 +201,39 @@ function install_rust_xtensa_toolchain() {
         fi
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
     fi
+
+    if [ "${ESP_IDF_VERSION}" == "" ]; then
+        echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
+        if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
+            if [ ! -f "${GCC_FILE}" ]; then
+                echo "** Downloading ${GCC_DIST_URL}"
+                curl -LO "${GCC_DIST_URL}"
+            fi
+            mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
+            echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
+            pwd
+            tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
+            echo "done"
+        else
+            echo "already installed"
+        fi
+    fi
+}
+
+function install_llvm_clang() {
+    echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
+    if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
+        if [ ! -f "${LLVM_FILE}" ]; then
+            echo "** Downloading ${LLVM_DIST_URL}"
+            curl -LO "${LLVM_DIST_URL}"
+        fi
+        mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
+        tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
+        echo "done"
+    else
+        echo "already installed"
+    fi
+
 }
 
 function clear_download_cache() {
@@ -244,8 +297,6 @@ function install_extra_crates() {
         done
     fi
 }
-set -e
-#set -v
 
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rustup
@@ -357,84 +408,20 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-XTENSA_INSTALLED=false
-RISCV_INSTALLED=false
-for BOARD in "${ESP_BOARDS[@]}"; do
-    if [ "${BOARD}" == "esp32c3" ] && [ ${RISCV_INSTALLED} == "false" ]; then
-        install_rust_riscv_toolchain
-        RISCV_INSTALLED=true
-    elif ([ "${BOARD}" == "esp32" ] || [ "${BOARD}" == "esp32s3" ] || [ "${BOARD}" == "esp32s2" ]) && ([ ${XTENSA_INSTALLED} == "false" ]); then
-        install_rust_xtensa_toolchain
-        XTENSA_INSTALLED=true
-    elif [ "${BOARD}" == "all" ]; then
-        install_rust_riscv_toolchain
-        RISCV_INSTALLED=true
-        install_rust_xtensa_toolchain
-        XTENSA_INSTALLED=true
-    elif [ "${BOARD}" != "esp32" ] && [ "${BOARD}" != "esp32s3" ] && [ "${BOARD}" != "esp32s2" ] && [ "${BOARD}" != "esp32c3" ] && [ "${BOARD}" != "all" ]; then
-        echo "Incorrect build target: ${BOARD}"
-        exit 0
-    fi
-done
-
-
-if [ ${XTENSA_INSTALLED} == "true" ]; then
-    echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
-    if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
-        if [ ! -f "${LLVM_FILE}" ]; then
-            echo "** Downloading ${LLVM_DIST_URL}"
-            curl -LO "${LLVM_DIST_URL}"
-        fi
-        mkdir -p "${IDF_TOOL_XTENSA_ELF_CLANG}"
-        tar xf ${LLVM_FILE} -C "${IDF_TOOL_XTENSA_ELF_CLANG}" --strip-components=1
-        echo "done"
-    else
-        echo "already installed"
-    fi
-
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
-        echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
-        if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
-            if [ ! -f "${GCC_FILE}" ]; then
-                echo "** Downloading ${GCC_DIST_URL}"
-                curl -LO "${GCC_DIST_URL}"
-            fi
-            mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
-            echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
-            pwd
-            tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
-            echo "done"
-        else
-            echo "already installed"
-        fi
-    fi
-
+if [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
+    install_rust_riscv_toolchain
 fi
 
+if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
+    install_rust_xtensa_toolchain
+fi
+
+install_llvm_clang
+install_esp_idf
 install_extra_crates
 
-if [ ${XTENSA_INSTALLED} == "true" ]; then
-    if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
-        clear_download_cache
-    fi
-fi
-
-if [ "${ESP_IDF_VERSION}" != "" ]; then
-    mkdir -p ${IDF_TOOLS_PATH}/frameworks/
-    git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
-        --recursive https://github.com/espressif/esp-idf.git \
-        ${IDF_TOOLS_PATH}/frameworks/esp-idf
-    python3 ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/idf_tools.py install cmake
-    for BOARD in "${ESP_BOARDS[@]}"; do
-        ${IDF_TOOLS_PATH}/frameworks/esp-idf/install.sh ${BOARD}
-    done
-    if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
-        rm -rf ${IDF_TOOLS_PATH}/dist
-        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
-        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/examples
-        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/esp_app_trace
-        rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/test_idf_size
-    fi
+if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+    clear_download_cache
 fi
 
 PROFILE_NAME="your default shell"
@@ -445,7 +432,7 @@ elif grep -q "bash" <<< "$SHELL"; then
 fi
 
 echo "Add following command to $PROFILE_NAME"
-if [ ${XTENSA_INSTALLED} == "true" ]; then
+if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
     if [ "${ESP_IDF_VERSION}" == "" ]; then
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
     else
@@ -455,13 +442,15 @@ if [ ${XTENSA_INSTALLED} == "true" ]; then
     # Workaround of https://github.com/espressif/esp-idf/issues/7910
     echo export PIP_USER="no"
 fi
+
 if [ "${ESP_IDF_VERSION}" != "" ]; then
     echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}
     echo source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh
 fi
+
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
-    if [ ${XTENSA_INSTALLED} == "true" ]; then
+    if [[ "${BUILD_TARGET}" =~ 'esp32s[2|3]' || "${BUILD_TARGET}" =~ 'esp32[$|,| ]' ]]; then
         if [ "${ESP_IDF_VERSION}" == "" ]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
         else
