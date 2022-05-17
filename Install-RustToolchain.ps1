@@ -89,7 +89,8 @@ $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmVersi
 $LlvmArch="win64"
 $LlvmArtifactVersion=$LlvmVersion.Substring(4).Substring(0,6).Replace(".","_")
 $LlvmFile="xtensa-esp32-elf-llvm${LlvmArtifactVersion}-${LlvmVersion}-${LlvmArch}.zip"
-$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmVersion}/${LlvmFile}"
+#$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmVersion}/${LlvmFile}"
+$LlvmUrl="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified/${LlvmFile}"
 
 # Only export variables
 if ("export" -eq $InstallationMode) {

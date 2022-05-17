@@ -269,7 +269,10 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
 
-LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+#LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
+LLVM_ARCH="${ARCH}"
+
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 
 # Extra crates binary download support
@@ -282,34 +285,26 @@ ESPMONITOR_URL=""
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
-    LLVM_ARCH="${ARCH}"
     GCC_ARCH="macos"
-    # LLVM artifact is stored as part of Rust release
-    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
-    LLVM_ARCH="macos"
+    #LLVM_ARCH="macos"
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
-    LLVM_ARCH="${ARCH}"
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.0/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
+    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.0/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
-    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
-    LLVM_ARCH="${ARCH}"
     GCC_ARCH="linux-arm64"
-    # LLVM artifact is stored as part of Rust release
-    LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
-    LLVM_ARCH="win64"
+    #LLVM_ARCH="win64"
     GCC_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
