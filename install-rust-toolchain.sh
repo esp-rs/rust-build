@@ -144,6 +144,14 @@ function install_rustup() {
         --default-toolchain none --profile minimal -y
 }
 
+function install_rust() {
+    curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
+}
+
+function install_rust_toolchain() {
+    rustup toolchain install $1
+}
+
 function source_cargo() {
     if [ -e "${HOME}/.cargo/env" ]; then
         source "${HOME}/.cargo/env"
@@ -303,6 +311,10 @@ function install_extra_crates() {
 command -v rustup || install_rustup
 
 source_cargo
+
+# Deploy missing toolchains - Xtensa toolchain should be used on top of these
+rustup toolchain list | grep stable || install_rust_toolchain stable
+rustup toolchain list | grep nightly || install_rust_toolchain nightly
 
 # Check minimal rustc version
 RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
