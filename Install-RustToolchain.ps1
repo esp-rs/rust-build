@@ -20,8 +20,6 @@ $ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
 $RustcMinimalMinorVersion="55"
-$EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
-$EspFlashBin="${env:USERPROFILE}\.cargo\bin\cargo-espflash.exe"
 
 "Processing configuration:"
 "-InstalltationMode    = ${InstallationMode}"
@@ -82,6 +80,8 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
 }
 
 $Arch="x86_64-pc-windows-msvc"
+$EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${Arch}.zip"
+$CargoBin="${env:USERPROFILE}\.cargo\bin\"
 $RustDist="rust-${ToolchainVersion}-${Arch}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
 $IdfToolsPath="${HOME}/.espressif"
@@ -155,7 +155,9 @@ cargo install ldproxy
 # Install espflash from binary archive
 if (-Not (Test-Path $EspFlashBin -PathType Leaf)) {
     "** installing cargo-espflash from $EspFlashUrl to $EspFlashBin"
-    Invoke-WebRequest $EspFlashUrl -OutFile $EspFlashBin
+    Invoke-WebRequest $EspFlashUrl -OutFile ${EspFlashBin}.zip
+    Expand-Archive ${EspFlashBin}.zip -DestinationPath $CargoBin
+    Remove-Item -Path ${EspFlashBin}.zip
 }
 
 ExportVariables
