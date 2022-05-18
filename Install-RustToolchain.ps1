@@ -81,7 +81,8 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
 
 $Arch="x86_64-pc-windows-msvc"
 $EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${Arch}.zip"
-$CargoBin="${env:USERPROFILE}\.cargo\bin\"
+$CargoBin="${env:USERPROFILE}\.cargo\bin"
+$EspFlashBin="${CargoBin}\cargo-espflash.exe"
 $RustDist="rust-${ToolchainVersion}-${Arch}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
 $IdfToolsPath="${HOME}/.espressif"
