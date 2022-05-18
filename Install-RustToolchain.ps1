@@ -156,9 +156,9 @@ cargo install ldproxy
 # Install espflash from binary archive
 if (-Not (Test-Path $EspFlashBin -PathType Leaf)) {
     "** installing cargo-espflash from $EspFlashUrl to $EspFlashBin"
-    Invoke-WebRequest $EspFlashUrl -OutFile ${EspFlashBin}.zip
-    Expand-Archive ${EspFlashBin}.zip -DestinationPath $CargoBin
-    Remove-Item -Path ${EspFlashBin}.zip
+    Invoke-WebRequest $EspFlashUrl -OutFile "${EspFlashBin}.zip"
+    Expand-Archive "${EspFlashBin}.zip" -DestinationPath $CargoBin
+    Remove-Item -Path "${EspFlashBin}.zip"
 }
 
 ExportVariables
