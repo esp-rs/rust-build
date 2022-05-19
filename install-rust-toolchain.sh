@@ -172,7 +172,7 @@ function install_esp_idf() {
     fi
 
     mkdir -p ${IDF_TOOLS_PATH}/frameworks/
-    NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-'`
+    NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g'`
     export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
     git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
         --recursive https://github.com/espressif/esp-idf.git \
