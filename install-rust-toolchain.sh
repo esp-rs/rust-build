@@ -177,8 +177,8 @@ function install_esp_idf() {
     git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
         --recursive https://github.com/espressif/esp-idf.git \
         "${IDF_PATH}"
-    python3 ${IDF_PATH}/idf_tools.py install cmake
     ${IDF_PATH}/install.sh "${BUILD_TARGET}"
+    python3 ${IDF_PATH}/tools/idf_tools.py install cmake
     if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
         rm -rf ${IDF_TOOLS_PATH}/dist
         rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
