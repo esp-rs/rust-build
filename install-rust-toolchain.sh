@@ -167,7 +167,7 @@ function source_cargo() {
 }
 
 function install_esp_idf() {
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
+    if [ -z "${ESP_IDF_VERSION}" ]; then
         return
     fi
 
