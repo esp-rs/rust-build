@@ -280,7 +280,7 @@ function install_crate_from_zip() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
 
-    if [[ -z "${ESPFLASH_URL}" ]]; then
+    if [[ -z "${CRATE_URL}" ]]; then
         cargo install ${CRATE_BIN}
         return
     fi
