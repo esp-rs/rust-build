@@ -445,7 +445,7 @@ if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
     install_rust_riscv_toolchain
 fi
 
-if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[$|,|\ ] ]]; then
+if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     install_rust_xtensa_toolchain
     IS_XTENSA_INSTALLED=1
 fi
