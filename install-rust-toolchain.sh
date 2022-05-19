@@ -172,11 +172,13 @@ function install_esp_idf() {
     fi
 
     mkdir -p ${IDF_TOOLS_PATH}/frameworks/
+    NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-'`
+    export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
     git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
         --recursive https://github.com/espressif/esp-idf.git \
-        ${IDF_TOOLS_PATH}/frameworks/esp-idf
-    python3 ${IDF_TOOLS_PATH}/frameworks/esp-idf/tools/idf_tools.py install cmake
-    ${IDF_TOOLS_PATH}/frameworks/esp-idf/install.sh "${BUILD_TARGET}"
+        "${IDF_PATH}"
+    python3 ${IDF_PATH}/idf_tools.py install cmake
+    ${IDF_PATH}/install.sh "${BUILD_TARGET}"
     if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
         rm -rf ${IDF_TOOLS_PATH}/dist
         rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
@@ -472,12 +474,12 @@ if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     fi
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
     # Workaround of https://github.com/espressif/esp-idf/issues/7910
-    echo export PIP_USER="no"
+    echo 'export PIP_USER="no"'
 fi
 
 if [ "${ESP_IDF_VERSION}" != "" ]; then
-    echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}
-    echo source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh
+    echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
+    echo "source ${IDF_PATH}/export.sh"
 fi
 
 # Store export instructions in the file
@@ -489,10 +491,10 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
         fi
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
-        echo export PIP_USER="no" >> "${EXPORT_FILE}"
+        echo 'export PIP_USER="no"' >> "${EXPORT_FILE}"
     fi
     if [ "${ESP_IDF_VERSION}" != "" ]; then
-        echo export IDF_TOOLS_PATH=${IDF_TOOLS_PATH} >> "${EXPORT_FILE}"
-        echo "source ${IDF_TOOLS_PATH}/frameworks/esp-idf/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
+        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >> "${EXPORT_FILE}"
+        echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
     fi
 fi
