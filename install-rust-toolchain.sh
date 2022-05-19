@@ -274,36 +274,54 @@ function install_rust_riscv_toolchain() {
     --target riscv32i-unknown-none-elf -y
 }
 
+function install_crate_from_zip() {
+    CRATE_URL="$1"
+    CRATE_BIN="$2"
+
+    if [[ -z "${ESPFLASH_URL}" ]]; then
+        cargo install ${CRATE_BIN}
+        return
+    fi
+
+    if [[ ! -e "${CRATE_BIN}" ]]; then
+        echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.zip"
+        curl -L "${CRATE_URL}" -o "${CRATE_BIN}.zip"
+        unzip "${CRATE_BIN}.zip" -d "${CARGO_HOME}/bin/"
+        rm "${CRATE_BIN}.zip"
+        chmod u+x "${CRATE_BIN}"
+        echo "Using ${CRATE_BIN} binary release"
+    fi
+}
+
+function install_crate_from_xz() {
+    CRATE_URL="$1"
+    CRATE_BIN="$2"
+
+    if [[ -z "${ESPFLASH_URL}" ]]; then
+        cargo install ${CRATE_BIN}
+        return
+    fi
+
+    if [[ ! -e "${CRATE_BIN}" ]]; then
+        echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.xz"
+        curl -L "${CRATE_URL}" -o "${CRATE_BIN}.xz"
+        unxz "${CRATE_BIN}.xz"
+        chmod u+x "${CRATE_BIN}"
+        echo "Using ${CRATE_BIN} binary release"
+    fi
+}
+
 function install_extra_crates() {
-    if [[ ! -z "${EXTRA_CRATES}" ]]; then
-        for CRATE in ${EXTRA_CRATES}; do
-            echo "Installing additional extra crate: ${CRATE}"
-            if [ "${CRATE}" = "cargo-espflash" ] && [[ ! -z "${ESPFLASH_URL}" ]]; then
-                if [[ ! -e "${ESPFLASH_BIN}" ]]; then
-                    curl -L "${ESPFLASH_URL}" -o "${ESPFLASH_BIN}.zip"
-                    unzip "${ESPFLASH_BIN}.zip" -d "${CARGO_HOME}/bin/"
-                    rm "${ESPFLASH_BIN}.zip"
-                    chmod u+x "${ESPFLASH_BIN}"
-                fi
-                echo "Using cargo-espflash binary release"
-            elif [ "${CRATE}" = "ldproxy" ] && [[ ! -z "${LDPROXY_URL}" ]]; then
-                if [[ ! -e "${LDPROXY_BIN}" ]]; then
-                    curl -L "${LDPROXY_URL}" -o "${LDPROXY_BIN}.xz"
-                    unxz "${LDPROXY_BIN}.xz"
-                    chmod u+x "${LDPROXY_BIN}"
-                fi
-                echo "Using ldproxy binary release"
-            elif [ "${CRATE}" = "espmonitor" ] && [[ ! -z "${ESPMONITOR_URL}" ]]; then
-                if [[ ! -e "${ESPMONITOR_BIN}" ]]; then
-                    curl -L "${ESPMONITOR_URL}" -o "${ESPMONITOR_BIN}.xz"
-                    unxz "${ESPMONITOR_BIN}.xz"
-                    chmod u+x "${ESPMONITOR_BIN}"
-                fi
-                echo "Using espmonitor binary release"
-            else
-                cargo install ${CRATE}
-            fi
-        done
+    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]]; then
+        install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]; then
+        install_crate_from_xz "${LDPROXY_URL}" "${LDPROXY_BIN}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]; then
+        install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
     fi
 }
 
@@ -361,9 +379,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.0/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.0/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
+    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
