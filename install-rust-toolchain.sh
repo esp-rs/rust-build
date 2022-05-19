@@ -280,6 +280,10 @@ function install_crate_from_zip() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
 
+    if [[ -z "${CRATE_BIN}" ]]; then
+        return
+    fi
+
     if [[ -z "${CRATE_URL}" ]]; then
         cargo install ${CRATE_BIN}
         return
@@ -298,6 +302,10 @@ function install_crate_from_zip() {
 function install_crate_from_xz() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
+
+    if [[ -z "${CRATE_BIN}" ]]; then
+        return
+    fi
 
     if [[ -z "${CRATE_URL}" ]]; then
         cargo install ${CRATE_BIN}
