@@ -155,13 +155,13 @@ function install_rust_toolchain() {
 function source_cargo() {
     if [ -e "${HOME}/.cargo/env" ]; then
         source "${HOME}/.cargo/env"
-        export CARGO_HOME="${HOME}/.cargo/"
+        export CARGO_HOME="${HOME}/.cargo"
     else
         if [ -n "${CARGO_HOME}" ] && [ -e "${CARGO_HOME}/env" ]; then
             source ${CARGO_HOME}/env
         else
 	    echo "Warning: Unable to source .cargo/env"
-            export CARGO_HOME="${HOME}/.cargo/"
+            export CARGO_HOME="${HOME}/.cargo"
         fi
     fi
 }
@@ -414,10 +414,6 @@ LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
 GCC_FILE="xtensa-esp32-elf-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
 GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
-
-echo "GCC_FILE ${GCC_FILE}"
-echo "GCC_DIST_URL ${GCC_DIST_URL}"
-
 
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
