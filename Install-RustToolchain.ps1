@@ -4,7 +4,7 @@ param (
     [String]
     $ExportFile = '',
     [String]
-    $ToolchainVersion = '1.60.0.1',
+    $ToolchainVersion = '1.61.0.0',
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
@@ -20,8 +20,6 @@ $ProgressPreference = 'SilentlyContinue'
 $ExportContent = ""
 #Set-PSDebug -Trace 1
 $RustcMinimalMinorVersion="55"
-$EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash.exe"
-$EspFlashBin="${env:USERPROFILE}\.cargo\bin\cargo-espflash.exe"
 
 "Processing configuration:"
 "-InstalltationMode    = ${InstallationMode}"
@@ -82,14 +80,18 @@ if ((rustfmt --version | Select-String -Pattern stable).Length -eq 0) {
 }
 
 $Arch="x86_64-pc-windows-msvc"
+$EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${Arch}.zip"
+$CargoBin="${env:USERPROFILE}\.cargo\bin"
+$EspFlashBin="${CargoBin}\cargo-espflash.exe"
 $RustDist="rust-${ToolchainVersion}-${Arch}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
 $IdfToolsPath="${HOME}/.espressif"
 $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmVersion}-${Arch}"
-$LlvmArch="win64"
+$LlvmArch="x86_64-pc-windows-msvc"
 $LlvmArtifactVersion=$LlvmVersion.Substring(4).Substring(0,6).Replace(".","_")
 $LlvmFile="xtensa-esp32-elf-llvm${LlvmArtifactVersion}-${LlvmVersion}-${LlvmArch}.zip"
-$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmVersion}/${LlvmFile}"
+#$LlvmUrl="https://github.com/espressif/llvm-project/releases/download/${LlvmVersion}/${LlvmFile}"
+$LlvmUrl="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified/${LlvmFile}"
 
 # Only export variables
 if ("export" -eq $InstallationMode) {
@@ -154,7 +156,9 @@ cargo install ldproxy
 # Install espflash from binary archive
 if (-Not (Test-Path $EspFlashBin -PathType Leaf)) {
     "** installing cargo-espflash from $EspFlashUrl to $EspFlashBin"
-    Invoke-WebRequest $EspFlashUrl -OutFile $EspFlashBin
+    Invoke-WebRequest $EspFlashUrl -OutFile "${EspFlashBin}.zip"
+    Expand-Archive "${EspFlashBin}.zip" -DestinationPath $CargoBin
+    Remove-Item -Path "${EspFlashBin}.zip"
 }
 
 ExportVariables

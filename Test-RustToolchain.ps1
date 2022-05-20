@@ -2,7 +2,7 @@
 param (
     [Parameter()]
     [String]
-    $ToolchainVersion = '1.60.0.1',
+    $ToolchainVersion = '1.61.0.0',
     [String]
     [ValidateSet("xtensa-esp32-espidf", "xtensa-esp32s2-espidf", "xtensa-esp32s3-espidf", "riscv32imc-esp-espidf")]
     $Target = "xtensa-esp32-espidf",

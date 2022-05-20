@@ -22,6 +22,24 @@ This repository contains:
 
 ## Xtensa Installation
 
+Download installer from Release section: https://github.com/esp-rs/rust-build/releases/tag/v1.61.0.0
+
+### Download installer
+
+#### Download installer in Bash
+
+```bash
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/install-rust-toolchain.sh
+chmod a+x install-rust-toolchain.sh
+```
+
+
+#### Download installer in PowerShell
+
+```powershell
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+```
+
 ### Linux and macOS
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
@@ -75,7 +93,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```
-./Install-RustToolchain.sh --toolchain-version 1.60.0.1 --export-file Export-EspRust.ps1
+./Install-RustToolchain.sh --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 
