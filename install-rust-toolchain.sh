@@ -324,14 +324,21 @@ function install_crate_from_xz() {
 function install_extra_crates() {
     if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]; then
         install_crate_from_xz "${LDPROXY_URL}" "${LDPROXY_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]; then
         install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/espmonitor/}"
+    fi
+
+    if ! [[ -z "${EXTRA_CRATES// }" ]];then
+       cargo install $EXTRA_CRATES
     fi
 }
 
