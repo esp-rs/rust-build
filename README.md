@@ -113,7 +113,11 @@ rustup target add riscv32i-unknown-none-elf
     git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
     cd rust-esp32-std-demo/
     ```
-2. Build and flash:
+2. Set esp toolchain as default:
+    ```sh
+    rustup default esp
+    ```
+3. Build and flash:
     ```sh
     cargo espflash --target <TARGET> <SERIAL>
     ```
