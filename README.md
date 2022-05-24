@@ -57,11 +57,16 @@ No prerequisites are needed for macOS
 #### Installation commands
 
 ```sh
-./install-rust-toolchain.sh
+$ git clone https://github.com/esp-rs/rust-build.git
+$ cd rust-build
+$ ./install-rust-toolchain.sh
 ```
+
 > Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
 Export variables are displayed at the end of the script.
+> **Note**
+> If the export variables are added into the shell startup script, the shell may need to be refreshed.
 
 ### Windows x64
 
@@ -125,6 +130,16 @@ rustup target add riscv32i-unknown-none-elf
 
     And `SERIAL` is the serial port connected to the target device.
     > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+
+    When building for Xtensa targets, we need to [override the `esp` toolchain](https://rust-lang.github.io/rustup/overrides.html), there are several solutions:
+      - Set `esp` toolchain as default: `rustup default esp`
+      - Use `cargo +esp`
+      - Override the project directory: `rustup override set esp`
+      - Create a file called `rust-toolchain.toml` or `rust-toolchain` with:
+        ```toml
+        [toolchain]
+        channel = "esp"
+        ```
 #### Idf first approach
 
 1. Get example source code
