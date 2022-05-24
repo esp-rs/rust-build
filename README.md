@@ -90,17 +90,12 @@ choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
 #### Installation commands for PowerShell
 
 ```sh
-./Install-RustToolchain.ps1
+$ git clone https://github.com/esp-rs/rust-build.git
+$ cd rust-build
+$ ./Install-RustToolchain.ps1
 ```
 
 Export variables are displayed at the end of the output from the script.
-
-Installation of different version of toolchain:
-
-```
-./Install-RustToolchain.sh --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
-source ./Export-EspRust.ps1
-```
 
 ## RiscV Installation
 Following instructions are specific for ESP32-C based on RiscV architecture.
