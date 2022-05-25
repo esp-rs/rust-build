@@ -321,6 +321,28 @@ function install_crate_from_xz() {
     fi
 }
 
+function install_crate_from_tar_gz() {
+    CRATE_URL="$1"
+    CRATE_BIN="$2"
+
+    if [[ -z "${CRATE_BIN}" ]]; then
+        return
+    fi
+
+    if [[ -z "${CRATE_URL}" ]]; then
+        cargo install ${CRATE_BIN}
+        return
+    fi
+
+    if [[ ! -e "${CRATE_BIN}" ]]; then
+        echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.tar.gz"
+        curl -L "${CRATE_URL}" -o "${CRATE_BIN}.tar.gz"
+        tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        chmod u+x "${CRATE_BIN}"
+        echo "Using ${CRATE_BIN} binary release"
+    fi
+}
+
 function install_extra_crates() {
     if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
@@ -335,6 +357,11 @@ function install_extra_crates() {
     if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]; then
         install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/espmonitor/}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
@@ -381,6 +408,9 @@ LDPROXY_URL=""
 LDPROXY_BIN=""
 ESPMONITOR_BIN=""
 ESPMONITOR_URL=""
+GENERATE_URL=""
+GENERATE_BIN=""
+GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
@@ -392,6 +422,8 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
@@ -400,6 +432,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
+    # cargo-generate does not have gnu package. See https://github.com/cargo-generate/cargo-generate/pull/602
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
@@ -407,6 +442,8 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     GCC_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
