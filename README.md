@@ -55,10 +55,12 @@ Instructions for ESP-C series based on RISC-V architecture are described in [Ris
 
 - Linux:
   - dependencies (command for Ubuntu/Debian):
+  
     ```sh
     apt-get install -y git curl gcc ninja-build cmake libudev-dev \
       python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
     ```
+
 No prerequisites are needed for macOS
 
 #### Installation commands
@@ -66,6 +68,7 @@ No prerequisites are needed for macOS
 ```sh
 ./install-rust-toolchain.sh
 ```
+
 > Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
 Export variables are displayed at the end of the script.
@@ -84,7 +87,7 @@ Instructions for ESP-C series based on RISC-V architecture are described  in [Ri
 
 Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
 
-```
+```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
 choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
 ```
@@ -99,7 +102,7 @@ Export variables are displayed at the end of the output from the script.
 
 Installation of different version of toolchain:
 
-```
+```sh
 ./Install-RustToolchain.sh --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
@@ -119,14 +122,18 @@ rustup target add riscv32i-unknown-none-elf
 ### Cargo first approach
 
 1. Get example source code
+
     ```sh
     git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
     cd rust-esp32-std-demo/
     ```
+
 2. Build and flash:
+
     ```sh
     cargo espflash --target <TARGET> <SERIAL>
     ```
+
     Where `TARGET` can be:
 
     - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
@@ -140,14 +147,18 @@ rustup target add riscv32i-unknown-none-elf
 ### Idf first approach
 
 1. Get example source code
+
     ```sh
     git clone https://github.com/espressif/rust-esp32-example.git
     cd rust-esp32-example-main
     ```
+
 2. Select architecture for the build
+
     ```sh
     idf.py set-target <TARGET>
     ```
+
     Where `TARGET` can be:
 
     - `esp32` for the ESP32(Xtensa architecture). [Default]
@@ -155,6 +166,7 @@ rustup target add riscv32i-unknown-none-elf
     - `esp32s3` for the ESP32-S3(Xtensa architecture).
 
 3. Build and flash
+
     ```sh
     idf.py build flash
     ```
@@ -168,13 +180,13 @@ Alternatively, some container images, with pre-installed Rust and ESP-IDF, are p
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
 
-```
+```sh
 podman run --device /dev/ttyUSB0 --device /dev/ttyUSB1 -it docker.io/espressif/idf-rust-examples
 ```
 
 Docker (does not support flashing from container):
 
-```
+```sh
 docker run -it espressif/idf-rust-examples
 ```
 
