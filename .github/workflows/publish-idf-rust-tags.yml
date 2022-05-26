@@ -41,7 +41,7 @@ jobs:
         name: Build and push - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag
         uses: docker/build-push-action@v2
         with:
-          file: idf-rust.Dockerfile
+          file: idf-rust.Containerfile
           build-args: |
             XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
             ESP_IDF_VERSION=${{ matrix.esp-idf }}
