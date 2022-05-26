@@ -39,7 +39,6 @@ curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/instal
 chmod a+x install-rust-toolchain.sh
 ```
 
-
 #### Download installer in PowerShell
 
 ```powershell
@@ -53,6 +52,7 @@ Following instructions are specific for ESP32 and ESP32-S series based on Xtensa
 Instructions for ESP-C series based on RISC-V architecture are described in [RiscV section](#riscv-installation).
 
 #### Prerequisites
+
 - Linux:
   - dependencies (command for Ubuntu/Debian):
     ```sh
@@ -60,6 +60,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [Ris
       python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
     ```
 No prerequisites are needed for macOS
+
 #### Installation commands
 
 ```sh
@@ -104,6 +105,7 @@ source ./Export-EspRust.ps1
 ```
 
 ## RiscV Installation
+
 Following instructions are specific for ESP32-C based on RiscV architecture.
 
 Install the RISCV target for Rust:
@@ -113,7 +115,9 @@ rustup target add riscv32i-unknown-none-elf
 ```
 
 ## Building projects
-#### Cargo first approach
+
+### Cargo first approach
+
 1. Get example source code
     ```sh
     git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
@@ -132,7 +136,8 @@ rustup target add riscv32i-unknown-none-elf
 
     And `SERIAL` is the serial port connected to the target device.
     > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
-#### Idf first approach
+
+### Idf first approach
 
 1. Get example source code
     ```sh
@@ -174,7 +179,8 @@ docker run -it espressif/idf-rust-examples
 ```
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
-## Devcontainers
+
+## Dev-Containers
 
 There is also the option to integrate with Visual Studio Code using [remote containers](https://code.visualstudio.com/docs/remote/containers). With this method,
 we would have a fully working environment to build projects in Rust for ESP boards
