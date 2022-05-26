@@ -1,24 +1,30 @@
 # rust-build
 
 This repository contains:
+
 - workflows for building Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
 - binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
 
 ## Table of Contents
 
-- [Xtensa Installation](#xtensa-installation)
-  - [Linux and macOS](#linux-and-macos)
-    - [Prerequisites](#prerequisites)
-    - [Installation commands](#installation-commands)
-  - [Windows x64](#windows-x64)
-    - [Prerequisites](#prerequisites-1)
-    - [Installation commands for PowerShell](#installation-commands-for-powershell)
-- [RiscV Installation](#riscv-installation)
-- [Building projects](#building-projects)
+- [rust-build](#rust-build)
+  - [Table of Contents](#table-of-contents)
+  - [Xtensa Installation](#xtensa-installation)
+    - [Download installer](#download-installer)
+      - [Download installer in Bash](#download-installer-in-bash)
+      - [Download installer in PowerShell](#download-installer-in-powershell)
+    - [Linux and macOS](#linux-and-macos)
+      - [Prerequisites](#prerequisites)
+      - [Installation commands](#installation-commands)
+    - [Windows x64](#windows-x64)
+      - [Prerequisites](#prerequisites-1)
+      - [Installation commands for PowerShell](#installation-commands-for-powershell)
+  - [RiscV Installation](#riscv-installation)
+  - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
-- [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
-- [Devcontainers](#devcontainers)
+  - [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
+  - [Dev-Containers](#dev-containers)
 
 ## Xtensa Installation
 
@@ -118,6 +124,7 @@ rustup target add riscv32i-unknown-none-elf
     cargo espflash --target <TARGET> <SERIAL>
     ```
     Where `TARGET` can be:
+
     - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
     - `xtensa-esp32s2-espidf` for the ESP32-S2(Xtensa architecture).
     - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
@@ -137,9 +144,11 @@ rustup target add riscv32i-unknown-none-elf
     idf.py set-target <TARGET>
     ```
     Where `TARGET` can be:
+
     - `esp32` for the ESP32(Xtensa architecture). [Default]
     - `esp32s2` for the ESP32-S2(Xtensa architecture).
     - `esp32s3` for the ESP32-S3(Xtensa architecture).
+
 3. Build and flash
     ```sh
     idf.py build flash
