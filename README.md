@@ -142,6 +142,7 @@ rustup target add riscv32i-unknown-none-elf
     - `riscv32imc-esp-espidf` for the ESP32-C3(RiscV architecture).
 
     And `SERIAL` is the serial port connected to the target device.
+
     > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
 
 ### Idf first approach
