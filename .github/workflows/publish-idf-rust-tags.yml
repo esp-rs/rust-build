@@ -45,7 +45,7 @@ jobs:
           build-args: |
             XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
             ESP_IDF_VERSION=${{ matrix.esp-idf }}
-            ESP_BOARD=${{ matrix.board }
+            ESP_BOARD=${{ matrix.board }}
           context: .
           platforms: linux/amd64, linux/arm64
           push: true
