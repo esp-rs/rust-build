@@ -27,7 +27,7 @@ display_help() {
   echo "Arguments: "
   echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
   echo "-c|--cargo-home                 Cargo path"
-  echo "-d|--toolchain-destination      Toolchain instalation folder."
+  echo "-d|--toolchain-destination      Toolchain installation folder."
   echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
   echo "-f|--export-file                Destination of the export file generated."
   echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
@@ -35,7 +35,7 @@ display_help() {
   echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
   echo "-n|--nightly-version            Nightly Rust toolchain version"
   echo "-r|--rustup-home                Path to .rustup"
-  echo "-s|--esp-idf-version            ESP-IDF version.When empty, no esp-idf is installed. Default: \"\""
+  echo "-s|--esp-idf-version            ESP-IDF version. When empty, no esp-idf is installed. Default: \"\""
   echo "-t|--toolchain-version          Xtensa Rust toolchain version"
   echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
 }
