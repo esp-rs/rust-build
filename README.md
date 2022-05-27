@@ -20,22 +20,6 @@ This repository contains:
 - [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
 - [Devcontainers](#devcontainers)
 
-
-## Arguments
-- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3`]. Defaults to: `esp32,esp32s2,esp32s3`
-- `-c|--cargo-home`: Cargo path.
-- `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
-- `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
-- `-f|--export-file`: Destination of the export file generated.
-- `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
-- `-l|--llvm-version`: LLVM version.
-- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]
-- `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
-- `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
-- `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
-- `-t|--toolchain-version`: Xtensa Rust toolchain version
-- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]
-
 ## Xtensa Installation
 
 Download installer from Release section: https://github.com/esp-rs/rust-build/releases/tag/v1.61.0.0
@@ -73,16 +57,36 @@ No prerequisites are needed for macOS
 #### Installation commands
 
 ```sh
-$ git clone https://github.com/esp-rs/rust-build.git
-$ cd rust-build
-$ ./install-rust-toolchain.sh
+git clone https://github.com/esp-rs/rust-build.git
+cd rust-build
+./install-rust-toolchain.sh
 ```
-
-> Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
 Export variables are displayed at the end of the script.
 > **Note**
 > If the export variables are added into the shell startup script, the shell may need to be refreshed.
+
+Installation of different version of toolchain:
+
+```
+./install-rust-toolchain.sh --toolchain-version 1.61.0.0 --export-file export-esp-rust.sh
+source export-esp-rust.sh
+```
+
+#### Arguments
+- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3`]. Defaults to: `esp32,esp32s2,esp32s3`
+- `-c|--cargo-home`: Cargo path.
+- `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
+- `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
+- `-f|--export-file`: Destination of the export file generated.
+- `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
+- `-l|--llvm-version`: LLVM version.
+- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]
+- `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
+- `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
+- `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
+- `-t|--toolchain-version`: Xtensa Rust toolchain version
+- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]
 
 ### Windows x64
 
@@ -106,12 +110,19 @@ choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
 #### Installation commands for PowerShell
 
 ```sh
-$ git clone https://github.com/esp-rs/rust-build.git
-$ cd rust-build
-$ ./Install-RustToolchain.ps1
+git clone https://github.com/esp-rs/rust-build.git
+cd rust-build
+./Install-RustToolchain.ps1
 ```
 
 Export variables are displayed at the end of the output from the script.
+
+Installation of different version of toolchain:
+
+```
+./Install-RustToolchain.ps1 --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
+source ./Export-EspRust.ps1
+```
 
 ## RiscV Installation
 Following instructions are specific for ESP32-C based on RiscV architecture.
