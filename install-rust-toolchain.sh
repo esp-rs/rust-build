@@ -328,7 +328,7 @@ function install_extra_crates() {
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]; then
-        install_crate_from_xz "${LDPROXY_URL}" "${LDPROXY_BIN}"
+        install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
@@ -396,9 +396,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
+    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-${ARCH}.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
