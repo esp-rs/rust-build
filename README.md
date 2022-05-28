@@ -2,8 +2,9 @@
 
 This repository contains:
 
-- workflows for building Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
-- binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
+- Workflows for building a Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
+- Binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
+- An [installation script](install-rust-toolchain.sh) to locally install a pre-compiled nightly ESP32 toolchain
 
 ## Table of Contents
 
@@ -19,7 +20,7 @@ This repository contains:
     - [Windows x64](#windows-x64)
       - [Prerequisites](#prerequisites-1)
       - [Installation commands for PowerShell](#installation-commands-for-powershell)
-  - [RiscV Installation](#riscv-installation)
+  - [RISC-V Installation](#riscv-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
@@ -49,7 +50,7 @@ Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.61.
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in [RiscV section](#riscv-installation).
+Instructions for ESP-C series based on RISC-V architecture are described in [RISC-V section](#riscv-installation).
 
 #### Prerequisites
 
@@ -103,7 +104,7 @@ source export-esp-rust.sh
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described  in [RiscV section](#riscv-installation).
+Instructions for ESP-C series based on RISC-V architecture are described  in [RISC-V section](#riscv-installation).
 
 #### Prerequisites
 
@@ -135,11 +136,11 @@ Installation of different version of toolchain:
 source ./Export-EspRust.ps1
 ```
 
-## RiscV Installation
+## RISC-V Installation
 
-Following instructions are specific for ESP32-C based on RiscV architecture.
+Following instructions are specific for ESP32-C based on RISC-V architecture.
 
-Install the RISCV target for Rust:
+Install the RISC-V target for Rust:
 
 ```sh
 rustup target add riscv32i-unknown-none-elf
@@ -167,7 +168,7 @@ rustup target add riscv32i-unknown-none-elf
     - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
     - `xtensa-esp32s2-espidf` for the ESP32-S2(Xtensa architecture).
     - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
-    - `riscv32imc-esp-espidf` for the ESP32-C3(RiscV architecture).
+    - `riscv32imc-esp-espidf` for the ESP32-C3(RISC-V architecture).
 
     And `SERIAL` is the serial port connected to the target device.
 
