@@ -165,9 +165,9 @@ docker run -it espressif/idf-rust-examples
 ```
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
-## Devcontainers
+## Dev Containers
 
 There is also the option to integrate with Visual Studio Code using [remote containers](https://code.visualstudio.com/docs/remote/containers). With this method,
 we would have a fully working environment to build projects in Rust for ESP boards
-in VScode alongside useful settings and extensions, for more information,
+in VS Code alongside useful settings and extensions, for more information,
 please, refer to [esp-rs-devcontainer](https://github.com/SergioGasquez/esp-rs-devcontainer).
