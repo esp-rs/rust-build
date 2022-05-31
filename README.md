@@ -145,11 +145,16 @@ rustup target add riscv32i-unknown-none-elf
     idf.py build flash
     ```
 
-## Podman/Docker Rust ESP environment
+## Containers with Rust ESP environment
 
 Alternatively, some container images, with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
-- [idf-rust](https://hub.docker.com/r/espressif/idf-rust) - contains only the toolchain.
+- [idf-rust](https://hub.docker.com/r/espressif/idf-rust)
+ - Some tags contains only the toolchain. The naming convention for those tags is: `<xtensa-version>`
+ - Some tags contains full environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
+   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
+   in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
+   and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
 - [idf-rust-examples](https://hub.docker.com/r/espressif/idf-rust-examples) - includes two examples: [rust-esp32-example](https://github.com/espressif/rust-esp32-example) and [rust-esp32-std-demo](https://github.com/ivmarkov/rust-esp32-std-demo).
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
@@ -171,6 +176,3 @@ Dev Container support is offered for VS Code, Gitpod and GitHub Codespaces,
 resulting in a fully working environment to develop for ESP boards in Rust,
 flash and simulate projects with Wokwi from the container.
 
-We provide some tags for the [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust/tags)
-image that can be used for Dev Containers.
-Tags are generated for `linux/arm64` and `linux/amd64`, and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
