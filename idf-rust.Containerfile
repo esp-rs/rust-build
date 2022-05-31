@@ -35,5 +35,18 @@ RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
     --esp-idf-version "${ESP_IDF_VERSION}" \
     --minified-esp-idf "YES" \
     --export-file  ${HOME}/export-esp.sh
+# Install web-flash and wokwi-server
+RUN curl -L https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-x86_64-unknown-linux-gnu.zip \
+    -o /home/${CONTAINER_USER}/.cargo/bin/web-flash.zip \
+    && unzip /home/${CONTAINER_USER}/.cargo/bin/web-flash.zip \
+    -d /home/${CONTAINER_USER}/.cargo/bin/ \
+    && rm /home/${CONTAINER_USER}/.cargo/bin/web-flash.zip
+RUN chmod u+x /home/${CONTAINER_USER}/.cargo/bin/web-flash
+RUN curl -L https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-x86_64-unknown-linux-gnu.zip \
+    -o /home/${CONTAINER_USER}/.cargo/bin/wokwi-server.zip \
+    && unzip /home/${CONTAINER_USER}/.cargo/bin/wokwi-server.zip \
+    -d /home/${CONTAINER_USER}/.cargo/bin/ \
+    && rm /home/${CONTAINER_USER}/.cargo/bin/wokwi-server.zip
+RUN chmod u+x /home/${CONTAINER_USER}/.cargo/bin/wokwi-server
 # Activate ESP-IDF and Xtensa Rust toolchain environment
 RUN echo "source ${HOME}/export-esp.sh" >> ~/.bashrc
