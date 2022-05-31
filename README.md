@@ -168,8 +168,9 @@ If you are using the `idf-rust-examples` image, instructions will be displayed o
 ## Dev Containers
 
 Dev Container support is offered for VS Code, Gitpod and GitHub Codespaces,
-resulting in a fully working environment to build, flash and projects in Rust
-for ESP boards in the contianers alongside useful settings and extensions.
+resulting in a fully working environment to develop for ESP boards in Rust,
+flash and simulate projects with Wokwi from the container.
 
 We provide some tags for the [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust/tags)
 image that can be used for Dev Containers.
+Tags are generated for `linux/arm64` and `linux/amd64`, and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
