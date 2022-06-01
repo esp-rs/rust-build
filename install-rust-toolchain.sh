@@ -212,8 +212,7 @@ function install_rust_xtensa_toolchain() {
         fi
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
     fi
-
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
+    if [ -z "${ESP_IDF_VERSION}" ]; then
         echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
         if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
             if [ ! -f "${GCC_FILE}" ]; then
@@ -410,7 +409,9 @@ ESPMONITOR_BIN=""
 ESPMONITOR_URL=""
 GENERATE_URL=""
 GENERATE_BIN=""
-GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
+if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+    GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
+fi
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
@@ -432,8 +433,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-x86_64-unknown-linux-gnu.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
-    # cargo-generate does not have gnu package. See https://github.com/cargo-generate/cargo-generate/pull/602
-    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-x86_64-unknown-linux-musl.tar.gz"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
@@ -515,7 +515,7 @@ fi
 
 echo "Add following command to $PROFILE_NAME"
 if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
+    if [ -z "${ESP_IDF_VERSION}" ]; then
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
     else
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
@@ -525,7 +525,7 @@ if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     echo 'export PIP_USER="no"'
 fi
 
-if [ "${ESP_IDF_VERSION}" != "" ]; then
+if [ -n "${ESP_IDF_VERSION}" ]; then
     echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
     echo "source ${IDF_PATH}/export.sh"
 fi
@@ -533,7 +533,7 @@ fi
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-        if [ "${ESP_IDF_VERSION}" == "" ]; then
+        if [ -z "${ESP_IDF_VERSION}" ]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
         else
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
@@ -541,7 +541,7 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
         echo 'export PIP_USER="no"' >> "${EXPORT_FILE}"
     fi
-    if [ "${ESP_IDF_VERSION}" != "" ]; then
+    if [ -n "${ESP_IDF_VERSION}" ]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >> "${EXPORT_FILE}"
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
     fi
