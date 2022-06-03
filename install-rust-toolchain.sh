@@ -343,22 +343,22 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
-    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]; then
-        install_crate_from_xz "${LDPROXY_URL}" "${LDPROXY_BIN}"
+    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]  && [ -n "${LDPROXY_URL}" ] && [ -n "${LDPROXY_BIN}" ]; then
+        install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]  && [ -n "${ESPMONITOR_URL}" ] && [ -n "${ESPMONITOR_BIN}" ]; then
         install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/espmonitor/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
         install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
@@ -418,11 +418,15 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="macos"
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
@@ -442,6 +446,8 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     GCC_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
 fi
