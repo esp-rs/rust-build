@@ -28,7 +28,7 @@ ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
     ${INSTALL_RUST_TOOLCHAIN}
 RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
     && ./${INSTALL_RUST_TOOLCHAIN} \
-    --extra-crates "ldproxy cargo-espflash" \
+    --extra-crates "ldproxy cargo-espflash cargo-generate" \
     --clear-cache "YES" \
     --build-target "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
