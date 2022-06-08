@@ -13,12 +13,11 @@ on:
         default: '1.61.0.0'
 
 jobs:
-  std-tags:
+  release-v4_4:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         board: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3']
-        esp-idf: ['release/v4.4', 'master']
     steps:
       -
         name: Checkout
@@ -38,17 +37,54 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
       -
-        name: Build and push - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag
+        name: Build and push - ${{ matrix.board }}_v4.4_${{ github.event.inputs.toolchain-version }} tag
         uses: docker/build-push-action@v2
         with:
-          file: idf-rust.Dockerfile
+          file: idf-rust.Containerfile
           build-args: |
             XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
-            ESP_IDF_VERSION=${{ matrix.esp-idf }}
-            ESP_BOARD=${{ matrix.board }
+            ESP_IDF_VERSION=release/v4.4
+            ESP_BOARD=${{ matrix.board }}
           context: .
           platforms: linux/amd64, linux/arm64
           push: true
-          tags: espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
+          tags: espressif/idf-rust:${{ matrix.board }}_v4.4_${{ github.event.inputs.toolchain-version }}
+  master:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        board: ['esp32', 'esp32s2', 'esp32s3', 'esp32c3']
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      -
+        name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      -
+        name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      -
+        name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      -
+        name: Build and push - ${{ matrix.board }}_master_${{ github.event.inputs.toolchain-version }} tag
+        uses: docker/build-push-action@v2
+        with:
+          file: idf-rust.Containerfile
+          build-args: |
+            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
+            ESP_IDF_VERSION=master
+            ESP_BOARD=${{ matrix.board }}
+          context: .
+          platforms: linux/amd64, linux/arm64
+          push: true
+          tags: espressif/idf-rust:${{ matrix.board }}_master_${{ github.event.inputs.toolchain-version }}
+
 
 

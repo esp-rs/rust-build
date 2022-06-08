@@ -212,11 +212,16 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
     idf.py build flash
     ```
 
-## Podman/Docker Rust ESP environment
+## Containers with Rust ESP environment
 
 Alternatively, some container images, with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
-- [idf-rust](https://hub.docker.com/r/espressif/idf-rust) - contains only the toolchain.
+- [idf-rust](https://hub.docker.com/r/espressif/idf-rust)
+ - Some tags contains only the toolchain. The naming convention for those tags is: `<xtensa-version>`
+ - Some tags contains full environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
+   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
+   in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
+   and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
 - [idf-rust-examples](https://hub.docker.com/r/espressif/idf-rust-examples) - includes two examples: [rust-esp32-example](https://github.com/espressif/rust-esp32-example) and [rust-esp32-std-demo](https://github.com/ivmarkov/rust-esp32-std-demo).
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
@@ -233,9 +238,11 @@ docker run -it espressif/idf-rust-examples
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
 
-## Dev-Containers
+## Dev Containers
 
-There is also the option to integrate with Visual Studio Code using [remote containers](https://code.visualstudio.com/docs/remote/containers). With this method,
-we would have a fully working environment to build projects in Rust for ESP boards
-in VScode alongside useful settings and extensions, for more information,
-please, refer to [esp-rs-devcontainer](https://github.com/SergioGasquez/esp-rs-devcontainer).
+Dev Container support is offered for VS Code, Gitpod and GitHub Codespaces,
+resulting in a fully working environment to develop for ESP boards in Rust,
+flash and simulate projects with Wokwi from the container.
+
+Template projects [esp-template](https://github.com/esp-rs/esp-template/) and
+[esp-idf-template](https://github.com/esp-rs/esp-template/) include a question for Dev Containers support.
