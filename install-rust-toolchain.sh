@@ -212,8 +212,7 @@ function install_rust_xtensa_toolchain() {
         fi
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
     fi
-
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
+    if [ -z "${ESP_IDF_VERSION}" ]; then
         echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
         if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
             if [ ! -f "${GCC_FILE}" ]; then
@@ -321,20 +320,47 @@ function install_crate_from_xz() {
     fi
 }
 
+function install_crate_from_tar_gz() {
+    CRATE_URL="$1"
+    CRATE_BIN="$2"
+
+    if [[ -z "${CRATE_BIN}" ]]; then
+        return
+    fi
+
+    if [[ -z "${CRATE_URL}" ]]; then
+        cargo install ${CRATE_BIN}
+        return
+    fi
+
+    if [[ ! -e "${CRATE_BIN}" ]]; then
+        echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.tar.gz"
+        curl -L "${CRATE_URL}" -o "${CRATE_BIN}.tar.gz"
+        tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        chmod u+x "${CRATE_BIN}"
+        echo "Using ${CRATE_BIN} binary release"
+    fi
+}
+
 function install_extra_crates() {
-    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]  && [ -n "${LDPROXY_URL}" ] && [ -n "${LDPROXY_BIN}" ]; then
         install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]; then
+    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]  && [ -n "${ESPMONITOR_URL}" ] && [ -n "${ESPMONITOR_BIN}" ]; then
         install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/espmonitor/}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
+        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
@@ -381,17 +407,28 @@ LDPROXY_URL=""
 LDPROXY_BIN=""
 ESPMONITOR_BIN=""
 ESPMONITOR_URL=""
+GENERATE_URL=""
+GENERATE_BIN=""
+if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+    GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
+fi
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="macos"
     GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
@@ -400,6 +437,8 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-${ARCH}.xz"
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
@@ -407,6 +446,10 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     GCC_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
+    LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
@@ -478,7 +521,7 @@ fi
 
 echo "Add following command to $PROFILE_NAME"
 if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-    if [ "${ESP_IDF_VERSION}" == "" ]; then
+    if [ -z "${ESP_IDF_VERSION}" ]; then
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
     else
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
@@ -488,7 +531,7 @@ if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     echo 'export PIP_USER="no"'
 fi
 
-if [ "${ESP_IDF_VERSION}" != "" ]; then
+if [ -n "${ESP_IDF_VERSION}" ]; then
     echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
     echo "source ${IDF_PATH}/export.sh"
 fi
@@ -496,7 +539,7 @@ fi
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-        if [ "${ESP_IDF_VERSION}" == "" ]; then
+        if [ -z "${ESP_IDF_VERSION}" ]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
         else
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
@@ -504,7 +547,7 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
         echo 'export PIP_USER="no"' >> "${EXPORT_FILE}"
     fi
-    if [ "${ESP_IDF_VERSION}" != "" ]; then
+    if [ -n "${ESP_IDF_VERSION}" ]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >> "${EXPORT_FILE}"
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
     fi
