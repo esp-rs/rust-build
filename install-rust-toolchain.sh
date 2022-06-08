@@ -363,6 +363,24 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
+    if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
+        if [ -n "${WEB_FLASH_URL}" ] && [ -n "${WEB_FLASH_BIN}" ]; then
+            install_crate_from_zip "${WEB_FLASH_URL}" "${WEB_FLASH_BIN}"
+        else
+            cargo install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
+        fi
+        EXTRA_CRATES="${EXTRA_CRATES/web-flash/}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "wokwi-server" ]]; then
+        if [ -n "${WOKWI_SERVER_URL}" ] && [ -n "${WOKWI_SERVER_BIN}" ]; then
+            install_crate_from_zip "${WOKWI_SERVER_URL}" "${WOKWI_SERVER_BIN}"
+        else
+            cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server
+        fi
+        EXTRA_CRATES="${EXTRA_CRATES/wokwi-server/}"
+    fi
+
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
        cargo install $EXTRA_CRATES
     fi
@@ -409,6 +427,10 @@ ESPMONITOR_BIN=""
 ESPMONITOR_URL=""
 GENERATE_URL=""
 GENERATE_BIN=""
+WOKWI_SERVER_URL=""
+WOKWI_SERVER_BIN=""
+WEB_FLASH_URL=""
+WEB_FLASH_BIN=""
 if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
 fi
@@ -420,6 +442,10 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
+    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
+    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     #LLVM_ARCH="macos"
     GCC_ARCH="macos"
@@ -429,6 +455,10 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
+    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
+    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
+    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
@@ -439,6 +469,10 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
+    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
+    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
+    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
@@ -450,6 +484,10 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
+    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
+    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server.exe"
+    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash.exe"
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
