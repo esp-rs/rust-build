@@ -149,7 +149,7 @@ function install_rust() {
 }
 
 function install_rust_toolchain() {
-    rustup toolchain install $1
+    rustup toolchain install $1 --profile minimal
 }
 
 function source_cargo() {
@@ -374,8 +374,13 @@ command -v rustup || install_rustup
 source_cargo
 
 # Deploy missing toolchains - Xtensa toolchain should be used on top of these
-rustup toolchain list | grep stable || install_rust_toolchain stable
-rustup toolchain list | grep nightly || install_rust_toolchain nightly
+if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
+    rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
+fi
+
+if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
+    install_rust_riscv_toolchain
+fi
 
 # Check minimal rustc version
 RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
@@ -495,9 +500,6 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
-    install_rust_riscv_toolchain
-fi
 
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     install_rust_xtensa_toolchain
