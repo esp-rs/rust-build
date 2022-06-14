@@ -219,7 +219,6 @@ function install_llvm_clang() {
     else
         echo "already installed"
     fi
-
 }
 
 function clear_download_cache() {
@@ -238,7 +237,6 @@ function clear_download_cache() {
 
   echo " - ${LLVM_FILE}"
   rm -f "${LLVM_FILE}"
-
 }
 
 function install_rust_riscv_toolchain() {
@@ -365,7 +363,6 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
 fi
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
-
 # Possible values of ARCH
 #ARCH="aarch64-apple-darwin"
 #ARCH="aarch64-unknown-linux-gnu"
@@ -397,7 +394,7 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
-    #LLVM_ARCH="macos"
+    # LLVM_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -416,7 +413,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
-    #LLVM_ARCH="win64"
+    # LLVM_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -427,13 +424,11 @@ fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
-
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
-
 
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
@@ -452,7 +447,6 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
 
-
     if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
         clear_download_cache
     fi
@@ -461,7 +455,6 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
         exit 0
     fi
 fi
-
 
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     install_rust_xtensa_toolchain
