@@ -163,10 +163,6 @@ function source_cargo() {
 }
 
 function install_esp_idf() {
-    if [ -z "${ESP_IDF_VERSION}" ]; then
-        return
-    fi
-
     mkdir -p ${IDF_TOOLS_PATH}/frameworks/
     NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g'`
     export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
@@ -473,7 +469,9 @@ if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "$
 fi
 
 install_llvm_clang
-install_esp_idf
+if [ -n "${ESP_IDF_VERSION}" ]; then
+    install_esp_idf
+fi
 install_extra_crates
 
 if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
