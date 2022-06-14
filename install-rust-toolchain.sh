@@ -144,9 +144,6 @@ function install_rustup() {
         --default-toolchain none --profile minimal -y
 }
 
-function install_rust() {
-    curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
-}
 
 function install_rust_toolchain() {
     rustup toolchain install $1 --profile minimal
