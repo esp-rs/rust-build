@@ -459,9 +459,9 @@ fi
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     install_rust_xtensa_toolchain
     IS_XTENSA_INSTALLED=1
+    install_llvm_clang
 fi
 
-install_llvm_clang
 if [ -n "${ESP_IDF_VERSION}" ]; then
     install_esp_idf
 fi
