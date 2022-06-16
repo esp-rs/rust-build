@@ -475,6 +475,8 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     #LLVM_ARCH="win64"
     GCC_ARCH="win64"
