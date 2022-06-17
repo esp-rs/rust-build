@@ -343,6 +343,7 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
+    echo "install_extra_crates: ${EXTRA_CRATES}"
     if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
@@ -359,7 +360,8 @@ function install_extra_crates() {
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
-        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
+        echo "Installing cargo generate from binary crate"
+	install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
@@ -382,6 +384,7 @@ function install_extra_crates() {
     fi
 
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
+       echo "Cargo install: ${EXTRA_CRATES}"
        cargo install $EXTRA_CRATES
     fi
 }
