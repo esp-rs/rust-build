@@ -46,7 +46,7 @@ jobs:
             ESP_IDF_VERSION=release/v4.4
             ESP_BOARD=${{ matrix.board }}
           context: .
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: espressif/idf-rust:${{ matrix.board }}_v4.4_${{ github.event.inputs.toolchain-version }}
   master:
@@ -82,7 +82,7 @@ jobs:
             ESP_IDF_VERSION=master
             ESP_BOARD=${{ matrix.board }}
           context: .
-          platforms: linux/amd64, linux/arm64
+          platforms: linux/amd64
           push: true
           tags: espressif/idf-rust:${{ matrix.board }}_master_${{ github.event.inputs.toolchain-version }}
 
