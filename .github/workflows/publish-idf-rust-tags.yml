@@ -40,7 +40,7 @@ jobs:
             ESP_IDF_VERSION=release/v4.4
             ESP_BOARD=${{ matrix.board }}
           context: .
-          platforms: linux/amd64
+          platforms: linux/arm64
           push: false
   master:
     runs-on: ubuntu-latest
@@ -69,7 +69,7 @@ jobs:
             ESP_IDF_VERSION=master
             ESP_BOARD=${{ matrix.board }}
           context: .
-          platforms: linux/amd64
+          platforms: linux/arm64
           push: false
 
 
