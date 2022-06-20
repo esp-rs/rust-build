@@ -30,7 +30,7 @@ jobs:
       id: get_release
       with:
         route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
-        owner: esp-rs
+        owner: SergioGasquez
         repo: rust-build
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
