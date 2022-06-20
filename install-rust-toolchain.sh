@@ -12,7 +12,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-14.0.0-20220415"
+LLVM_VERSION="esp-14.0.0-20220415"  
 GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
 NIGHTLY_VERSION="nightly"
@@ -343,6 +343,7 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
+    echo "install_extra_crates: ${EXTRA_CRATES}"
     if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
@@ -359,7 +360,8 @@ function install_extra_crates() {
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
-        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
+        echo "Installing cargo generate from binary crate"
+	install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
@@ -382,6 +384,7 @@ function install_extra_crates() {
     fi
 
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
+       echo "Cargo install: ${EXTRA_CRATES}"
        cargo install $EXTRA_CRATES
     fi
 }
@@ -475,6 +478,8 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
+    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     #LLVM_ARCH="win64"
     GCC_ARCH="win64"
