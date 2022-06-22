@@ -12,7 +12,7 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-14.0.0-20220415"  
+LLVM_VERSION="esp-14.0.0-20220415"
 GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
 NIGHTLY_VERSION="nightly"
@@ -378,7 +378,7 @@ function install_extra_crates() {
         if [ -n "${WOKWI_SERVER_URL}" ] && [ -n "${WOKWI_SERVER_BIN}" ]; then
             install_crate_from_zip "${WOKWI_SERVER_URL}" "${WOKWI_SERVER_BIN}"
         else
-            cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server
+            RUSTFLAGS="--cfg tokio_unstable" cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server --locked
         fi
         EXTRA_CRATES="${EXTRA_CRATES/wokwi-server/}"
     fi
