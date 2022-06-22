@@ -376,7 +376,7 @@ function install_extra_crates() {
         if [ -n "${WOKWI_SERVER_URL}" ] && [ -n "${WOKWI_SERVER_BIN}" ]; then
             install_crate_from_zip "${WOKWI_SERVER_URL}" "${WOKWI_SERVER_BIN}"
         else
-            cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server
+            RUSTFLAGS="--cfg tokio_unstable" cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server --locked
         fi
         EXTRA_CRATES="${EXTRA_CRATES/wokwi-server/}"
     fi
