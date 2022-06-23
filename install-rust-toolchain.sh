@@ -533,6 +533,10 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
+if [[ "${BUILD_TARGET}" == all ]]; then
+    BUILD_TARGET="esp32,esp32s2,esp32s3,esp32c3"
+fi
+
 if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
     install_rust_riscv_toolchain
 fi
