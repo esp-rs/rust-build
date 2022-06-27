@@ -3,7 +3,7 @@
 set -e
 
 # Default values
-TOOLCHAIN_VERSION="1.61.0.0"
+TOOLCHAIN_VERSION="1.62.0.0"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
@@ -18,7 +18,8 @@ CLEAR_CACHE="no"
 EXTRA_CRATES="ldproxy"
 export ESP_IDF_VERSION="release/v4.4"
 PROJECT="rust-esp32-std-demo"
-PROJECT_REPO="https://github.com/ivmarkov/${PROJECT}.git"
+PROJECT_USER="ivmarkov"
+PROJECT_REPO="https://github.com/${PROJECT_USER}/${PROJECT}.git"
 
 # Process positional arguments
 POSITIONAL=()
@@ -81,8 +82,13 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
-    -u|--project-repo)
+    -g|--project-repo)
       PROJECT_REPO="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -u|--project-user)
+      PROJECT_USER="$2"
       shift # past argument
       shift # past value
       ;;
