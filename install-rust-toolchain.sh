@@ -4,7 +4,7 @@ set -e
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.61.0.0"
+TOOLCHAIN_VERSION="1.62.0.0"
 if [ -z "${RUSTUP_HOME}" ]; then
     RUSTUP_HOME="${HOME}/.rustup"
 fi
