@@ -144,12 +144,8 @@ function install_rustup() {
         --default-toolchain none --profile minimal -y
 }
 
-function install_rust() {
-    curl https://sh.rustup.rs -sSf | bash -s -- --default-toolchain stable -y
-}
-
 function install_rust_toolchain() {
-    rustup toolchain install $1
+    rustup toolchain install $1 --profile minimal
 }
 
 function source_cargo() {
@@ -167,10 +163,6 @@ function source_cargo() {
 }
 
 function install_esp_idf() {
-    if [ -z "${ESP_IDF_VERSION}" ]; then
-        return
-    fi
-
     mkdir -p ${IDF_TOOLS_PATH}/frameworks/
     NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g'`
     export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
@@ -212,22 +204,6 @@ function install_rust_xtensa_toolchain() {
         fi
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
     fi
-    if [ -z "${ESP_IDF_VERSION}" ]; then
-        echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
-        if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
-            if [ ! -f "${GCC_FILE}" ]; then
-                echo "** Downloading ${GCC_DIST_URL}"
-                curl -LO "${GCC_DIST_URL}"
-            fi
-            mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
-            echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
-            pwd
-            tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
-            echo "done"
-        else
-            echo "already installed"
-        fi
-    fi
 }
 
 function install_llvm_clang() {
@@ -243,7 +219,6 @@ function install_llvm_clang() {
     else
         echo "already installed"
     fi
-
 }
 
 function clear_download_cache() {
@@ -262,9 +237,6 @@ function clear_download_cache() {
 
   echo " - ${LLVM_FILE}"
   rm -f "${LLVM_FILE}"
-
-  echo " - ${GCC_FILE}"
-  rm -f "${GCC_FILE}"
 }
 
 function install_rust_riscv_toolchain() {
@@ -392,8 +364,13 @@ command -v rustup || install_rustup
 source_cargo
 
 # Deploy missing toolchains - Xtensa toolchain should be used on top of these
-rustup toolchain list | grep stable || install_rust_toolchain stable
-rustup toolchain list | grep nightly || install_rust_toolchain nightly
+if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
+    rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
+fi
+
+if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
+    install_rust_riscv_toolchain
+fi
 
 # Check minimal rustc version
 RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
@@ -404,7 +381,6 @@ if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
 fi
 
 ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
-
 # Possible values of ARCH
 #ARCH="aarch64-apple-darwin"
 #ARCH="aarch64-unknown-linux-gnu"
@@ -415,8 +391,6 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
 LLVM_ARCH="${ARCH}"
-
-GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 
 # Extra crates binary download support
 ESPFLASH_URL=""
@@ -437,7 +411,6 @@ fi
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
-    GCC_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -447,8 +420,7 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
-    #LLVM_ARCH="macos"
-    GCC_ARCH="macos"
+    # LLVM_ARCH="macos"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -460,7 +432,6 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
-    GCC_ARCH="linux-amd64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
@@ -476,8 +447,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
-    #LLVM_ARCH="win64"
-    GCC_ARCH="win64"
+    # LLVM_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/ldproxy-0.3.0-x86_64-unknown-linux-gnu.xz"
@@ -492,23 +462,17 @@ fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
-
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
-
-GCC_FILE="xtensa-esp32-elf-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
-GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
-
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
 
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
-IDF_TOOL_XTENSA_ELF_GCC="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-gcc/${GCC_VERSION}-${ARCH}"
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
@@ -521,9 +485,6 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
 
-    echo " - ${IDF_TOOL_XTENSA_ELF_GCC}"
-    rm -rf "${IDF_TOOL_XTENSA_ELF_GCC}"
-
     if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
         clear_download_cache
     fi
@@ -533,17 +494,15 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     fi
 fi
 
-if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
-    install_rust_riscv_toolchain
-fi
-
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     install_rust_xtensa_toolchain
     IS_XTENSA_INSTALLED=1
+    install_llvm_clang
 fi
 
-install_llvm_clang
-install_esp_idf
+if [ -n "${ESP_IDF_VERSION}" ]; then
+    install_esp_idf
+fi
 install_extra_crates
 
 if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
