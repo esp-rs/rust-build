@@ -363,6 +363,10 @@ command -v rustup || install_rustup
 
 source_cargo
 
+if [[ "${BUILD_TARGET}" == all ]]; then
+    BUILD_TARGET="esp32,esp32s2,esp32s3,esp32c3"
+fi
+
 # Deploy missing toolchains - Xtensa toolchain should be used on top of these
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
     rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
@@ -494,14 +498,6 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     if [ "${INSTALLATION_MODE}" == "uninstall" ]; then
         exit 0
     fi
-fi
-
-if [[ "${BUILD_TARGET}" == all ]]; then
-    BUILD_TARGET="esp32,esp32s2,esp32s3,esp32c3"
-fi
-
-if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
-    install_rust_riscv_toolchain
 fi
 
 if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
