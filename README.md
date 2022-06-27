@@ -56,7 +56,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
 
 - Linux:
   - dependencies (command for Ubuntu/Debian):
-  
+
     ```sh
     apt-get install -y git curl gcc ninja-build cmake libudev-dev \
       python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
@@ -86,7 +86,7 @@ source export-esp-rust.sh
 ```
 
 #### Arguments
-- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3`]. Defaults to: `esp32,esp32s2,esp32s3`
+- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
@@ -186,7 +186,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
         [toolchain]
         channel = "esp"
         ```
-        
+
 1. Get example source code
 
     ```sh
