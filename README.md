@@ -245,4 +245,4 @@ resulting in a fully working environment to develop for ESP boards in Rust,
 flash and simulate projects with Wokwi from the container.
 
 Template projects [esp-template](https://github.com/esp-rs/esp-template/) and
-[esp-idf-template](https://github.com/esp-rs/esp-template/) include a question for Dev Containers support.
+[esp-idf-template](https://github.com/esp-rs/esp-idf-template/) include a question for Dev Containers support.
