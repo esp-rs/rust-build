@@ -148,6 +148,19 @@ rustup target add riscv32i-unknown-none-elf
 
 ## Building projects
 
+When building for Xtensa targets, we need to [override the `esp` toolchain](https://rust-lang.github.io/rustup/overrides.html), there are several solutions:
+
+- Set `esp` toolchain as default: `rustup default esp`
+- Use `cargo +esp`
+- Override the project directory: `rustup override set esp`
+- Create a file called `rust-toolchain.toml` or `rust-toolchain` with:
+
+    ```toml
+    [toolchain]
+    channel = "esp"
+    ```
+
+
 ### Cargo first approach
 
 1. Get example source code
@@ -177,16 +190,6 @@ rustup target add riscv32i-unknown-none-elf
 
 ### Idf first approach
 
-When building for Xtensa targets, we need to [override the `esp` toolchain](https://rust-lang.github.io/rustup/overrides.html), there are several solutions:
-      - Set `esp` toolchain as default: `rustup default esp`
-      - Use `cargo +esp`
-      - Override the project directory: `rustup override set esp`
-      - Create a file called `rust-toolchain.toml` or `rust-toolchain` with:
-        ```toml
-        [toolchain]
-        channel = "esp"
-        ```
-        
 1. Get example source code
 
     ```sh
