@@ -452,6 +452,8 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
+    LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
+    LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     # LLVM_ARCH="win64"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
