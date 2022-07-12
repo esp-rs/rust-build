@@ -323,8 +323,13 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
-    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/espflash/}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${CARGO_ESPFLASH_URL}" ] && [ -n "${CARGO_ESPFLASH_BIN}" ]; then
+        install_crate_from_zip "${CARGO_ESPFLASH_URL}" "${CARGO_ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
     fi
 
