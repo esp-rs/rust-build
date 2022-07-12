@@ -475,7 +475,6 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     SYSTEM_PACKAGES=""
-    GCC_ARCH="linux-arm64"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
@@ -558,8 +557,6 @@ if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
     fi
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-    # Workaround of https://github.com/espressif/esp-idf/issues/7910
-    echo 'export PIP_USER="no"'
 fi
 
 if [ -n "${ESP_IDF_VERSION}" ]; then
@@ -576,7 +573,6 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
         fi
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
-        echo 'export PIP_USER="no"' >> "${EXPORT_FILE}"
     fi
     if [ -n "${ESP_IDF_VERSION}" ]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >> "${EXPORT_FILE}"
