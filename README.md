@@ -55,12 +55,10 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
 #### Prerequisites
 
 - Linux:
-  - dependencies (command for Ubuntu/Debian):
-  
+  - [Dependencies (command for Ubuntu/Debian)](https://github.com/esp-rs/esp-idf-template/blob/master/cargo/.devcontainer/Dockerfile#L16):
     ```sh
-    apt-get install -y git curl gcc ninja-build cmake libudev-dev \
-      python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5 \
-      unzip
+    apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils\
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7
     ```
 
 No prerequisites are needed for macOS
