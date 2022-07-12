@@ -333,11 +333,6 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "espmonitor" ]]  && [ -n "${ESPMONITOR_URL}" ] && [ -n "${ESPMONITOR_BIN}" ]; then
-        install_crate_from_xz "${ESPMONITOR_URL}" "${ESPMONITOR_BIN}"
-        EXTRA_CRATES="${EXTRA_CRATES/espmonitor/}"
-    fi
-
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
         install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
@@ -425,8 +420,6 @@ ESPFLASH_URL=""
 ESPFLASH_BIN=""
 LDPROXY_URL=""
 LDPROXY_BIN=""
-ESPMONITOR_BIN=""
-ESPMONITOR_URL=""
 GENERATE_URL=""
 GENERATE_BIN=""
 WOKWI_SERVER_URL=""
@@ -465,8 +458,6 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    ESPMONITOR_URL="https://github.com/esp-rs/rust-build/releases/download/v1.60.0.1/espmonitor-0.7.0-${ARCH}.xz"
-    ESPMONITOR_BIN="${CARGO_HOME}/bin/espmonitor"
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
