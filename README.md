@@ -59,7 +59,8 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
   
     ```sh
     apt-get install -y git curl gcc ninja-build cmake libudev-dev \
-      python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
+      python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5 \
+      unzip
     ```
 
 No prerequisites are needed for macOS
