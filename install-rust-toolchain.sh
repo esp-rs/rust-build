@@ -272,7 +272,7 @@ function install_rust_riscv_toolchain() {
     --default-toolchain ${NIGHTLY_VERSION} \
     --component rust-src \
     --profile minimal \
-    --target riscv32i-unknown-none-elf -y
+    --target riscv32imc-unknown-none-elf -y
 }
 
 function install_crate_from_zip() {
