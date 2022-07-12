@@ -373,7 +373,7 @@ function install_system_packages() {
 
     echo "Installing system packages: ${SYSTEM_PACKAGES}"
 
-    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin"]]; then
+    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin" ]]; then
         command -v brew || {
             echo "Warning: Unable to find command brew. Skipping installation of system package."
             return
