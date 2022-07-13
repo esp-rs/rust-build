@@ -29,21 +29,21 @@ This repository contains:
 
 ## Xtensa Installation
 
-Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.61.0.0]
+Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.0.0]
 
 ### Download installer
 
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -56,7 +56,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
 
 - Linux:
   - dependencies (command for Ubuntu/Debian):
-  
+
     ```sh
     apt-get install -y git curl gcc ninja-build cmake libudev-dev \
       python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5 \
@@ -82,12 +82,12 @@ Export variables are displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.61.0.0 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.62.0.0 --export-file export-esp-rust.sh
 source export-esp-rust.sh
 ```
 
 #### Arguments
-- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3`]. Defaults to: `esp32,esp32s2,esp32s3`
+- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
@@ -133,7 +133,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
+./Install-RustToolchain.ps1 --toolchain-version 1.62.0.0 --export-file Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 
@@ -187,7 +187,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
         [toolchain]
         channel = "esp"
         ```
-        
+
 1. Get example source code
 
     ```sh
