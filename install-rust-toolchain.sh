@@ -12,7 +12,10 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
+#LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
 LLVM_VERSION="esp-14.0.0-20220415"
+GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
 NIGHTLY_VERSION="nightly"
@@ -188,6 +191,26 @@ function install_esp_idf() {
     fi
 }
 
+function install_xtensa_elf_gcc() {
+    IDF_TOOL_XTENSA_ELF_GCC="${IDF_TOOLS_PATH}/tools/$1-gcc/${GCC_VERSION}-${ARCH}"
+    GCC_FILE="$1-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
+    GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
+    echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
+    if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
+        if [ ! -f "${GCC_FILE}" ]; then
+            echo "** Downloading ${GCC_DIST_URL}"
+            curl -LO "${GCC_DIST_URL}"
+        fi
+        mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
+        echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
+        tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
+        echo "done"
+    else
+        echo "already installed"
+    fi
+    IDF_TOOL_XTENSA_ELF_GCC_PATH="${IDF_TOOL_XTENSA_ELF_GCC}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}"
+}
+
 function install_rust_xtensa_toolchain() {
     if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
         echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
@@ -211,6 +234,21 @@ function install_rust_xtensa_toolchain() {
             tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
         fi
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+    fi
+
+    if [ -z "${ESP_IDF_VERSION}" ]; then
+        if [[ "${BUILD_TARGET}" =~ "esp32s3" ]]; then
+            install_xtensa_elf_gcc "xtensa-esp32s3-elf"
+        fi
+        if [[ "${BUILD_TARGET}" =~ "esp32s2" ]]; then
+            install_xtensa_elf_gcc "xtensa-esp32s2-elf"
+        fi
+        if [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
+            install_xtensa_elf_gcc "riscv32-esp-elf"
+        fi
+        if [[ "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
+            install_xtensa_elf_gcc "xtensa-esp32-elf"
+        fi
     fi
 }
 
@@ -245,6 +283,11 @@ function clear_download_cache() {
 
   echo " - ${LLVM_FILE}"
   rm -f "${LLVM_FILE}"
+
+  if [ -z "${ESP_IDF_VERSION}" ]; then
+    echo " - *-elf-gcc8_4_0-esp-2021r2-patch3-linux-amd64.tar.gz"
+    rm -f *-elf-gcc8_4_0-esp-2021r2-patch3-linux-amd64.tar.gz
+  fi
 }
 
 function install_rust_riscv_toolchain() {
@@ -417,10 +460,6 @@ ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
 #ARCH="x86_64-unknown-linux-gnu"
 #ARCH="x86_64-pc-windows-msvc"
 
-#LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
-LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
-LLVM_ARCH="${ARCH}"
-
 # Extra crates binary download support
 ESPFLASH_URL=""
 ESPFLASH_BIN=""
@@ -440,6 +479,7 @@ fi
 
 # Configuration overrides for specific architectures
 if [ ${ARCH} == "aarch64-apple-darwin" ]; then
+    GCC_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -451,7 +491,7 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
-    # LLVM_ARCH="macos"
+    GCC_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -465,6 +505,7 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
+    GCC_ARCH="linux-amd64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -479,7 +520,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
-    # GCC_ARCH="linux-arm64"
+    GCC_ARCH="linux-arm64"
     SYSTEM_PACKAGES=""
     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
@@ -488,7 +529,7 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
-    # LLVM_ARCH="win64"
+    GCC_ARCH="win64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
@@ -511,13 +552,14 @@ install_system_packages
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
-LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
+LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
 if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
 
+IDF_TOOL_XTENSA_ELF_GCC_PATH=""
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
@@ -561,11 +603,10 @@ if grep -q "zsh" <<< "$SHELL"; then
 elif grep -q "bash" <<< "$SHELL"; then
   PROFILE_NAME=~/.bashrc
 fi
-
 echo "Add following command to $PROFILE_NAME"
 if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     if [ -z "${ESP_IDF_VERSION}" ]; then
-        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\"
+        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\"
     else
         echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
     fi
@@ -581,7 +622,7 @@ fi
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
         if [ -z "${ESP_IDF_VERSION}" ]; then
-            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC}/bin/:\$PATH\" > "${EXPORT_FILE}"
+            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\" > "${EXPORT_FILE}"
         else
             echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
         fi
