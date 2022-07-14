@@ -285,8 +285,8 @@ function clear_download_cache() {
   rm -f "${LLVM_FILE}"
 
   if [ -z "${ESP_IDF_VERSION}" ]; then
-    echo " - *-elf-gcc8_4_0-esp-2021r2-patch3-linux-amd64.tar.gz"
-    rm -f *-elf-gcc8_4_0-esp-2021r2-patch3-linux-amd64.tar.gz
+    echo " - *-elf-gcc*.tar.gz"
+    rm -f *-elf-gcc*.tar.gz
   fi
 }
 
