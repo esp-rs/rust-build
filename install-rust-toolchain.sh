@@ -606,9 +606,7 @@ fi
 echo "Add following command to $PROFILE_NAME"
 if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
     if [ -z "${ESP_IDF_VERSION}" ]; then
-        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\"
-    else
-        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\"
+        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\"
     fi
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 fi
@@ -622,9 +620,7 @@ fi
 if [[ ! -z "${EXPORT_FILE}" ]]; then
     if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
         if [ -z "${ESP_IDF_VERSION}" ]; then
-            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\" > "${EXPORT_FILE}"
-        else
-            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/bin/:\$PATH\" > "${EXPORT_FILE}"
+            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\" > "${EXPORT_FILE}"
         fi
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
     fi
