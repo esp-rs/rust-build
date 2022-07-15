@@ -5,7 +5,6 @@ on:
     paths:
       - "install-rust-toolchain.sh"
   pull_request:
-    branches: [ main ]
     paths:
       - "install-rust-toolchain.sh"
   workflow_dispatch:
