@@ -27,30 +27,30 @@ IS_XTENSA_INSTALLED=0
 SYSTEM_PACKAGES="openssl@3"
 
 display_help() {
-  echo "Usage: install-rust-toolchain.sh <arguments>"
-  echo "Arguments: "
-  echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
-  echo "-c|--cargo-home                 Cargo path"
-  echo "-d|--toolchain-destination      Toolchain installation folder."
-  echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
-  echo "-f|--export-file                Destination of the export file generated."
-  echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
-  echo "-l|--llvm-version               LLVM version"
-  echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
-  echo "-n|--nightly-version            Nightly Rust toolchain version"
-  echo "-p|--system-packages            Install missing system packages"
-  echo "-r|--rustup-home                Path to .rustup"
-  echo "-s|--esp-idf-version            ESP-IDF version. When empty, no esp-idf is installed. Default: \"\""
-  echo "-t|--toolchain-version          Xtensa Rust toolchain version"
-  echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
+    echo "Usage: install-rust-toolchain.sh <arguments>"
+    echo "Arguments: "
+    echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
+    echo "-c|--cargo-home                 Cargo path"
+    echo "-d|--toolchain-destination      Toolchain installation folder."
+    echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
+    echo "-f|--export-file                Destination of the export file generated."
+    echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
+    echo "-l|--llvm-version               LLVM version"
+    echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
+    echo "-n|--nightly-version            Nightly Rust toolchain version"
+    echo "-p|--system-packages            Install missing system packages"
+    echo "-r|--rustup-home                Path to .rustup"
+    echo "-s|--esp-idf-version            ESP-IDF version. When empty, no esp-idf is installed. Default: \"\""
+    echo "-t|--toolchain-version          Xtensa Rust toolchain version"
+    echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
 }
 
 # Process positional arguments
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
-  key="$1"
+    key="$1"
 
-  case $key in
+   case $key in
     -h|--help)
       display_help
       exit 1
@@ -167,7 +167,7 @@ function source_cargo() {
         if [ -n "${CARGO_HOME}" ] && [ -e "${CARGO_HOME}/env" ]; then
             source ${CARGO_HOME}/env
         else
-	    echo "Warning: Unable to source .cargo/env"
+            echo "Warning: Unable to source .cargo/env"
             export CARGO_HOME="${HOME}/.cargo"
         fi
     fi
@@ -191,24 +191,24 @@ function install_esp_idf() {
     fi
 }
 
-function install_xtensa_elf_gcc() {
-    IDF_TOOL_XTENSA_ELF_GCC="${IDF_TOOLS_PATH}/tools/$1-gcc/${GCC_VERSION}-${ARCH}"
+function install_gcc() {
+    IDF_TOOL_GCC="${IDF_TOOLS_PATH}/tools/$1-gcc/${GCC_VERSION}-${ARCH}"
     GCC_FILE="$1-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
     GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
-    echo "* installing ${IDF_TOOL_XTENSA_ELF_GCC} "
-    if [ ! -d ${IDF_TOOL_XTENSA_ELF_GCC} ]; then
+    echo "* installing ${IDF_TOOL_GCC} "
+    if [ ! -d ${IDF_TOOL_GCC} ]; then
         if [ ! -f "${GCC_FILE}" ]; then
             echo "** Downloading ${GCC_DIST_URL}"
             curl -LO "${GCC_DIST_URL}"
         fi
-        mkdir -p "${IDF_TOOL_XTENSA_ELF_GCC}"
-        echo "IDF_TOOL_XTENSA_ELF_GCC ${IDF_TOOL_XTENSA_ELF_GCC}"
-        tar xf ${GCC_FILE} -C "${IDF_TOOL_XTENSA_ELF_GCC}" --strip-components=1
+        mkdir -p "${IDF_TOOL_GCC}"
+        echo "IDF_TOOL_GCC ${IDF_TOOL_GCC}"
+        tar xf ${GCC_FILE} -C "${IDF_TOOL_GCC}" --strip-components=1
         echo "done"
     else
         echo "already installed"
     fi
-    IDF_TOOL_XTENSA_ELF_GCC_PATH="${IDF_TOOL_XTENSA_ELF_GCC}/bin/${IDF_TOOL_XTENSA_ELF_GCC_PATH:+:${IDF_TOOL_XTENSA_ELF_GCC_PATH}}"
+    IDF_TOOL_GCC_PATH="${IDF_TOOL_GCC}/bin/${IDF_TOOL_GCC_PATH:+:${IDF_TOOL_GCC_PATH}}"
 }
 
 function install_rust_xtensa_toolchain() {
@@ -238,16 +238,13 @@ function install_rust_xtensa_toolchain() {
 
     if [ -z "${ESP_IDF_VERSION}" ]; then
         if [[ "${BUILD_TARGET}" =~ "esp32s3" ]]; then
-            install_xtensa_elf_gcc "xtensa-esp32s3-elf"
+            install_gcc "xtensa-esp32s3-elf"
         fi
         if [[ "${BUILD_TARGET}" =~ "esp32s2" ]]; then
-            install_xtensa_elf_gcc "xtensa-esp32s2-elf"
-        fi
-        if [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
-            install_xtensa_elf_gcc "riscv32-esp-elf"
+            install_gcc "xtensa-esp32s2-elf"
         fi
         if [[ "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
-            install_xtensa_elf_gcc "xtensa-esp32-elf"
+            install_gcc "xtensa-esp32-elf"
         fi
     fi
 }
@@ -268,34 +265,34 @@ function install_llvm_clang() {
 }
 
 function clear_download_cache() {
-  echo "Removing cached dist files:"
-  echo " - ${RUST_DIST}"
-  rm -rf "${RUST_DIST}"
+    echo "Removing cached dist files:"
+    echo " - ${RUST_DIST}"
+    rm -rf "${RUST_DIST}"
 
-  echo " - ${RUST_DIST}.tar.xz"
-  rm -f "${RUST_DIST}.tar.xz"
+    echo " - ${RUST_DIST}.tar.xz"
+    rm -f "${RUST_DIST}.tar.xz"
 
-  echo " - ${RUST_SRC_DIST}"
-  rm -rf "${RUST_SRC_DIST}"
+    echo " - ${RUST_SRC_DIST}"
+    rm -rf "${RUST_SRC_DIST}"
 
-  echo " - ${RUST_SRC_DIST}.tar.xz"
-  rm -f "${RUST_SRC_DIST}.tar.xz"
+    echo " - ${RUST_SRC_DIST}.tar.xz"
+    rm -f "${RUST_SRC_DIST}.tar.xz"
 
-  echo " - ${LLVM_FILE}"
-  rm -f "${LLVM_FILE}"
+    echo " - ${LLVM_FILE}"
+    rm -f "${LLVM_FILE}"
 
-  if [ -z "${ESP_IDF_VERSION}" ]; then
-    echo " - *-elf-gcc*.tar.gz"
-    rm -f *-elf-gcc*.tar.gz
-  fi
+    if [ -z "${ESP_IDF_VERSION}" ]; then
+        echo " - *-elf-gcc*.tar.gz"
+        rm -f *-elf-gcc*.tar.gz
+    fi
 }
 
 function install_rust_riscv_toolchain() {
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-    --default-toolchain ${NIGHTLY_VERSION} \
-    --component rust-src \
-    --profile minimal \
-    --target riscv32i-unknown-none-elf -y
+        --default-toolchain ${NIGHTLY_VERSION} \
+        --component rust-src \
+        --profile minimal \
+        --target riscv32i-unknown-none-elf -y
 }
 
 function install_crate_from_zip() {
@@ -406,7 +403,7 @@ function install_extra_crates() {
     fi
 
     if ! [[ -z "${EXTRA_CRATES// }" ]];then
-       cargo install $EXTRA_CRATES
+        cargo install $EXTRA_CRATES
     fi
 }
 
@@ -559,7 +556,7 @@ if [ -z "${IDF_TOOLS_PATH}" ]; then
     IDF_TOOLS_PATH="${HOME}/.espressif"
 fi
 
-IDF_TOOL_XTENSA_ELF_GCC_PATH=""
+IDF_TOOL_GCC_PATH=""
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
@@ -590,6 +587,8 @@ fi
 
 if [ -n "${ESP_IDF_VERSION}" ]; then
     install_esp_idf
+elif [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
+    install_gcc "riscv32-esp-elf"
 fi
 install_extra_crates
 
@@ -599,33 +598,26 @@ fi
 
 PROFILE_NAME="your default shell"
 if grep -q "zsh" <<< "$SHELL"; then
-  PROFILE_NAME=~/.zshrc
+    PROFILE_NAME=~/.zshrc
 elif grep -q "bash" <<< "$SHELL"; then
-  PROFILE_NAME=~/.bashrc
+    PROFILE_NAME=~/.bashrc
 fi
 echo "Add following command to $PROFILE_NAME"
-if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-    if [ -z "${ESP_IDF_VERSION}" ]; then
-        echo export PATH=\"${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\"
-    fi
+if [ -z "${ESP_IDF_VERSION}" ]; then
+    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
     echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-fi
-
-if [ -n "${ESP_IDF_VERSION}" ]; then
+else
     echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
     echo "source ${IDF_PATH}/export.sh"
 fi
 
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
-    if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-        if [ -z "${ESP_IDF_VERSION}" ]; then
-            echo export PATH=\"${IDF_TOOL_XTENSA_ELF_GCC_PATH}:\$PATH\" > "${EXPORT_FILE}"
-        fi
-        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >> "${EXPORT_FILE}"
-    fi
-    if [ -n "${ESP_IDF_VERSION}" ]; then
-        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >> "${EXPORT_FILE}"
-        echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >> "${EXPORT_FILE}"
+    if [ -z "${ESP_IDF_VERSION}" ]; then
+        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >"${EXPORT_FILE}"
+        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
+    else
+        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
+        echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     fi
 fi
