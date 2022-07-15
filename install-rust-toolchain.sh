@@ -208,7 +208,7 @@ function install_xtensa_elf_gcc() {
     else
         echo "already installed"
     fi
-    IDF_TOOL_XTENSA_ELF_GCC_PATH="${IDF_TOOL_XTENSA_ELF_GCC}/bin/:${IDF_TOOL_XTENSA_ELF_GCC_PATH}"
+    IDF_TOOL_XTENSA_ELF_GCC_PATH="${IDF_TOOL_XTENSA_ELF_GCC}/bin/${IDF_TOOL_XTENSA_ELF_GCC_PATH:+:${IDF_TOOL_XTENSA_ELF_GCC_PATH}}"
 }
 
 function install_rust_xtensa_toolchain() {
