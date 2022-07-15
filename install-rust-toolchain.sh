@@ -603,21 +603,25 @@ elif grep -q "bash" <<< "$SHELL"; then
     PROFILE_NAME=~/.bashrc
 fi
 echo "Add following command to $PROFILE_NAME"
-if [ -z "${ESP_IDF_VERSION}" ]; then
-    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-else
+if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
+fi
+if [ -n "${ESP_IDF_VERSION}" ]; then
     echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
     echo "source ${IDF_PATH}/export.sh"
+else
+    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
 fi
 
 # Store export instructions in the file
 if [[ ! -z "${EXPORT_FILE}" ]]; then
-    if [ -z "${ESP_IDF_VERSION}" ]; then
-        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >"${EXPORT_FILE}"
+    if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
-    else
+    fi
+    if [ -n "${ESP_IDF_VERSION}" ]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
+    else
+        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >"${EXPORT_FILE}"
     fi
 fi
