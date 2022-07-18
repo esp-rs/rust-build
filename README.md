@@ -29,21 +29,21 @@ This repository contains:
 
 ## Xtensa Installation
 
-Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.61.0.0]
+Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.0.0]
 
 ### Download installer
 
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.61.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -80,12 +80,12 @@ Export variables are displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.61.0.0 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.62.0.0 --export-file export-esp-rust.sh
 source export-esp-rust.sh
 ```
 
 #### Arguments
-- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3`]. Defaults to: `esp32,esp32s2,esp32s3`
+- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
@@ -115,7 +115,7 @@ Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
+choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0 -y
 ```
 
 #### Installation commands for PowerShell
@@ -131,7 +131,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 --toolchain-version 1.61.0.0 --export-file Export-EspRust.ps1
+./Install-RustToolchain.ps1 --toolchain-version 1.62.0.0 --export-file Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 
@@ -185,7 +185,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
         [toolchain]
         channel = "esp"
         ```
-        
+
 1. Get example source code
 
     ```sh
