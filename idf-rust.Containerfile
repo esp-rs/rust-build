@@ -9,7 +9,7 @@ ARG CONTAINER_USER=esp
 ARG CONTAINER_GROUP=esp
 ARG NIGHTLY_TOOLCHAIN_VERSION=nightly
 ARG XTENSA_TOOLCHAIN_VERSION=1.62.0.0
-ARG ESP_IDF_VERSION=release/v4.4
+ARG ESP_IDF_VERSION=""
 ARG ESP_BOARD=esp32,esp32s2,esp32s3
 ARG INSTALL_RUST_TOOLCHAIN=install-rust-toolchain.sh
 # Install dependencies
@@ -29,7 +29,6 @@ ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
 RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
     && ./${INSTALL_RUST_TOOLCHAIN} \
     --extra-crates "ldproxy cargo-espflash cargo-generate" \
-    --clear-cache "YES" \
     --build-target "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
     --esp-idf-version "${ESP_IDF_VERSION}" \
