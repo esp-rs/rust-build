@@ -50,86 +50,86 @@ POSITIONAL=()
 while [[ $# -gt 0 ]]; do
     key="$1"
 
-   case $key in
-    -h|--help)
-      display_help
-      exit 1
-      ;;
-    -b|--build-target)
-      BUILD_TARGET="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -d|--toolchain-destination)
-      TOOLCHAIN_DESTINATION_DIR="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -e|--extra-crates)
-      EXTRA_CRATES="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -f|--export-file)
-      EXPORT_FILE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -o|--cargo-home)
-      CARGO_HOME="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -i|--installation-mode)
-      INSTALLATION_MODE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -l|--llvm-version)
-      LLVM_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -m|--minified-esp-idf)
-      MINIFIED_ESP_IDF="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -n|--nightly-version)
-      NIGHTLY_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -p|--system-packages)
-      SYSTEM_PACKAGES="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -r|--rustup-home)
-      RUSTUP_HOME="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -s|--esp-idf-version)
-      ESP_IDF_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -t|--toolchain-version)
-      TOOLCHAIN_VERSION="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    -x|--clear-cache)
-      CLEAR_DOWNLOAD_CACHE="$2"
-      shift # past argument
-      shift # past value
-      ;;
-    *)    # unknown option
-      POSITIONAL+=("$1") # save it in an array for later
-      shift # past argument
-      ;;
-  esac
+    case $key in
+    -h | --help)
+        display_help
+        exit 1
+        ;;
+    -b | --build-target)
+        BUILD_TARGET="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -d | --toolchain-destination)
+        TOOLCHAIN_DESTINATION_DIR="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -e | --extra-crates)
+        EXTRA_CRATES="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -f | --export-file)
+        EXPORT_FILE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -o | --cargo-home)
+        CARGO_HOME="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -i | --installation-mode)
+        INSTALLATION_MODE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -l | --llvm-version)
+        LLVM_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -m | --minified-esp-idf)
+        MINIFIED_ESP_IDF="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -n | --nightly-version)
+        NIGHTLY_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -p | --system-packages)
+        SYSTEM_PACKAGES="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -r | --rustup-home)
+        RUSTUP_HOME="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -s | --esp-idf-version)
+        ESP_IDF_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -t | --toolchain-version)
+        TOOLCHAIN_VERSION="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -x | --clear-cache)
+        CLEAR_DOWNLOAD_CACHE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    *)                     # unknown option
+        POSITIONAL+=("$1") # save it in an array for later
+        shift              # past argument
+        ;;
+    esac
 done
 
 set -- "${POSITIONAL[@]}" # restore positional parameters
@@ -175,7 +175,7 @@ function source_cargo() {
 
 function install_esp_idf() {
     mkdir -p ${IDF_TOOLS_PATH}/frameworks/
-    NORMALIZED_VERSION=`echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g'`
+    NORMALIZED_VERSION=$(echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g')
     export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
     git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
         --recursive https://github.com/espressif/esp-idf.git \
@@ -374,7 +374,7 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/espflash/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]]  && [ -n "${LDPROXY_URL}" ] && [ -n "${LDPROXY_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]] && [ -n "${LDPROXY_URL}" ] && [ -n "${LDPROXY_BIN}" ]; then
         install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
@@ -402,7 +402,7 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/wokwi-server/}"
     fi
 
-    if ! [[ -z "${EXTRA_CRATES// }" ]];then
+    if ! [[ -z "${EXTRA_CRATES// /}" ]]; then
         cargo install $EXTRA_CRATES
     fi
 }
@@ -442,14 +442,14 @@ if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
 fi
 
 # Check minimal rustc version
-RUSTC_MINOR_VERSION=`rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/'`
+RUSTC_MINOR_VERSION=$(rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/')
 if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
     echo "rustc version is too low, requires 1.${RUSTC_MINIMAL_MINOR_VERSION}"
     echo "calling rustup"
     install_rustup
 fi
 
-ARCH=`rustup show | grep "Default host" | sed -e 's/.* //'`
+ARCH=$(rustup show | grep "Default host" | sed -e 's/.* //')
 # Possible values of ARCH
 #ARCH="aarch64-apple-darwin"
 #ARCH="aarch64-unknown-linux-gnu"
@@ -471,7 +471,7 @@ WOKWI_SERVER_BIN=""
 WEB_FLASH_URL=""
 WEB_FLASH_BIN=""
 if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-    GENERATE_VERSION=`git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3-|tail -n1`
+    GENERATE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)
 fi
 
 # Configuration overrides for specific architectures
@@ -548,7 +548,7 @@ install_system_packages
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
-LLVM_ARTIFACT_VERSION=`echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g'`
+LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
@@ -561,7 +561,7 @@ IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
-if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ] ; then
+if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ]; then
     echo "Removing:"
 
     echo " - ${TOOLCHAIN_DESTINATION_DIR}"
@@ -597,9 +597,9 @@ if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
 fi
 
 PROFILE_NAME="your default shell"
-if grep -q "zsh" <<< "$SHELL"; then
+if grep -q "zsh" <<<"$SHELL"; then
     PROFILE_NAME=~/.zshrc
-elif grep -q "bash" <<< "$SHELL"; then
+elif grep -q "bash" <<<"$SHELL"; then
     PROFILE_NAME=~/.bashrc
 fi
 echo "Add following command to $PROFILE_NAME"
