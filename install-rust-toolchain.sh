@@ -159,11 +159,11 @@ function install_rust_toolchain() {
 }
 
 function source_cargo() {
-    if [ -e "${HOME}/.cargo/env" ]; then
+    if [[ -e "${HOME}/.cargo/env" ]]; then
         source "${HOME}/.cargo/env"
         export CARGO_HOME="${HOME}/.cargo"
     else
-        if [ -n "${CARGO_HOME}" ] && [ -e "${CARGO_HOME}/env" ]; then
+        if [[ -n "${CARGO_HOME}" ]] && [[ -e "${CARGO_HOME}/env" ]]; then
             source ${CARGO_HOME}/env
         else
             echo "Warning: Unable to source .cargo/env"
@@ -181,7 +181,7 @@ function install_esp_idf() {
         "${IDF_PATH}"
     ${IDF_PATH}/install.sh "${BUILD_TARGET}"
     python3 ${IDF_PATH}/tools/idf_tools.py install cmake
-    if [ "${MINIFIED_ESP_IDF}" == "YES" ]; then
+    if [[ "${MINIFIED_ESP_IDF}" == "YES" ]]; then
         rm -rf ${IDF_TOOLS_PATH}/dist
         rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/docs
         rm -rf ${IDF_TOOLS_PATH}/frameworks/esp-idf/examples
@@ -195,8 +195,8 @@ function install_gcc() {
     GCC_FILE="$1-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
     GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
     echo "* installing ${IDF_TOOL_GCC} "
-    if [ ! -d ${IDF_TOOL_GCC} ]; then
-        if [ ! -f "${GCC_FILE}" ]; then
+    if [[ ! -d ${IDF_TOOL_GCC} ]]; then
+        if [[ ! -f "${GCC_FILE}" ]]; then
             echo "** Downloading ${GCC_DIST_URL}"
             curl -LO "${GCC_DIST_URL}"
         fi
@@ -211,15 +211,15 @@ function install_gcc() {
 }
 
 function install_rust_xtensa_toolchain() {
-    if [ -d "${TOOLCHAIN_DESTINATION_DIR}" ]; then
+    if [[ -d "${TOOLCHAIN_DESTINATION_DIR}" ]]; then
         echo "Previous installation of toolchain exist in: ${TOOLCHAIN_DESTINATION_DIR}"
         echo "Please, remove the directory before new installation."
         exit 1
     fi
 
-    if [ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]; then
+    if [[ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]]; then
         mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
-        if [ ! -f ${RUST_DIST}.tar.xz ]; then
+        if [[ ! -f ${RUST_DIST}.tar.xz ]]; then
             echo "** downloading: ${RUST_DIST_URL}"
             curl -LO "${RUST_DIST_URL}"
             mkdir -p ${RUST_DIST}
@@ -227,7 +227,7 @@ function install_rust_xtensa_toolchain() {
         fi
         ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
 
-        if [ ! -f ${RUST_SRC_DIST}.tar.xz ]; then
+        if [[ ! -f ${RUST_SRC_DIST}.tar.xz ]]; then
             curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
             mkdir -p ${RUST_SRC_DIST}
             tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
@@ -235,7 +235,7 @@ function install_rust_xtensa_toolchain() {
         ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
     fi
 
-    if [ -z "${ESP_IDF_VERSION}" ]; then
+    if [[ -z "${ESP_IDF_VERSION}" ]]; then
         if [[ "${BUILD_TARGET}" =~ "esp32s3" ]]; then
             install_gcc "xtensa-esp32s3-elf"
         fi
@@ -250,8 +250,8 @@ function install_rust_xtensa_toolchain() {
 
 function install_llvm_clang() {
     echo "* installing ${IDF_TOOL_XTENSA_ELF_CLANG} "
-    if [ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]; then
-        if [ ! -f "${LLVM_FILE}" ]; then
+    if [[ ! -d ${IDF_TOOL_XTENSA_ELF_CLANG} ]]; then
+        if [[ ! -f "${LLVM_FILE}" ]]; then
             echo "** Downloading ${LLVM_DIST_URL}"
             curl -LO "${LLVM_DIST_URL}"
         fi
@@ -280,7 +280,7 @@ function clear_download_cache() {
     echo " - ${LLVM_FILE}"
     rm -f "${LLVM_FILE}"
 
-    if [ -z "${ESP_IDF_VERSION}" ]; then
+    if [[ -z "${ESP_IDF_VERSION}" ]]; then
         echo " - *-elf-gcc*.tar.gz"
         rm -f *-elf-gcc*.tar.gz
     fi
@@ -362,29 +362,28 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
-
-    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [ -n "${CARGO_ESPFLASH_URL}" ] && [ -n "${CARGO_ESPFLASH_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [[ -n "${CARGO_ESPFLASH_URL}" ]] && [[ -n "${CARGO_ESPFLASH_BIN}" ]]; then
         install_crate_from_zip "${CARGO_ESPFLASH_URL}" "${CARGO_ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "espflash" ]] && [ -n "${ESPFLASH_URL}" ] && [ -n "${ESPFLASH_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "espflash" ]] && [[ -n "${ESPFLASH_URL}" ]] && [[ -n "${ESPFLASH_BIN}" ]]; then
         install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/espflash/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]] && [ -n "${LDPROXY_URL}" ] && [ -n "${LDPROXY_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]] && [[ -n "${LDPROXY_URL}" ]] && [[ -n "${LDPROXY_BIN}" ]]; then
         install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [ -n "${GENERATE_URL}" ] && [ -n "${GENERATE_BIN}" ]; then
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [[ -n "${GENERATE_URL}" ]] && [[ -n "${GENERATE_BIN}" ]]; then
         install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
-        if [ -n "${WEB_FLASH_URL}" ] && [ -n "${WEB_FLASH_BIN}" ]; then
+        if [[ -n "${WEB_FLASH_URL}" ]] && [[ -n "${WEB_FLASH_BIN}" ]]; then
             install_crate_from_zip "${WEB_FLASH_URL}" "${WEB_FLASH_BIN}"
         else
             cargo install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
@@ -393,7 +392,7 @@ function install_extra_crates() {
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "wokwi-server" ]]; then
-        if [ -n "${WOKWI_SERVER_URL}" ] && [ -n "${WOKWI_SERVER_BIN}" ]; then
+        if [[ -n "${WOKWI_SERVER_URL}" ]] && [[ -n "${WOKWI_SERVER_BIN}" ]]; then
             install_crate_from_zip "${WOKWI_SERVER_URL}" "${WOKWI_SERVER_BIN}"
         else
             RUSTFLAGS="--cfg tokio_unstable" cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server --locked
@@ -407,7 +406,7 @@ function install_extra_crates() {
 }
 
 function install_system_packages() {
-    if [ -z "${SYSTEM_PACKAGES}" ]; then
+    if [[ -z "${SYSTEM_PACKAGES}" ]]; then
         return
     fi
 
@@ -442,7 +441,7 @@ fi
 
 # Check minimal rustc version
 RUSTC_MINOR_VERSION=$(rustc --version | sed -e 's/^rustc 1\.\([^.]*\).*/\1/')
-if [ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]; then
+if [[ "${RUSTC_MINOR_VERSION}" -lt "${RUSTC_MINIMAL_MINOR_VERSION}" ]]; then
     echo "rustc version is too low, requires 1.${RUSTC_MINIMAL_MINOR_VERSION}"
     echo "calling rustup"
     install_rustup
@@ -474,7 +473,7 @@ if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
 fi
 
 # Configuration overrides for specific architectures
-if [ ${ARCH} == "aarch64-apple-darwin" ]; then
+if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -486,7 +485,7 @@ if [ ${ARCH} == "aarch64-apple-darwin" ]; then
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
-elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
+elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -502,7 +501,7 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
-elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
+elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
@@ -519,7 +518,7 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
-elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
+elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
     SYSTEM_PACKAGES=""
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
@@ -530,7 +529,7 @@ elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
-elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
+elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
@@ -565,7 +564,7 @@ IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
-if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "reinstall" ]; then
+if [[ "${INSTALLATION_MODE}" == "uninstall" ]] || [[ "${INSTALLATION_MODE}" == "reinstall" ]]; then
     echo "Removing:"
 
     echo " - ${TOOLCHAIN_DESTINATION_DIR}"
@@ -574,11 +573,11 @@ if [ "${INSTALLATION_MODE}" == "uninstall" ] || [ "${INSTALLATION_MODE}" == "rei
     echo " - ${IDF_TOOL_XTENSA_ELF_CLANG}"
     rm -rf "${IDF_TOOL_XTENSA_ELF_CLANG}"
 
-    if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+    if [[ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]]; then
         clear_download_cache
     fi
 
-    if [ "${INSTALLATION_MODE}" == "uninstall" ]; then
+    if [[ "${INSTALLATION_MODE}" == "uninstall" ]]; then
         exit 0
     fi
 fi
@@ -589,24 +588,25 @@ if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "$
     install_llvm_clang
 fi
 
-if [ -n "${ESP_IDF_VERSION}" ]; then
+if [[ -n "${ESP_IDF_VERSION}" ]]; then
     install_esp_idf
 elif [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
     install_gcc "riscv32-esp-elf"
 fi
 install_extra_crates
 
-if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
+if [[ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]]; then
     clear_download_cache
 fi
 
 # Either store the export instructions in a file to be sourced later or print instructions
 # directly to the terminal to be used immediately.
 if [[ -n "${EXPORT_FILE:-}" ]]; then
+    echo -n "" >"${EXPORT_FILE}"
     if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
     fi
-    if [ -n "${ESP_IDF_VERSION}" ]; then
+    if [[ -n "${ESP_IDF_VERSION}" ]]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
