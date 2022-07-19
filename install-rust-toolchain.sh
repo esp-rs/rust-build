@@ -1,13 +1,12 @@
 #!/usr/bin/env bash
 
-set -e
+set -eu
 #set -v
 
 # Default values
 TOOLCHAIN_VERSION="1.62.0.0"
-if [ -z "${RUSTUP_HOME}" ]; then
-    RUSTUP_HOME="${HOME}/.rustup"
-fi
+RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
+CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
@@ -139,7 +138,7 @@ echo "--build-target          = ${BUILD_TARGET}"
 echo "--cargo-home            = ${CARGO_HOME}"
 echo "--clear-cache           = ${CLEAR_DOWNLOAD_CACHE}"
 echo "--esp-idf-version       = ${ESP_IDF_VERSION}"
-echo "--export-file           = ${EXPORT_FILE}"
+echo "--export-file           = ${EXPORT_FILE:-}"
 echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
 echo "--llvm-version          = ${LLVM_VERSION}"
@@ -495,7 +494,9 @@ elif [ ${ARCH} == "x86_64-apple-darwin" ]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    fi
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
@@ -510,7 +511,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    fi
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
@@ -519,7 +522,9 @@ elif [ ${ARCH} == "x86_64-unknown-linux-gnu" ]; then
 elif [ ${ARCH} == "aarch64-unknown-linux-gnu" ]; then
     GCC_ARCH="linux-arm64"
     SYSTEM_PACKAGES=""
-    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    fi
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -534,7 +539,9 @@ elif [ ${ARCH} == "x86_64-pc-windows-msvc" ]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
-    GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    fi
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server.exe"
@@ -552,10 +559,7 @@ LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
 LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 
-if [ -z "${IDF_TOOLS_PATH}" ]; then
-    IDF_TOOLS_PATH="${HOME}/.espressif"
-fi
-
+IDF_TOOLS_PATH="${IDF_TOOLS_PATH:-${HOME}/.espressif}"
 IDF_TOOL_GCC_PATH=""
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
 
