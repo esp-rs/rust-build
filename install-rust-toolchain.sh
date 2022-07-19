@@ -564,7 +564,7 @@ RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
-if [[ "${MINIFIED_LLVM}" == "NO" ]]
+if [[ "${MINIFIED_LLVM}" == "NO" ]]; then
     LLVM_DIST_URL="${LLVM_FULL_DIST_MIRROR}/${LLVM_FILE}"
 else
     LLVM_DIST_URL="${LLVM_MINIFIED_DIST_MIRROR}/${LLVM_FILE}"
