@@ -622,6 +622,6 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
-        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >"${EXPORT_FILE}"
+        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
     fi
 fi
