@@ -15,10 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ['esp32', 'esp32s3', 'esp32s3', 'esp32c3']
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
@@ -75,10 +74,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ['esp32', 'esp32s3', 'esp32s3', 'esp32c3']
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
@@ -94,5 +92,17 @@ jobs:
           cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false
           cd test-${{ matrix.board }}
           cargo build
-
-
+  crate-check:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      - name: Install toolchain
+        run: |
+          bash install-rust-toolchain.sh \
+          --extra-crates "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"
