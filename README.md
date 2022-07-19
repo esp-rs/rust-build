@@ -29,7 +29,7 @@ This repository contains:
 
 ## Xtensa Installation
 
-Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.0.0]
+Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
 
 ### Download installer
 
