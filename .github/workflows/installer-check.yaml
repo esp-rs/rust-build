@@ -95,11 +95,12 @@ jobs:
           cd test-${{ matrix.board }}
           cargo build
   minified-llvm:
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
+        os: [ubuntu-latest, macos-latest]
         minified-llvm: ['YES', 'NO']
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
