@@ -4,9 +4,11 @@ on:
   push:
     paths:
       - "install-rust-toolchain.sh"
+      - ".github/workflows/installer-check.yaml"
   pull_request:
     paths:
       - "install-rust-toolchain.sh"
+      - ".github/workflows/installer-check.yaml"
   workflow_dispatch:
 
 jobs:
