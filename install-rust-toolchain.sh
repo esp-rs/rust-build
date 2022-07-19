@@ -11,9 +11,10 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-#LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
-LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
+LLVM_FULL_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+LLVM_MINIFIED_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
 LLVM_VERSION="esp-14.0.0-20220415"
+MINIFIED_LLVM="NO"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
@@ -34,6 +35,7 @@ display_help() {
     echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
     echo "-f|--export-file                Destination of the export file generated."
     echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
+    echo "-k|--minified-llvm              Use minified LLVM. Possible values [YES, NO]"
     echo "-l|--llvm-version               LLVM version"
     echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
     echo "-n|--nightly-version            Nightly Rust toolchain version"
@@ -81,6 +83,11 @@ while [[ $# -gt 0 ]]; do
         ;;
     -i | --installation-mode)
         INSTALLATION_MODE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -k | --minified-llvm)
+        MINIFIED_LLVM="$2"
         shift # past argument
         shift # past value
         ;;
@@ -143,6 +150,7 @@ echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
 echo "--llvm-version          = ${LLVM_VERSION}"
 echo "--minified-esp-idf      = ${MINIFIED_ESP_IDF}"
+echo "--minified-llvm         = ${MINIFIED_LLVM}"
 echo "--nightly-version       = ${NIGHTLY_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--system-packages       = ${SYSTEM_PACKAGES}"
@@ -556,8 +564,11 @@ RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
 LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
-LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
-
+if [[ "${MINIFIED_LLVM}" == "NO" ]]
+    LLVM_DIST_URL="${LLVM_FULL_DIST_MIRROR}/${LLVM_FILE}"
+else
+    LLVM_DIST_URL="${LLVM_MINIFIED_DIST_MIRROR}/${LLVM_FILE}"
+fi
 IDF_TOOLS_PATH="${IDF_TOOLS_PATH:-${HOME}/.espressif}"
 IDF_TOOL_GCC_PATH=""
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"

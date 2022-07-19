@@ -94,5 +94,19 @@ jobs:
           cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false
           cd test-${{ matrix.board }}
           cargo build
-
+  minified-llvm:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        minified-llvm: ['YES', 'NO']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      - name: Install toolchain
+        run: |
+          bash install-rust-toolchain.sh \
+          --minified-llvm "${{ matrix.minified-llvm }}"
 
