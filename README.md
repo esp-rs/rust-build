@@ -142,7 +142,7 @@ Following instructions are specific for ESP32-C based on RISC-V architecture.
 Install the RISC-V target for Rust:
 
 ```sh
-rustup target add riscv32i-unknown-none-elf
+rustup target add riscv32imc-unknown-none-elf
 ```
 
 ## Building projects
