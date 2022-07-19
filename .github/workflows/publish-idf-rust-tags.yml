@@ -40,13 +40,13 @@ jobs:
       - name: Build template project using generated tag (master)
         if: matrix.esp-idf == 'master' && matrix.board != 'all'
         run: |
-          docker run --user esp --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
-                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-idf-template ${{ matrix.board }} mainline
+          docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/build-template-project.sh esp-idf-template ${{ matrix.board }} mainline
       - name: Build template project using generated tag (v4.4)
         if: matrix.esp-idf == 'v4.4' && matrix.board != 'all'
         run: |
-          docker run --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
-                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-idf-template ${{ matrix.board }} ${{ matrix.esp-idf }}
+          docker run --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/build-template-project.sh esp-idf-template ${{ matrix.board }} ${{ matrix.esp-idf }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -100,8 +100,8 @@ jobs:
       - name: Build template project using generated tag (master)
         if: matrix.board != 'all'
         run: |
-          docker run --user esp --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
-                 --rm idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-template ${{ matrix.board }}
+          docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/build-template-project.sh esp-template ${{ matrix.board }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
