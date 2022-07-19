@@ -483,6 +483,7 @@ fi
 # Configuration overrides for specific architectures
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
+    LLVM_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -495,6 +496,7 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="macos"
+    LLVM_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -511,6 +513,7 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
+    LLVM_ARCH="linux-amd64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -528,6 +531,7 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
+    LLVM_ARCH="${ARCH}"
     SYSTEM_PACKAGES=""
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
@@ -539,6 +543,7 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
+    LLVM_ARCH="win64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
@@ -563,10 +568,11 @@ install_system_packages
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
-LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
 if [[ "${MINIFIED_LLVM}" == "NO" ]]; then
+    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
     LLVM_DIST_URL="${LLVM_FULL_DIST_MIRROR}/${LLVM_FILE}"
 else
+    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
     LLVM_DIST_URL="${LLVM_MINIFIED_DIST_MIRROR}/${LLVM_FILE}"
 fi
 IDF_TOOLS_PATH="${IDF_TOOLS_PATH:-${HOME}/.espressif}"
