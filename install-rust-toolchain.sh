@@ -604,7 +604,7 @@ elif grep -q "bash" <<<"$SHELL"; then
 fi
 echo "Add following command to $PROFILE_NAME"
 if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
 fi
 if [ -n "${ESP_IDF_VERSION}" ]; then
     echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
