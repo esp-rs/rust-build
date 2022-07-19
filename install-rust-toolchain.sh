@@ -596,26 +596,10 @@ if [ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]; then
     clear_download_cache
 fi
 
-PROFILE_NAME="your default shell"
-if grep -q "zsh" <<<"$SHELL"; then
-    PROFILE_NAME=~/.zshrc
-elif grep -q "bash" <<<"$SHELL"; then
-    PROFILE_NAME=~/.bashrc
-fi
-echo "Add following command to $PROFILE_NAME"
-if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
-    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-fi
-if [ -n "${ESP_IDF_VERSION}" ]; then
-    echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
-    echo "source ${IDF_PATH}/export.sh"
-else
-    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
-fi
-
-# Store export instructions in the file
-if [[ ! -z "${EXPORT_FILE}" ]]; then
-    if [ ${IS_XTENSA_INSTALLED} -eq 1 ]; then
+# Either store the export instructions in a file to be sourced later or print instructions
+# directly to the terminal to be used immediately.
+if [[ -n "${EXPORT_FILE:-}" ]]; then
+    if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
     fi
     if [ -n "${ESP_IDF_VERSION}" ]; then
@@ -623,5 +607,22 @@ if [[ ! -z "${EXPORT_FILE}" ]]; then
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
+    fi
+else
+    PROFILE_NAME="your default shell"
+    if grep -q "zsh" <<<"$SHELL"; then
+        PROFILE_NAME=~/.zshrc
+    elif grep -q "bash" <<<"$SHELL"; then
+        PROFILE_NAME=~/.bashrc
+    fi
+    echo "Add following command to $PROFILE_NAME"
+    if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
+        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+    fi
+    if [[ -n "${ESP_IDF_VERSION}" ]]; then
+        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
+        echo "source ${IDF_PATH}/export.sh"
+    else
+        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
     fi
 fi
