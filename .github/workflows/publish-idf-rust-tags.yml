@@ -25,55 +25,28 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag (v4.4)
-        if: matrix.esp-idf == 'v4.4'
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: idf-rust.Containerfile
-          build-args: |
-            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
-            ESP_IDF_VERSION=release/v4.4
-            ESP_BOARD=${{ matrix.board }}
-          tags: idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
-          push: false
-      - name: Build - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag (master)
-        if: matrix.esp-idf == 'master'
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: idf-rust.Containerfile
-          build-args: |
-            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
-            ESP_IDF_VERSION=${{ matrix.esp-idf }}
-            ESP_BOARD=${{ matrix.board }}
-          tags: idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
-          push: false
+      - name: Build Docker image (master)
+        if: matrix.esp-idf == 'master' && matrix.board != 'all'
+        run: |
+          docker image build --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} \
+           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
+           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf }} --build-arg ESP_BOARD=${{ matrix.board }} .
+      - name: Build Docker image (v4.4)
+        if: matrix.esp-idf == 'v4.4' && matrix.board != 'all'
+        run: |
+          docker image build --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} \
+           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
+           --build-arg ESP_IDF_VERSION=release/v4.4 --build-arg ESP_BOARD=${{ matrix.board }} .
       - name: Build template project using generated tag (master)
         if: matrix.esp-idf == 'master' && matrix.board != 'all'
-        uses: addnab/docker-run-action@v3
-        with:
-          image: idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
-          options: -u esp
-          shell: bash
-          run: |
-            source /home/esp/export-esp.sh
-            cargo generate --git https://github.com/esp-rs/esp-idf-template --branch fix/remove-toolchain-question cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=mainline -d devcontainer=false
-            cd test-${{ matrix.board }}
-            cargo build
-      - name: Build template project using generated tag (release/v4.4)
+        run: |
+          docker run --user esp --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-idf-template ${{ matrix.board }} mainline
+      - name: Build template project using generated tag (v4.4)
         if: matrix.esp-idf == 'v4.4' && matrix.board != 'all'
-        uses: addnab/docker-run-action@v3
-        with:
-          image: idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
-          options: -u esp
-          shell: bash
-          run: |
-            source /home/esp/export-esp.sh
-            cat /home/esp/export-esp.sh
-            cargo generate --git https://github.com/esp-rs/esp-idf-template --branch fix/remove-toolchain-question cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=v4.4 -d devcontainer=false
-            cd test-${{ matrix.board }}
-            cargo build
+        run: |
+          docker run --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-idf-template ${{ matrix.board }} ${{ matrix.esp-idf }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -83,8 +56,22 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Build - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag
+      - name: Build - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag (v4.4)
         uses: docker/build-push-action@v2
+        if: matrix.esp-idf == 'v4.4'
+        with:
+          context: .
+          file: idf-rust.Containerfile
+          build-args: |
+            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
+            ESP_IDF_VERSION=release/v4.4
+            ESP_BOARD=${{ matrix.board }}
+          tags: espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }}
+          push: true
+          platforms: linux/amd64, linux/arm64
+      - name: Build - ${{ matrix.board }}_${{ matrix.esp-idf }}_${{ github.event.inputs.toolchain-version }} tag (mater)
+        uses: docker/build-push-action@v2
+        if: matrix.esp-idf == 'master'
         with:
           context: .
           file: idf-rust.Containerfile
@@ -104,29 +91,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build - ${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} tag
-        uses: docker/build-push-action@v2
-        with:
-          context: .
-          file: idf-rust.Containerfile
-          build-args: |
-            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
-            ESP_BOARD=${{ matrix.board }}
-          tags: idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }}
-          push: false
-      - name: Build template project using generated tag
+      - name: Build Docker image
         if: matrix.board != 'all'
-        uses: addnab/docker-run-action@v3
-        with:
-          image: idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }}
-          options: -u esp
-          shell: bash
-          run: |
-            source /home/esp/export-esp.sh
-            cat /home/esp/export-esp.sh
-            cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false
-            cd test-${{ matrix.board }}
-            cargo build
+        run: |
+          docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
+           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
+           --build-arg ESP_BOARD=${{ matrix.board }} .
+      - name: Build template project using generated tag (master)
+        if: matrix.board != 'all'
+        run: |
+          docker run --user esp --mount type=bind,source="$(pwd)/test.sh",target=/workspace/test.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/test.sh esp-template ${{ matrix.board }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
