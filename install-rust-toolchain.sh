@@ -26,7 +26,6 @@ MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
 SYSTEM_PACKAGES="openssl@3"
 EXPORT_FILE=""
-POSITIONAL=""
 
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
