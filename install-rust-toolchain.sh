@@ -48,7 +48,7 @@ display_help() {
 }
 
 # Process positional arguments
-POSITIONAL=()
+POSITIONAL=""
 while [[ $# -gt 0 ]]; do
     key="$1"
 
