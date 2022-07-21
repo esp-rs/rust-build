@@ -1,10 +1,17 @@
+[CmdletBinding()]
+param (
+    [Parameter()]
+    [String]
+    [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu")]
+    $DefaultHost = "x86_64-pc-windows-msvc"
+)
 # Helper script to perform repackaging of Windows release
 
 # Stop on error
 $ErrorActionPreference = "Stop"
 
 $RustVersion="nightly"
-$ReleaseVersion="1.62.0.0"
+$ReleaseVersion="1.62.1.0"
 
 if (Test-Path -Path esp -PathType Container) {
     Remove-Item -Recurse -Force -Path esp
@@ -12,13 +19,13 @@ if (Test-Path -Path esp -PathType Container) {
 }
 
 mkdir esp
-7z e rust-${RustVersion}-x86_64-pc-windows-msvc.tar.xz
-7z x rust-${RustVersion}-x86_64-pc-windows-msvc.tar
-pushd rust-${RustVersion}-x86_64-pc-windows-msvc
+7z e rust-${RustVersion}-${DefaultHost}.tar.xz
+7z x rust-${RustVersion}-${DefaultHost}.tar
+pushd rust-${RustVersion}-${DefaultHost}
 cp -Recurse .\rustc\bin ..\esp\
 cp -Recurse .\rustc\lib ..\esp\
 cp -Recurse .\rustc\share ..\esp\
-cp -ErrorAction SilentlyContinue -Recurse .\rust-std-x86_64-pc-windows-msvc\lib\* ..\esp\lib\
+cp -ErrorAction SilentlyContinue -Recurse .\rust-std-${DefaultHost}\lib\* ..\esp\lib\
 popd
 7z e rust-src-${RustVersion}.tar.xz
 7z x rust-src-${RustVersion}.tar
@@ -32,4 +39,4 @@ Get-ChildItem -Path .\ -Filter *.pdb -Recurse -File -Name| ForEach-Object {
     Remove-Item -Path $_
 }
 
-7z a rust-${ReleaseVersion}-x86_64-pc-windows-msvc.zip esp/
+7z a rust-${ReleaseVersion}-${DefaultHost}.zip esp/
