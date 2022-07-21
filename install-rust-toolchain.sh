@@ -11,9 +11,10 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-#LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
-LLVM_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
 LLVM_VERSION="esp-14.0.0-20220415"
+LLVM_FULL_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
+LLVM_MINIFIED_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
+MINIFIED_LLVM="YES"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
@@ -35,6 +36,7 @@ display_help() {
     echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
     echo "-f|--export-file                Destination of the export file generated."
     echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
+    echo "-k|--minified-llvm              Use minified LLVM. Possible values [YES, NO]"
     echo "-l|--llvm-version               LLVM version"
     echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
     echo "-n|--nightly-version            Nightly Rust toolchain version"
@@ -45,8 +47,7 @@ display_help() {
     echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
 }
 
-# Process positional arguments
-POSITIONAL=()
+# Process arguments
 while [[ $# -gt 0 ]]; do
     key="$1"
 
@@ -82,6 +83,11 @@ while [[ $# -gt 0 ]]; do
         ;;
     -i | --installation-mode)
         INSTALLATION_MODE="$2"
+        shift # past argument
+        shift # past value
+        ;;
+    -k | --minified-llvm)
+        MINIFIED_LLVM="$2"
         shift # past argument
         shift # past value
         ;;
@@ -125,14 +131,12 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    *)                     # unknown option
-        POSITIONAL+=("$1") # save it in an array for later
-        shift              # past argument
+    *) # unknown option
+        echo "Warning: Unknown argument: $2."
+        shift # past argument
         ;;
     esac
 done
-
-set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
 echo "--build-target          = ${BUILD_TARGET}"
@@ -144,6 +148,7 @@ echo "--extra-crates          = ${EXTRA_CRATES}"
 echo "--installation-mode     = ${INSTALLATION_MODE}"
 echo "--llvm-version          = ${LLVM_VERSION}"
 echo "--minified-esp-idf      = ${MINIFIED_ESP_IDF}"
+echo "--minified-llvm         = ${MINIFIED_LLVM}"
 echo "--nightly-version       = ${NIGHTLY_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
 echo "--system-packages       = ${SYSTEM_PACKAGES}"
@@ -476,6 +481,7 @@ fi
 # Configuration overrides for specific architectures
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
+    LLVM_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -488,6 +494,7 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="macos"
+    LLVM_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -504,6 +511,7 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
+    LLVM_ARCH="linux-amd64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -521,6 +529,7 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
+    MINIFIED_LLVM="YES"
     SYSTEM_PACKAGES=""
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
@@ -532,6 +541,7 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
+    LLVM_ARCH="win64"
     SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
@@ -556,9 +566,13 @@ install_system_packages
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
 LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
-LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
-LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
-
+if [[ "${MINIFIED_LLVM}" == "NO" ]]; then
+    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
+    LLVM_DIST_URL="${LLVM_FULL_DIST_MIRROR}/${LLVM_FILE}"
+else
+    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
+    LLVM_DIST_URL="${LLVM_MINIFIED_DIST_MIRROR}/${LLVM_FILE}"
+fi
 IDF_TOOLS_PATH="${IDF_TOOLS_PATH:-${HOME}/.espressif}"
 IDF_TOOL_GCC_PATH=""
 IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
