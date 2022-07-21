@@ -47,8 +47,7 @@ display_help() {
     echo "-x|--clear-cache                Removes cached distribution files. Possible values [YES, NO]"
 }
 
-# Process positional arguments
-POSITIONAL=""
+# Process arguments
 while [[ $# -gt 0 ]]; do
     key="$1"
 
@@ -132,14 +131,12 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    *)                     # unknown option
-        POSITIONAL+=("$1") # save it in an array for later
-        shift              # past argument
+    *) # unknown option
+        echo "Warning: Unknown argument: $2."
+        shift # past argument
         ;;
     esac
 done
-
-set -- "${POSITIONAL[@]}" # restore positional parameters
 
 echo "Processing configuration:"
 echo "--build-target          = ${BUILD_TARGET}"
