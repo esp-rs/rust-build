@@ -17,9 +17,11 @@ This repository contains:
     - [Linux and macOS](#linux-and-macos)
       - [Prerequisites](#prerequisites)
       - [Installation commands](#installation-commands)
-    - [Windows x64](#windows-x64)
-      - [Prerequisites](#prerequisites-1)
+    - [Windows x64 MSVC](#windows-x64-msvc)
+      - [Prerequisites](#prerequisites-x64-msvc)
       - [Installation commands for PowerShell](#installation-commands-for-powershell)
+    - [Windows x64 GNU](#windows-x64-gnu)
+      - [Installation commands for PowerShell](#installation-commands-for-powershell-1)
   - [RISC-V Installation](#riscv-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
@@ -100,13 +102,40 @@ source export-esp-rust.sh
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
 - `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]
 
-### Windows x64
+### Windows x86_64 GNU
+
+Following instructions describes deployment with GNU toolchain which does not depend on MSVC and does not requires Windows 10 SDK installation.
+
+#### Prerequisites x86_64 GNU
+
+Install MinGW x86_64 e.g. from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
+
+```powershell
+choco install 7zip
+Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
+7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
+$env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
+```
+
+Install ESP-IDF using Windows installer https://dl.espressif.com/dl/esp-idf/
+#### Installation commands for PowerShell
+
+In activated ESP-IDF PowerShell enter following command:
+
+```powershell
+git clone https://github.com/esp-rs/rust-build.git
+cd rust-build
+./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu  --export-file Export-EspRust.ps1
+source Export-EspRust.ps1
+```
+
+### Windows x86_64 MSVC
 
 Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
 
 Instructions for ESP-C series based on RISC-V architecture are described  in [RISC-V section](#riscv-installation).
 
-#### Prerequisites
+#### Prerequisites x86_64 MSVC
 
 - Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
 
