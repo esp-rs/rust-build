@@ -10,7 +10,7 @@ on:
       toolchain_version:
         description: 'Version of Rust IDF toolchain'
         required: true
-        default: '1.62.0.0'
+        default: '1.62.1.0'
       target:
         description: 'Target to build (e.g. xtensa-esp32-espidf)'
         required: true

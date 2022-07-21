@@ -41,7 +41,7 @@ jobs:
       - name: Build template project
         run: |
           source ${HOME}/export-esp.sh
-          cargo generate --git https://github.com/esp-rs/esp-idf-template --branch fix/remove-toolchain-question cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=v4.4 -d devcontainer=false
+          cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=v4.4 -d devcontainer=false
           cd test-${{ matrix.board }}
           cargo build
   # esp-idf-master:
@@ -74,7 +74,7 @@ jobs:
   #     - name: Build template project
   #       run: |
   #         source ${HOME}/export-esp.sh
-  #         cargo generate --git https://github.com/esp-rs/esp-idf-template --branch fix/remove-toolchain-question cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=mainline -d devcontainer=false
+  #         cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=mainline -d devcontainer=false
   #         cd test-${{ matrix.board }}
   #         cargo build
   bare-metal:
@@ -120,3 +120,22 @@ jobs:
         run: |
           ./install-rust-toolchain.sh \
           --extra-crates "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"
+  minified-llvm:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        minified-llvm: ['YES', 'NO']
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh \
+          --minified-llvm "${{ matrix.minified-llvm }}"
