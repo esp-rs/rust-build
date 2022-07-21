@@ -126,7 +126,7 @@ In activated ESP-IDF PowerShell enter following command:
 ```powershell
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
-./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu  --export-file Export-EspRust.ps1
+./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu  -ExportFile Export-EspRust.ps1
 source Export-EspRust.ps1
 ```
 
@@ -162,7 +162,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different version of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 --toolchain-version 1.62.0.0 --export-file Export-EspRust.ps1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.62.1.0 -ExportFile Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 
