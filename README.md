@@ -17,7 +17,7 @@ This repository contains:
     - [Linux and macOS](#linux-and-macos)
       - [Prerequisites](#prerequisites)
       - [Installation commands](#installation-commands)
-    - [Windows x64 GNU](#windows-x64-gnu)
+    - [Windows x64 GNU](#windows-x86_64-gnu)
       - [Prerequisites](#prerequisites-x86_64-gnu)
       - [Installation commands for PowerShell](#installation-commands-for-powershell)
     - [Windows x64 MSVC](#windows-x86_64-msvc)
