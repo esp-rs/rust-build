@@ -132,7 +132,7 @@ while [[ $# -gt 0 ]]; do
         shift # past value
         ;;
     *) # unknown option
-        echo "Warning: Unknown argument: $2."
+        echo "Warning: Unknown argument."
         shift # past argument
         ;;
     esac
