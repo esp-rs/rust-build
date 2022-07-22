@@ -2,6 +2,9 @@
 param (
     [Parameter()]
     [String]
+    [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu")]
+    $DefaultHost = "x86_64-pc-windows-msvc",
+    [String]
     $ExportFile = '',
     [String]
     $ToolchainVersion = '1.62.1.0',
@@ -22,6 +25,7 @@ $ExportContent = ""
 $RustcMinimalMinorVersion="55"
 
 "Processing configuration:"
+"-DefaultHost          = ${DefaultHost}"
 "-InstalltationMode    = ${InstallationMode}"
 "-LlvmVersion          = ${LlvmVersion}"
 "-ToolchainVersion     = ${ToolchainVersion}"
@@ -29,7 +33,7 @@ $RustcMinimalMinorVersion="55"
 
 function InstallRust() {
     Invoke-WebRequest https://win.rustup.rs/x86_64 -OutFile rustup-init.exe
-    ./rustup-init.exe --default-toolchain stable -y
+    ./rustup-init.exe --default-host ${DefaultHost} --default-toolchain stable -y
     $env:PATH+=";$env:USERPROFILE\.cargo\bin"
     $ExportContent+="`n" + '$env:PATH+=";$env:USERPROFILE\.cargo\bin"'
 }
@@ -83,7 +87,7 @@ $Arch="x86_64-pc-windows-msvc"
 $EspFlashUrl="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${Arch}.zip"
 $CargoBin="${env:USERPROFILE}\.cargo\bin"
 $EspFlashBin="${CargoBin}\cargo-espflash.exe"
-$RustDist="rust-${ToolchainVersion}-${Arch}"
+$RustDist="rust-${ToolchainVersion}-${DefaultHost}"
 $RustDistZipUrl="https://github.com/esp-rs/rust-build/releases/download/v${ToolchainVersion}/${RustDist}.zip"
 $IdfToolsPath="${HOME}/.espressif"
 $IdfToolXtensaElfClang="${IdfToolsPath}/tools/xtensa-esp32-elf-clang/${LlvmVersion}-${Arch}"

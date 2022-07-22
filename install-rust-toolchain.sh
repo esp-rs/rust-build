@@ -427,6 +427,22 @@ function install_system_packages() {
     fi
 }
 
+function install_system_packages() {
+    if [ -z "${SYSTEM_PACKAGES}" ]; then
+        return
+    fi
+
+    echo "Installing system packages: ${SYSTEM_PACKAGES}"
+
+    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin" ]]; then
+        command -v brew || {
+            echo "Warning: Unable to find command brew. Skipping installation of system package."
+            return
+        }
+        brew list "${SYSTEM_PACKAGES}" || brew install "${SYSTEM_PACKAGES}"
+    fi
+}
+
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rustup
 
