@@ -32,21 +32,21 @@ This repository contains:
 
 ## Xtensa Installation
 
-Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.0.0]
+Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.1.0]
 
 ### Download installer
 
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -58,11 +58,10 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
 #### Prerequisites
 
 - Linux:
-  - dependencies (command for Ubuntu/Debian):
-
+  - [Dependencies (command for Ubuntu/Debian)](https://github.com/esp-rs/esp-idf-template/blob/master/cargo/.devcontainer/Dockerfile#L16):
     ```sh
-    apt-get install -y git curl gcc ninja-build cmake libudev-dev \
-      python3 python3-pip libusb-1.0-0 libssl-dev pkg-config libtinfo5
+    apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils\
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7
     ```
 
 No prerequisites are needed for macOS
@@ -84,7 +83,7 @@ Export variables are displayed at the end of the script.
 Installation of different version of toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.62.0.0 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.62.1.0 --export-file export-esp-rust.sh
 source export-esp-rust.sh
 ```
 
@@ -146,7 +145,7 @@ Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0
+choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0 -y
 ```
 
 #### Installation commands for PowerShell
@@ -173,7 +172,7 @@ Following instructions are specific for ESP32-C based on RISC-V architecture.
 Install the RISC-V target for Rust:
 
 ```sh
-rustup target add riscv32i-unknown-none-elf
+rustup target add riscv32imc-unknown-none-elf
 ```
 
 ## Building projects
@@ -275,4 +274,4 @@ resulting in a fully working environment to develop for ESP boards in Rust,
 flash and simulate projects with Wokwi from the container.
 
 Template projects [esp-template](https://github.com/esp-rs/esp-template/) and
-[esp-idf-template](https://github.com/esp-rs/esp-template/) include a question for Dev Containers support.
+[esp-idf-template](https://github.com/esp-rs/esp-idf-template/) include a question for Dev Containers support.
