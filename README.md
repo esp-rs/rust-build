@@ -51,7 +51,7 @@ Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.
 
 ### Linux and macOS
 
-Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
+The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture.
 
 Instructions for ESP-C series based on RISC-V architecture are described in [RISC-V section](#riscv-installation).
 
@@ -64,7 +64,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
     python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7
     ```
 
-No prerequisites are needed for macOS
+No prerequisites are needed for macOS.
 
 #### Installation commands
 
@@ -78,9 +78,9 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
 Export variables are displayed at the end of the script.
 > **Note**
-> If the export variables are added into the shell startup script, the shell may need to be refreshed.
+> If the export variables are added to the shell startup script, the shell may need to be refreshed.
 
-Installation of different version of toolchain:
+Installation of different version of the toolchain:
 
 ```
 ./install-rust-toolchain.sh --toolchain-version 1.62.1.0 --export-file export-esp-rust.sh
@@ -104,11 +104,11 @@ source export-esp-rust.sh
 
 ### Windows x86_64 GNU
 
-Following instructions describes deployment with GNU toolchain which does not depend on MSVC and does not requires Windows 10 SDK installation.
+The following instructions describe deployment with the GNU toolchain. If you're using Visual Studio with Windows 10 SDK, consider option [Windows x86_64 MSVC](#windows-x86_64-msvc).
 
 #### Prerequisites x86_64 GNU
 
-Install MinGW x86_64 e.g. from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
+Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
 
 ```powershell
 choco install 7zip
@@ -120,7 +120,7 @@ $env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
 Install ESP-IDF using Windows installer https://dl.espressif.com/dl/esp-idf/
 #### Installation commands for PowerShell
 
-In activated ESP-IDF PowerShell enter following command:
+Activate ESP-IDF PowerShell and enter following command:
 
 ```powershell
 git clone https://github.com/esp-rs/rust-build.git
@@ -131,7 +131,7 @@ source Export-EspRust.ps1
 
 ### Windows x86_64 MSVC
 
-Following instructions are specific for ESP32 and ESP32-S series based on Xtensa architecture.
+The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture. If you do not have Visual Studio and Windows 10 SDK installed, consider the alternative option [Windows x86_64 GNU](#windows-x86_64-gnu).
 
 Instructions for ESP-C series based on RISC-V architecture are described  in [RISC-V section](#riscv-installation).
 
@@ -158,7 +158,7 @@ cd rust-build
 
 Export variables are displayed at the end of the output from the script.
 
-Installation of different version of toolchain:
+Installation of different versions of toolchain:
 
 ```sh
 ./Install-RustToolchain.ps1 -ToolchainVersion 1.62.1.0 -ExportFile Export-EspRust.ps1
@@ -167,7 +167,7 @@ source ./Export-EspRust.ps1
 
 ## RISC-V Installation
 
-Following instructions are specific for ESP32-C based on RISC-V architecture.
+The following instructions are specific for ESP32-C based on RISC-V architecture.
 
 Install the RISC-V target for Rust:
 
@@ -243,11 +243,11 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
 
 ## Containers with Rust ESP environment
 
-Alternatively, some container images, with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
+Alternatively, some container images with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
 - [idf-rust](https://hub.docker.com/r/espressif/idf-rust)
- - Some tags contains only the toolchain. The naming convention for those tags is: `<xtensa-version>`
- - Some tags contains full environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
+ - Some tags contain only the toolchain. The naming convention for those tags is: `<xtensa-version>`
+ - Some tags contain full environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
    and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
    in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
    and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
@@ -259,7 +259,7 @@ Podman example with mapping multiple /dev/ttyUSB from host computer to the conta
 podman run --device /dev/ttyUSB0 --device /dev/ttyUSB1 -it docker.io/espressif/idf-rust-examples
 ```
 
-Docker (does not support flashing from container):
+Docker (does not support flashing from a container):
 
 ```sh
 docker run -it espressif/idf-rust-examples
@@ -269,7 +269,7 @@ If you are using the `idf-rust-examples` image, instructions will be displayed o
 
 ## Dev Containers
 
-Dev Container support is offered for VS Code, Gitpod and GitHub Codespaces,
+Dev Container support is offered for VS Code, Gitpod, and GitHub Codespaces,
 resulting in a fully working environment to develop for ESP boards in Rust,
 flash and simulate projects with Wokwi from the container.
 
