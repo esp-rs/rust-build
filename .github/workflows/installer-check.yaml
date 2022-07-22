@@ -4,21 +4,25 @@ on:
   push:
     paths:
       - "install-rust-toolchain.sh"
+      - ".github/workflows/installer-check.yaml"
   pull_request:
     paths:
       - "install-rust-toolchain.sh"
+      - ".github/workflows/installer-check.yaml"
   workflow_dispatch:
 
 jobs:
   esp-idf-v4-4:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
-        board: ['esp32', 'esp32s3', 'esp32s3', 'esp32c3']
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
@@ -28,7 +32,7 @@ jobs:
           sudo apt-get install ninja-build
       - name: Install toolchain
         run: |
-          bash install-rust-toolchain.sh \
+          ./install-rust-toolchain.sh \
           --extra-crates "ldproxy cargo-generate" \
           --build-target "${{ matrix.board }}" \
           --esp-idf-version "release/v4.4" \
@@ -42,6 +46,9 @@ jobs:
           cargo build
   # esp-idf-master:
   #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
   #   strategy:
   #     fail-fast: false
   #     matrix:
@@ -58,7 +65,7 @@ jobs:
   #         sudo apt-get install ninja-build
   #     - name: Install toolchain
   #       run: |
-  #         bash install-rust-toolchain.sh \
+  #         ./install-rust-toolchain.sh \
   #         --extra-crates "ldproxy cargo-generate" \
   #         --build-target "${{ matrix.board }}" \
   #         --esp-idf-version "master" \
@@ -72,19 +79,21 @@ jobs:
   #         cargo build
   bare-metal:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
     strategy:
       fail-fast: false
       matrix:
-        board: ['esp32', 'esp32s3', 'esp32s3', 'esp32c3']
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
       - name: Install toolchain
         run: |
-          bash install-rust-toolchain.sh \
+          ./install-rust-toolchain.sh \
           --extra-crates "ldproxy cargo-generate" \
           --build-target "${{ matrix.board }}" \
           --export-file  "${HOME}/export-esp.sh"
@@ -94,13 +103,14 @@ jobs:
           cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false
           cd test-${{ matrix.board }}
           cargo build
-  minified-llvm:
+  crate-check:
     strategy:
-      fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        minified-llvm: ['YES', 'NO']
     runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -108,6 +118,24 @@ jobs:
           ref: ${{ github.event.inputs.rust-build-branch }}
       - name: Install toolchain
         run: |
-          bash install-rust-toolchain.sh \
+          ./install-rust-toolchain.sh \
+          --extra-crates "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"
+  minified-llvm:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        minified-llvm: ["YES", "NO"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh \
           --minified-llvm "${{ matrix.minified-llvm }}"
-
