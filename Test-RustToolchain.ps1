@@ -2,7 +2,10 @@
 param (
     [Parameter()]
     [String]
-    $ToolchainVersion = '1.62.0.0',
+    [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu")]
+    $DefaultHost = "x86_64-pc-windows-msvc",
+    [String]
+    $ToolchainVersion = '1.62.1.0',
     [String]
     [ValidateSet("xtensa-esp32-espidf", "xtensa-esp32s2-espidf", "xtensa-esp32s3-espidf", "riscv32imc-esp-espidf")]
     $Target = "xtensa-esp32-espidf",
@@ -24,6 +27,7 @@ $ErrorActionPreference = "Stop"
 $RustStdDemo = "rust-esp32-std-demo"
 
 "Processing configuration:"
+"-DefaultHost      = ${DefaultHost}"
 "-Features         = ${Features}"
 "-LlvmVersion      = ${LlvmVersion}"
 "-Target           = ${Target}"
@@ -37,6 +41,7 @@ $ExportFile="Export-Rust-${ToolchainName}.ps1"
 
 if ("skip" -ne $InstallationMode) {
     ./Install-RustToolchain.ps1 `
+        -DefaultHost ${DefaultHost} `
         -ExportFile ${ExportFile} `
         -LlvmVersion ${LlvmVersion} `
         -InstallationMode ${InstallationMode} `
