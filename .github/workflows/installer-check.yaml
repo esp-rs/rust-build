@@ -140,3 +140,40 @@ jobs:
         run: |
           ./install-rust-toolchain.sh \
           --minified-llvm "${{ matrix.minified-llvm }}"
+  installation-modes:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "install"
+      - name: Reinstall toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "reinstall"
+      - name: Uninstall toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "uninstall"
+  test-arguments:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        arguments: ["", "--toolchain-version 1.62.1.0 --export-file export-esp-rust.sh", "--build-target all"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh "${{ matrix.arguments }}"
