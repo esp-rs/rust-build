@@ -108,6 +108,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
+        extra-crates: ["", "ldproxy", "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -118,9 +119,7 @@ jobs:
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
       - name: Install toolchain
-        run: |
-          ./install-rust-toolchain.sh \
-          --extra-crates "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"
+        run: ./install-rust-toolchain.sh --extra-crates "${{ matrix.extra-crates }}"
   minified-llvm:
     strategy:
       fail-fast: false
