@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ["esp32", "esp32s3", "esp32s3", "esp32c3", "all"]
+        board: ["esp32", "esp32s2", "esp32s3", "esp32c3", "all"]
         # esp-idf: ["master", "v4.4"]
         # Use only v4.4 as master is failing due to: https://github.com/esp-rs/esp-idf-sys/issues/99
         esp-idf: ["v4.4"]
