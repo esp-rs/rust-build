@@ -244,12 +244,15 @@ function install_rust_xtensa_toolchain() {
     if [[ -z "${ESP_IDF_VERSION}" ]]; then
         if [[ "${BUILD_TARGET}" =~ "esp32s3" ]]; then
             install_gcc "xtensa-esp32s3-elf"
+            IDF_SYSROOT_ESP32S3=$IDF_TOOL_GCC
         fi
         if [[ "${BUILD_TARGET}" =~ "esp32s2" ]]; then
             install_gcc "xtensa-esp32s2-elf"
+            IDF_SYSROOT_ESP32S2=$IDF_TOOL_GCC
         fi
         if [[ "${BUILD_TARGET}" =~ esp32[,|\ ] || "${BUILD_TARGET}" =~ esp32$ ]]; then
             install_gcc "xtensa-esp32-elf"
+            IDF_SYSROOT_ESP32=$IDF_TOOL_GCC
         fi
     fi
 }
@@ -623,6 +626,7 @@ if [[ -n "${ESP_IDF_VERSION}" ]]; then
     install_esp_idf
 elif [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
     install_gcc "riscv32-esp-elf"
+    IDF_SYSROOT_ESP32C3=$IDF_TOOL_GCC
 fi
 install_extra_crates
 
@@ -642,6 +646,19 @@ if [[ -n "${EXPORT_FILE:-}" ]]; then
         echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
+    fi
+
+    if [[ -n "$IDF_SYSROOT_ESP32C3" ]]; then
+        echo "export IDF_SYSROOT_ESP32C3=\"$IDF_SYSROOT_ESP32C3\"" >>"${EXPORT_FILE}"
+    fi
+    if [[ -n "$IDF_SYSROOT_ESP32S3" ]]; then
+        echo "export IDF_SYSROOT_ESP32S3=\"$IDF_SYSROOT_ESP32S3\"" >>"${EXPORT_FILE}"
+    fi
+    if [[ -n "$IDF_SYSROOT_ESP32S2" ]]; then
+        echo "export IDF_SYSROOT_ESP32S2=\"$IDF_SYSROOT_ESP32S2\"" >>"${EXPORT_FILE}"
+    fi
+    if [[ -n "$IDF_SYSROOT_ESP32" ]]; then
+        echo "export IDF_SYSROOT_ESP32=\"$IDF_SYSROOT_ESP32\"" >>"${EXPORT_FILE}"
     fi
 else
     PROFILE_NAME="your default shell"
