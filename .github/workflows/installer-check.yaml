@@ -168,7 +168,7 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        arguments: ["", "--toolchain-version ${{ xtensa-toolchain-version }} --export-file export-esp-rust.sh", "--build-target all"]
+        arguments: ["", "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh", "--build-target all"]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
