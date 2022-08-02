@@ -111,7 +111,7 @@ The following instructions describe deployment with the GNU toolchain. If you're
 Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
 
 ```powershell
-choco install 7zip
+choco install 7zip -y
 Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
 7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
 $env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
