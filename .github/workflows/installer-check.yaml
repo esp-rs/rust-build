@@ -107,6 +107,7 @@ jobs:
           cd test-${{ matrix.board }}
           cargo build
   crate-check:
+    if: github.event_name != 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -124,6 +125,7 @@ jobs:
       - name: Install toolchain
         run: ./install-rust-toolchain.sh --extra-crates "${{ matrix.extra-crates }}"
   minified-llvm:
+    if: github.event_name != 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -143,6 +145,7 @@ jobs:
           ./install-rust-toolchain.sh \
           --minified-llvm "${{ matrix.minified-llvm }}"
   installation-modes:
+    if: github.event_name != 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -164,6 +167,7 @@ jobs:
         run: |
           ./install-rust-toolchain.sh --installation-mode "uninstall"
   test-arguments:
+    if: github.event_name != 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
