@@ -32,21 +32,21 @@ This repository contains:
 
 ## Xtensa Installation
 
-Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.62.1.0]
+Download installer from Release section: [https://github.com/esp-rs/rust-build/releases/tag/v1.63.0.0]
 
 ### Download installer
 
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.63.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.63.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -83,7 +83,7 @@ Export variables are displayed at the end of the script.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.62.1.0 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.63.0.0 --export-file export-esp-rust.sh
 source export-esp-rust.sh
 ```
 
@@ -161,7 +161,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.62.1.0 -ExportFile Export-EspRust.ps1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.63.0.0 -ExportFile Export-EspRust.ps1
 source ./Export-EspRust.ps1
 ```
 
