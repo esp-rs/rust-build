@@ -126,8 +126,8 @@ Activate ESP-IDF PowerShell and enter following command:
 ```powershell
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
-./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu  -ExportFile Export-EspRust.ps1
-source Export-EspRust.ps1
+./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu -ExportFile Export-EspRust.ps1
+. ./Export-EspRust.ps1
 ```
 
 ### Windows x86_64 MSVC
@@ -163,7 +163,7 @@ Installation of different versions of toolchain:
 
 ```sh
 ./Install-RustToolchain.ps1 -ToolchainVersion 1.63.0.0 -ExportFile Export-EspRust.ps1
-source ./Export-EspRust.ps1
+. ./Export-EspRust.ps1
 ```
 
 ## RISC-V Installation
