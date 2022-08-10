@@ -94,13 +94,14 @@ source export-esp-rust.sh
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
 - `-f|--export-file`: Destination of the export file generated.
 - `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
+- `-k|--minified-llvm`: Use minified LLVM. Possible values: [`YES, NO`]. Defaults to: `YES`
 - `-l|--llvm-version`: LLVM version.
-- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]
+- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]. Defaults to: `NO`
 - `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
 - `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
 - `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
-- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]
+- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]. Defaults to: `YES`
 
 ### Windows x86_64 GNU
 
