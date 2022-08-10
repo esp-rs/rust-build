@@ -535,10 +535,10 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    fi
-    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
+    # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+    #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    # fi
+    # GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -547,10 +547,10 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
     SYSTEM_PACKAGES=""
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    fi
-    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
+    # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
+    #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
+    # fi
+    # GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
