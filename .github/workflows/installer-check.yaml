@@ -1,5 +1,8 @@
 name: Test installer by building template projects
 
+env:
+  xtensa-toolchain-version: '1.62.1.0'
+
 on:
   push:
     paths:
@@ -104,10 +107,12 @@ jobs:
           cd test-${{ matrix.board }}
           cargo build
   crate-check:
+    if: github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
+        extra-crates: ["", "ldproxy", "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -118,10 +123,9 @@ jobs:
         with:
           ref: ${{ github.event.inputs.rust-build-branch }}
       - name: Install toolchain
-        run: |
-          ./install-rust-toolchain.sh \
-          --extra-crates "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"
+        run: ./install-rust-toolchain.sh --extra-crates "${{ matrix.extra-crates }}"
   minified-llvm:
+    if: github.event_name == 'workflow_dispatch'
     strategy:
       fail-fast: false
       matrix:
@@ -140,3 +144,42 @@ jobs:
         run: |
           ./install-rust-toolchain.sh \
           --minified-llvm "${{ matrix.minified-llvm }}"
+  installation-modes:
+    if: github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "install"
+      - name: Reinstall toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "reinstall"
+      - name: Uninstall toolchain
+        run: |
+          ./install-rust-toolchain.sh --installation-mode "uninstall"
+  test-arguments:
+    if: github.event_name == 'workflow_dispatch'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        arguments: ["", "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh", "--build-target all"]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh "${{ matrix.arguments }}"

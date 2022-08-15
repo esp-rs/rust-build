@@ -39,14 +39,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.63.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.62.1.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.63.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -60,7 +60,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
 - Linux:
   - [Dependencies (command for Ubuntu/Debian)](https://github.com/esp-rs/esp-idf-template/blob/master/cargo/.devcontainer/Dockerfile#L16):
     ```sh
-    apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils\
+    apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils \
     python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7
     ```
 
@@ -83,7 +83,7 @@ Export variables are displayed at the end of the script.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.62.1.0 --export-file export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.63.0.0 --export-file export-esp-rust.sh
 source export-esp-rust.sh
 ```
 
@@ -94,13 +94,14 @@ source export-esp-rust.sh
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
 - `-f|--export-file`: Destination of the export file generated.
 - `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
+- `-k|--minified-llvm`: Use minified LLVM. Possible values: [`YES, NO`]. Defaults to: `YES`
 - `-l|--llvm-version`: LLVM version.
-- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]
+- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]. Defaults to: `NO`
 - `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
 - `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
 - `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
-- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]
+- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]. Defaults to: `YES`
 
 ### Windows x86_64 GNU
 
@@ -111,7 +112,7 @@ The following instructions describe deployment with the GNU toolchain. If you're
 Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
 
 ```powershell
-choco install 7zip
+choco install 7zip -y
 Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
 7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
 $env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
@@ -125,8 +126,8 @@ Activate ESP-IDF PowerShell and enter following command:
 ```powershell
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
-./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu  -ExportFile Export-EspRust.ps1
-source Export-EspRust.ps1
+./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu -ExportFile Export-EspRust.ps1
+. ./Export-EspRust.ps1
 ```
 
 ### Windows x86_64 MSVC
@@ -161,8 +162,8 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.62.1.0 -ExportFile Export-EspRust.ps1
-source ./Export-EspRust.ps1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.63.0.0 -ExportFile Export-EspRust.ps1
+. ./Export-EspRust.ps1
 ```
 
 ## RISC-V Installation
