@@ -10,7 +10,7 @@ on:
       release_version:
         description: 'Release version - long 4 places for tag'
         required: true
-        default: '1.63.0.1'
+        default: '1.63.0.0'
       rust_patch_version:
         description: 'Release patch version for generation - 3 places for tag'
         required: true
