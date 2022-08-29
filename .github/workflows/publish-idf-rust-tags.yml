@@ -120,4 +120,5 @@ jobs:
             XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
             ESP_BOARD=${{ matrix.board }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }}
+          push: true
           platforms: linux/amd64, linux/arm64
