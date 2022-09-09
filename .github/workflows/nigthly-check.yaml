@@ -9,7 +9,7 @@ env:
 
 jobs:
   current-nightly:
-    name: Build | Clippy | Fmt Check (esp32c3)
+    name: Current nightly
     runs-on: ubuntu-latest
     steps:
       - name: Setup | Rust
@@ -33,11 +33,11 @@ jobs:
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
       - name: Generate
-        run: cargo generate --git https://github.com/esp-rs/esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
+        run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
       - name: Build Project
-        run: cd test-esp32c3; cargo build
+        run: cd test; cargo build
   prior-nightly:
-    name: Build | Clippy | Fmt Check (esp32c3)
+    name: Prior nightly
     runs-on: ubuntu-latest
     steps:
       - name: Set env
@@ -64,11 +64,11 @@ jobs:
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
       - name: Generate
-        run: cargo generate --git https://github.com/esp-rs/esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
+        run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
       - name: Build Project
-        run: cd test-esp32c3; cargo build
+        run: cd test; cargo build
   next-prior-nightly:
-    name: Build | Clippy | Fmt Check (esp32c3)
+    name: Next prior nightly
     runs-on: ubuntu-latest
     steps:
       - name: Set env
@@ -95,6 +95,6 @@ jobs:
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
       - name: Generate
-        run: cargo generate --git https://github.com/esp-rs/esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
+        run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
       - name: Build Project
-        run: cd test-esp32c3; cargo build
+        run: cd test; cargo build
