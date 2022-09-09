@@ -3,6 +3,7 @@ name: Nightly checks
 on:
   schedule:
     - cron: "50 7 * * *"
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
