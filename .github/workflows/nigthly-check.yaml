@@ -99,9 +99,7 @@ jobs:
     name: Build | Clippy | Fmt Check (esp32c3)
     runs-on: ubuntu-latest
     steps:
-      - uses: ajilraju/actions-date@v0.1
-        id: date
-        with:
-          args: date --date='2 days ago'
-      - name: Print
-        run: echo ${{ steps.date.outputs }}
+      - name: Set env
+        run: echo "GITHUB_SHA_SHORT=$(date -d '-1 day' '+%Y%d%m')" >> $GITHUB_ENV
+      - name: Test
+        run: echo $GITHUB_SHA_SHORT
