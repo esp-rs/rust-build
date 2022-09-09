@@ -59,8 +59,7 @@ jobs:
         with:
           format: YYYY-MM-DD
       - name: Set environment
-        env:
-          NIGHTLY_VERSION: "nightly-${{ steps.current-date.outputs.time }}"
+        run: echo "NIGHTLY_VERSION=nightly-${{ steps.current-date.outputs.time }}" >> $GITHUB_ENV
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
         with:
