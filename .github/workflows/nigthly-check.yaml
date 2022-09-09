@@ -10,7 +10,7 @@ env:
   rust_toolchain: nightly
 
 jobs:
-  nightly:
+  current-nightly:
     name: Build | Clippy | Fmt Check (esp32c3)
     runs-on: ubuntu-latest
     steps:
@@ -49,53 +49,7 @@ jobs:
 
       - name: Build Project
         run: cd test-esp32c3; cargo build
-  # previous-nightly:
-  #   name: Build | Clippy | Fmt Check (esp32c3)
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Get current date
-  #       uses: josStorer/get-current-time@v2.0.1
-  #       id: current-date
-  #       with:
-  #         format: YYYY-MM-DD
-  #     - name: Set environment
-  #       run: echo "NIGHTLY_VERSION=nightly-${{ steps.current-date.outputs.time }}" >> $GITHUB_ENV
-  #     - name: Setup | Rust
-  #       uses: actions-rs/toolchain@v1
-  #       with:
-  #         toolchain: ${{ env.NIGHTLY_VERSION }}
-  #         components: rustfmt, clippy
-
-  #     - name: Setup | Std
-  #       run: rustup component add rust-src --toolchain ${{ env.NIGHTLY_VERSION }}-x86_64-unknown-linux-gnu
-
-  #     - name: Setup | Default to nightly
-  #       run: rustup default ${{ env.NIGHTLY_VERSION }}
-
-  #     - name: Setup | cargo-generate (binary)
-  #       id: binaries
-  #       continue-on-error: true
-  #       run: |
-  #         sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
-  #         tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
-  #         chmod u+x /home/runner/.cargo/bin/cargo-generate
-
-  #     - name: Setup | cargo-generate (cargo)
-  #       if: steps.binaries.outcome != 'success'
-  #       run: cargo install cargo-generate
-
-  #     - uses: Swatinem/rust-cache@v1
-
-  #     - uses: actions/checkout@v3
-  #       with:
-  #         path: /home/runner/work/esp-template/esp-template/github-esp-template
-
-  #     - name: Generate
-  #       run: cargo generate --path /home/runner/work/esp-template/esp-template/github-esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
-
-  #     - name: Build Project
-  #       run: cd test-esp32c3; cargo build
-  previous-nightly:
+  prior-nightly:
     name: Build | Clippy | Fmt Check (esp32c3)
     runs-on: ubuntu-latest
     steps:
@@ -107,7 +61,6 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly-${{ env.NIGHTLY_VERSION }}
-          components: rustfmt, clippy
 
       - name: Setup | Std
         run: rustup component add rust-src --toolchain nightly-${{ env.NIGHTLY_VERSION }}-x86_64-unknown-linux-gnu
@@ -136,5 +89,39 @@ jobs:
       - name: Generate
         run: cargo generate --path /home/runner/work/esp-template/esp-template/github-esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
 
+      - name: Build Project
+        run: cd test-esp32c3; cargo build
+  next-prior-nightly:
+    name: Build | Clippy | Fmt Check (esp32c3)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set env
+        run: echo "NIGHTLY_VERSION=$(date -d '-2 day' '+%Y-%d-%m')" >> $GITHUB_ENV
+      - name: Test
+        run: echo $NIGHTLY_VERSION
+      - name: Setup | Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-${{ env.NIGHTLY_VERSION }}
+      - name: Setup | Std
+        run: rustup component add rust-src --toolchain nightly-${{ env.NIGHTLY_VERSION }}-x86_64-unknown-linux-gnu
+      - name: Setup | Default to nightly
+        run: rustup default nightly-${{ env.NIGHTLY_VERSION }}
+      - name: Setup | cargo-generate (binary)
+        id: binaries
+        continue-on-error: true
+        run: |
+          sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
+          tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
+          chmod u+x /home/runner/.cargo/bin/cargo-generate
+      - name: Setup | cargo-generate (cargo)
+        if: steps.binaries.outcome != 'success'
+        run: cargo install cargo-generate
+      - uses: Swatinem/rust-cache@v1
+      - uses: actions/checkout@v3
+        with:
+          path: /home/runner/work/esp-template/esp-template/github-esp-template
+      - name: Generate
+        run: cargo generate --path /home/runner/work/esp-template/esp-template/github-esp-template --name test-esp32c3 --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
       - name: Build Project
         run: cd test-esp32c3; cargo build
