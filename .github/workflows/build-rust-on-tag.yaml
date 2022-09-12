@@ -3,7 +3,7 @@ name: create-rust-release
 on:
   push:
     tags:
-    - 'v*'
+      - "v*"
 
 jobs:
   create_release:
