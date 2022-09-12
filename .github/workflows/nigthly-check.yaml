@@ -65,7 +65,7 @@ jobs:
       - name: Generate
         run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false
       - name: Build Project
-        run: cd test; cargo +{{ env.NIGHTLY_VERSION }} build
+        run: cd test; cargo +${{ env.NIGHTLY_VERSION }} build
   next-prior-nightly:
     name: Next prior nightly
     runs-on: ubuntu-latest
