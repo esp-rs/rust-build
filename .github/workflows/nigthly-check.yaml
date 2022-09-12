@@ -42,7 +42,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set env
-        run: echo "NIGHTLY_VERSION=$(date -d '-1 day' '+%Y-%d-%m')" >> $GITHUB_ENV
+        run: echo "NIGHTLY_VERSION=$(date -d '-1 day' '+%Y-%m-%d')" >> $GITHUB_ENV
       - name: Test
         run: echo $NIGHTLY_VERSION
       - name: Setup | Rust
@@ -73,7 +73,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Set env
-        run: echo "NIGHTLY_VERSION=$(date -d '-2 day' '+%Y-%d-%m')" >> $GITHUB_ENV
+        run: echo "NIGHTLY_VERSION=$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
       - name: Test
         run: echo $NIGHTLY_VERSION
       - name: Setup | Rust
