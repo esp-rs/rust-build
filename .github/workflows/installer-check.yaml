@@ -1,7 +1,7 @@
 name: Test installer by building template projects
 
 env:
-  xtensa-toolchain-version: '1.62.1.0'
+  xtensa-toolchain-version: "1.62.1.0"
 
 on:
   push:
@@ -103,7 +103,7 @@ jobs:
       - name: Build template project
         run: |
           source ${HOME}/export-esp.sh
-          cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false
+          cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false -d alloc=false
           cd test-${{ matrix.board }}
           cargo build
   crate-check:
@@ -112,7 +112,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        extra-crates: ["", "ldproxy", "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"]
+        extra-crates:
+          [
+            "",
+            "ldproxy",
+            "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash",
+          ]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -172,7 +177,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        arguments: ["", "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh", "--build-target all"]
+        arguments:
+          [
+            "",
+            "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh",
+            "--build-target all",
+          ]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
