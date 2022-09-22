@@ -1,10 +1,9 @@
-name: 'Setup libudev-dev'
-description: 'Install libudev-dev'
+name: "Setup libudev-dev"
+description: "Install libudev-dev"
 
 runs:
   using: "composite"
   steps:
-
     - name: Install libudev-dev
       if: startsWith(matrix.os, 'ubuntu')
       shell: bash

@@ -10,7 +10,7 @@ on:
       toolchain-version:
         description: "Version of Rust toolchain"
         required: true
-        default: '1.64.0.0'
+        default: "1.64.0.0"
 
 jobs:
   esp-idf:

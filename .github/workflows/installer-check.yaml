@@ -1,7 +1,7 @@
 name: Test installer by building template projects
 
 env:
-  xtensa-toolchain-version: '1.62.1.0'
+  xtensa-toolchain-version: "1.62.1.0"
 
 on:
   push:
@@ -112,7 +112,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        extra-crates: ["", "ldproxy", "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash"]
+        extra-crates:
+          [
+            "",
+            "ldproxy",
+            "espflash cargo-espflash ldproxy cargo-generate wokwi-server web-flash",
+          ]
     runs-on: ${{ matrix.os }}
     defaults:
       run:
@@ -172,7 +177,12 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        arguments: ["", "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh", "--build-target all"]
+        arguments:
+          [
+            "",
+            "--toolchain-version $xtensa-toolchain-version --export-file export-esp-rust.sh",
+            "--build-target all",
+          ]
     runs-on: ${{ matrix.os }}
     defaults:
       run:

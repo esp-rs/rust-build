@@ -1,5 +1,5 @@
-name: 'Upload to github releases'
-description: 'Upload the final built archive to github'
+name: "Upload to github releases"
+description: "Upload the final built archive to github"
 
 # In addition to uploading the file to the release
 # * This also turns a tag into a release if one doesn't exist already
@@ -11,11 +11,8 @@ description: 'Upload the final built archive to github'
 runs:
   using: "composite"
   steps:
-
     - name: Upload Release Asset
       uses: softprops/action-gh-release@v1
       with:
-        tag_name:
-          v${{ env.release_version }}
-        files:
-          ${{ env.asset_name }}
+        tag_name: v${{ env.release_version }}
+        files: ${{ env.asset_name }}

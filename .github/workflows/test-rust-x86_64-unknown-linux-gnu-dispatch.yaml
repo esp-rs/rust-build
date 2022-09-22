@@ -4,37 +4,37 @@ on:
   workflow_dispatch:
     inputs:
       rust_build_branch:
-        description: 'Branch with test scripts'
+        description: "Branch with test scripts"
         required: true
-        default: 'main'
+        default: "main"
       toolchain_version:
-        description: 'Version of Rust IDF toolchain'
+        description: "Version of Rust IDF toolchain"
         required: true
-        default: '1.64.0.0'
+        default: "1.64.0.0"
       esp_idf_version:
-        description: 'Version of ESP-IDF for the build'
+        description: "Version of ESP-IDF for the build"
         required: true
-        default: 'release/v4.4'
+        default: "release/v4.4"
       project:
-        description: 'Name of project for the build'
+        description: "Name of project for the build"
         required: true
-        default: 'rust-esp32-std-demo'
+        default: "rust-esp32-std-demo"
       project_repo:
-        description: 'Git repository of the project'
+        description: "Git repository of the project"
         required: true
-        default: 'https://github.com/ivmarkov/rust-esp32-std-demo.git'
+        default: "https://github.com/ivmarkov/rust-esp32-std-demo.git"
       features:
-        description: 'Features for the build, space separated list'
+        description: "Features for the build, space separated list"
         required: false
-        default: ''
+        default: ""
       test_mode:
-        description: 'Testing mode: build, flash, monitor'
+        description: "Testing mode: build, flash, monitor"
         required: true
-        default: 'build'
+        default: "build"
       runs_on:
-        description: 'runs_on Github runner name'
+        description: "runs_on Github runner name"
         required: true
-        default: 'ubuntu-latest'
+        default: "ubuntu-latest"
 
 jobs:
   build-idf-rust-examples:
@@ -42,7 +42,13 @@ jobs:
     runs-on: ${{ github.event.inputs.runs_on }}
     strategy:
       matrix:
-        target: [ xtensa-esp32-espidf, xtensa-esp32s2-espidf, xtensa-esp32s3-espidf, riscv32imc-esp-espidf ]
+        target:
+          [
+            xtensa-esp32-espidf,
+            xtensa-esp32s2-espidf,
+            xtensa-esp32s3-espidf,
+            riscv32imc-esp-espidf,
+          ]
       fail-fast: false
 
     steps:

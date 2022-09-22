@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       rust_build_branch:
-        description: 'Branch with test scripts'
+        description: "Branch with test scripts"
         required: true
-        default: 'main'
+        default: "main"
       toolchain_version:
-        description: 'Version of Rust IDF toolchain'
+        description: "Version of Rust IDF toolchain"
         required: true
-        default: '1.64.0.0'
+        default: "1.64.0.0"
 
 jobs:
   build-idf-rust-examples:
