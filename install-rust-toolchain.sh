@@ -24,6 +24,7 @@ EXTRA_CRATES="ldproxy cargo-espflash"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
+IS_SCCACHE_INSTALLED=0
 SYSTEM_PACKAGES="openssl@3"
 EXPORT_FILE="export-esp.sh"
 
@@ -388,9 +389,12 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
-    if [[ "${EXTRA_CRATES}" =~ "sccache" ]] && [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
-        install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}"
-        EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        IS_SCCACHE_INSTALLED=1
+        if [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
+            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}"
+            EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
+        fi
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
@@ -649,6 +653,10 @@ if [[ -n "${EXPORT_FILE:-}" ]]; then
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
     fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0" >>"${EXPORT_FILE}"
+        echo "export RUSTC_WRAPPER=$(which sccache)" >>"${EXPORT_FILE}"
+    fi
 else
     PROFILE_NAME="your default shell"
     if grep -q "zsh" <<<"$SHELL"; then
@@ -665,5 +673,9 @@ else
         echo "source ${IDF_PATH}/export.sh"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
+    fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0"
+        echo "export RUSTC_WRAPPER=$(which sccache)"
     fi
 fi
