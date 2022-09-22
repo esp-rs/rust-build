@@ -1,5 +1,5 @@
-name: 'Setup Env Variables - Rust Build'
-description: 'Setup Env Variables - Rust Build'
+name: "Setup Env Variables - Rust Build"
+description: "Setup Env Variables - Rust Build"
 
 # used for rust build
 
@@ -12,7 +12,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-
     - name: Setup Env Variables - Common
       shell: bash
       run: |
@@ -46,7 +45,6 @@ runs:
 
         # asset name for release
         echo "asset_name=rust-${{ github.event.inputs.release_version }}-${{ matrix.target_name }}.zip" >> $GITHUB_ENV
-
 
     - name: Setup Env Variables - Unix
       if: startsWith(matrix.os, 'macos') || startsWith(matrix.os, 'ubuntu')

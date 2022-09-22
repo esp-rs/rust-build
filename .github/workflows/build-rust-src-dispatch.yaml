@@ -4,21 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       upload_artifacts:
-        description: 'Upload final artifacts to Release?'
+        description: "Upload final artifacts to Release?"
         required: true
-        default: 'yes'
+        default: "yes"
       rust_build_branch:
-        description: 'Branch of rust-build to use'
+        description: "Branch of rust-build to use"
         required: true
-        default: 'main'
+        default: "main"
       release_version:
-        description: 'Release Version for generation'
+        description: "Release Version for generation"
         required: true
-        default: '1.63.0.2'
+        default: '1.64.0.0'
       rust_version:
-        description: 'Version of esp rust to use'
+        description: "Version of esp rust to use"
         required: true
-        default: 'nightly'
+        default: "nightly"
 
 jobs:
   get_release:
@@ -28,21 +28,21 @@ jobs:
     outputs:
       upload_url: ${{ steps.get_upload_url.outputs.url }}
     steps:
-    - uses: octokit/request-action@v2.x
-      id: get_release
-      with:
-        route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
-        owner: esp-rs
-        repo: rust-build
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    - name: get upload url
-      id: get_upload_url
-      run: |
-        url=$(echo "$response" | jq -r '.upload_url')
-        echo "::set-output name=url::$url"
-      env:
-        response:  ${{ steps.get_release.outputs.data }}
+      - uses: octokit/request-action@v2.x
+        id: get_release
+        with:
+          route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
+          owner: esp-rs
+          repo: rust-build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: get upload url
+        id: get_upload_url
+        run: |
+          url=$(echo "$response" | jq -r '.upload_url')
+          echo "::set-output name=url::$url"
+        env:
+          response: ${{ steps.get_release.outputs.data }}
 
   build-idf-rust:
     name: Build IDF Rust for ${{ matrix.os }}
@@ -51,12 +51,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ ubuntu-latest ]
+        os: [ubuntu-latest]
         include:
-        - os: ubuntu-latest
-          ASSET_PATH: 'rust/build/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz'
-          ASSET_NAME: 'rust-src-${{ github.event.inputs.release_version }}.tar.xz'
-          ASSET_CONTENT_TYPE: 'application/x-tar'
+          - os: ubuntu-latest
+            ASSET_PATH: "rust/build/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz"
+            ASSET_NAME: "rust-src-${{ github.event.inputs.release_version }}.tar.xz"
+            ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2

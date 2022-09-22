@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       rust_build_branch:
-        description: 'Branch with test scripts'
+        description: "Branch with test scripts"
         required: true
-        default: 'main'
+        default: "main"
 
 jobs:
   build-idf-rust-examples:
@@ -14,15 +14,15 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ windows-self-hosted ]
+        os: [windows-self-hosted]
         include:
-        - os: windows-self-hosted
-          ARCH: ''
-          TARGET: win-x64
-          ASSET_PATH: 'build/dist/esp.zip'
-          ASSET_NAME: 'rust-1.63.0.2-x86_64-pc-windows-msvc.zip'
-          ASSET_CONTENT_TYPE: 'application/zip'
-          LLVM_ROOT_OPTION: '--llvm-root=C:/llvm-project'
+          - os: windows-self-hosted
+            ARCH: ""
+            TARGET: win-x64
+            ASSET_PATH: "build/dist/esp.zip"
+            ASSET_NAME: "rust-1.64.0.0-x86_64-pc-windows-msvc.zip"
+            ASSET_CONTENT_TYPE: "application/zip"
+            LLVM_ROOT_OPTION: "--llvm-root=C:/llvm-project"
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -32,7 +32,7 @@ jobs:
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'
+          python-version: "3.8"
       - name: Setup Ninja
         if: ${{ matrix.os == 'macos-latest' || matrix.os == 'ubuntu-latest' || matrix.os == 'ubuntu-18.04' || matrix.os == 'windows-latest' }}
         uses: seanmiddleditch/gha-setup-ninja@master
@@ -55,4 +55,3 @@ jobs:
           . ..\Export-Rust.ps1
           $env:IDF_CCACHE_ENABLE=""
           cargo +esp build
-

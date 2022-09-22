@@ -11,8 +11,8 @@ ENV LANG=C.UTF-8
 #ENV ESP_IDF_TOOLS_INSTALL_DIR=custom:/opt/.espressif
 
 RUN apt-get update \
-    && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
-    pkg-config libtinfo5 libssl1.1
+  && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
+  pkg-config libtinfo5 libssl1.1
 
 #RUN useradd -c "ESP Rust" rust -d /opt; chown rust:rust /opt
 RUN adduser --disabled-password --gecos "" rust
