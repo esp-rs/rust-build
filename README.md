@@ -72,6 +72,7 @@ No prerequisites are needed for macOS.
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
 ./install-rust-toolchain.sh
+. export-esp.sh
 ```
 
 Run `./install-rust-toolchain.sh --help` for more information about arguments.
@@ -83,8 +84,8 @@ Export variables are displayed at the end of the script.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.64.0.0 --export-file export-esp-rust.sh
-source export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.64.0.0
+. export-esp.sh
 ```
 
 #### Arguments
@@ -92,7 +93,7 @@ source export-esp-rust.sh
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
-- `-f|--export-file`: Destination of the export file generated.
+- `-f|--export-file`: Destination of the export file generated. Defaults to: `export-esp.sh`
 - `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
 - `-k|--minified-llvm`: Use minified LLVM. Possible values: [`YES, NO`]. Defaults to: `YES`
 - `-l|--llvm-version`: LLVM version.

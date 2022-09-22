@@ -25,7 +25,7 @@ ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
 SYSTEM_PACKAGES="openssl@3"
-EXPORT_FILE=""
+EXPORT_FILE="export-esp.sh"
 
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
@@ -34,7 +34,7 @@ display_help() {
     echo "-c|--cargo-home                 Cargo path"
     echo "-d|--toolchain-destination      Toolchain installation folder."
     echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
-    echo "-f|--export-file                Destination of the export file generated."
+    echo "-f|--export-file                Destination of the export file generated. Defaults to: export-esp.sh"
     echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
     echo "-k|--minified-llvm              Use minified LLVM. Possible values [YES, NO]"
     echo "-l|--llvm-version               LLVM version"
