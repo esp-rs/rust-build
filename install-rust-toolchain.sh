@@ -614,34 +614,37 @@ if [[ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]]; then
     clear_download_cache
 fi
 
-# Either store the export instructions in a file to be sourced later or print instructions
-# directly to the terminal to be used immediately.
+printf "\n IMPORTANT!"
+printf "\n The following environment variables need to be updated:\n"
+if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+fi
+if [[ -n "${ESP_IDF_VERSION}" ]]; then
+    echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
+    echo ". ${IDF_PATH}/export.sh"
+else
+    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
+fi
+PROFILE_NAME="your default shell"
+if grep -q "zsh" <<<"$SHELL"; then
+    PROFILE_NAME=~/.zshrc
+elif grep -q "bash" <<<"$SHELL"; then
+    PROFILE_NAME=~/.bashrc
+fi
+printf "\n If you want to activate the ESP-RS environment in every terminal session automatically, you can the previous commands to \"$PROFILE_NAME\""
+printf "\n However, it is not recommended, as doing so activates  ESP-RS virtual environment in every terminal session (including those where  ESP-RS is not needed), defeating the purpose of the virtual environment and likely affecting other software."
+
 if [[ -n "${EXPORT_FILE:-}" ]]; then
+    printf "\n The reccomended approach is to source the export file: \". ${EXPORT_FILE}\""
+    printf "\n Note: This should be done in every terminal session.\n"
     echo -n "" >"${EXPORT_FILE}"
     if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
     fi
     if [[ -n "${ESP_IDF_VERSION}" ]]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
-        echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
+        echo ". ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
-    fi
-else
-    PROFILE_NAME="your default shell"
-    if grep -q "zsh" <<<"$SHELL"; then
-        PROFILE_NAME=~/.zshrc
-    elif grep -q "bash" <<<"$SHELL"; then
-        PROFILE_NAME=~/.bashrc
-    fi
-    echo "Add following command to $PROFILE_NAME"
-    if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
-        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
-    fi
-    if [[ -n "${ESP_IDF_VERSION}" ]]; then
-        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
-        echo "source ${IDF_PATH}/export.sh"
-    else
-        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
     fi
 fi
