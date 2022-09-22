@@ -25,7 +25,7 @@ ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
 IS_SCCACHE_INSTALLED=0
-SYSTEM_PACKAGES="openssl@3"
+SYSTEM_PACKAGES=""
 EXPORT_FILE="export-esp.sh"
 
 display_help() {
@@ -158,7 +158,7 @@ echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
 
 function install_rustup() {
     curl https://sh.rustup.rs -sSf | bash -s -- \
-        --default-toolchain none --profile minimal -y
+    --default-toolchain none --profile minimal -y
 }
 
 function install_rust_toolchain() {
@@ -184,8 +184,8 @@ function install_esp_idf() {
     NORMALIZED_VERSION=$(echo ${ESP_IDF_VERSION} | sed -e 's!/!-!g')
     export IDF_PATH="${IDF_TOOLS_PATH}/frameworks/esp-idf-${NORMALIZED_VERSION}"
     git clone --branch ${ESP_IDF_VERSION} --depth 1 --shallow-submodules \
-        --recursive https://github.com/espressif/esp-idf.git \
-        "${IDF_PATH}"
+    --recursive https://github.com/espressif/esp-idf.git \
+    "${IDF_PATH}"
     ${IDF_PATH}/install.sh "${BUILD_TARGET}"
     python3 ${IDF_PATH}/tools/idf_tools.py install cmake
     if [[ "${MINIFIED_ESP_IDF}" == "YES" ]]; then
@@ -295,10 +295,10 @@ function clear_download_cache() {
 
 function install_rust_riscv_toolchain() {
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-        --default-toolchain ${NIGHTLY_VERSION} \
-        --component rust-src \
-        --profile minimal \
-        --target riscv32imc-unknown-none-elf -y
+    --default-toolchain ${NIGHTLY_VERSION} \
+    --component rust-src \
+    --profile minimal \
+    --target riscv32imc-unknown-none-elf -y
 }
 
 function install_crate_from_zip() {
