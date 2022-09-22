@@ -388,6 +388,11 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]] && [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
+        install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}"
+        EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
+    fi
+
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
         if [[ -n "${WEB_FLASH_URL}" ]] && [[ -n "${WEB_FLASH_BIN}" ]]; then
             install_crate_from_zip "${WEB_FLASH_URL}" "${WEB_FLASH_BIN}"
@@ -470,12 +475,17 @@ LDPROXY_URL=""
 LDPROXY_BIN=""
 GENERATE_URL=""
 GENERATE_BIN=""
+SCCACHE_URL=""
+SCCACHE_BIN=""
 WOKWI_SERVER_URL=""
 WOKWI_SERVER_BIN=""
 WEB_FLASH_URL=""
 WEB_FLASH_BIN=""
 if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     GENERATE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)
+fi
+if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+    SCCACHE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/mozilla/sccache" | cut -d/ -f3- | tail -n1)
 fi
 
 # Configuration overrides for specific architectures
@@ -488,6 +498,10 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -501,6 +515,10 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
@@ -549,6 +567,10 @@ elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
