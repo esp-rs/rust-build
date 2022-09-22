@@ -181,9 +181,8 @@ Installation of different versions of toolchain:
 We need to update enviornment variables as some of the installed tools are not
 yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
 environment variable to avoid conflicts with the system Clang. The enviroment
-variables that we need to update are shown at the end of the install script and
-can stored in an export file. By default this export file is `Export-EspRust.ps1` but can
-be modified with the `-ExportFile` argument.
+variables that we need to update are stored in an export file. By default this
+export file is `Export-EspRust.ps1` but can be modified with the `-ExportFile` argument.
 
 We must set the environmet variables in every terminal session.
 
