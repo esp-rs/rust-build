@@ -349,6 +349,7 @@ function install_crate_from_xz() {
 function install_crate_from_tar_gz() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
+    STRIP_COMPONENTS="$3"
 
     if [[ -z "${CRATE_BIN}" ]]; then
         return
@@ -362,7 +363,11 @@ function install_crate_from_tar_gz() {
     if [[ ! -e "${CRATE_BIN}" ]]; then
         echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.tar.gz"
         curl -L "${CRATE_URL}" -o "${CRATE_BIN}.tar.gz"
-        tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        if [[ -z "${STRIP_COMPONENTS}" ]]; then
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        else
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin --strip-components 1
+        fi
         chmod u+x "${CRATE_BIN}"
         echo "Using ${CRATE_BIN} binary release"
     fi
@@ -392,7 +397,7 @@ function install_extra_crates() {
     if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
         IS_SCCACHE_INSTALLED=1
         if [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
-            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}"
+            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}" "STRIP"
             EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
         fi
     fi
