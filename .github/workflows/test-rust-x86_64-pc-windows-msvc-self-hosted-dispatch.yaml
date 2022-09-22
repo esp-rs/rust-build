@@ -20,7 +20,7 @@ jobs:
           ARCH: ''
           TARGET: win-x64
           ASSET_PATH: 'build/dist/esp.zip'
-          ASSET_NAME: 'rust-1.63.0.2-x86_64-pc-windows-msvc.zip'
+          ASSET_NAME: 'rust-1.64.0.0-x86_64-pc-windows-msvc.zip'
           ASSET_CONTENT_TYPE: 'application/zip'
           LLVM_ROOT_OPTION: '--llvm-root=C:/llvm-project'
     steps:
