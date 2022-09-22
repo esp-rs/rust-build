@@ -5,7 +5,7 @@ param (
     [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu")]
     $DefaultHost = "x86_64-pc-windows-msvc",
     [String]
-    $ExportFile = '',
+    $ExportFile = 'Export-EspRust.ps1',
     [String]
     $ToolchainVersion = '1.64.0.0',
     [String]
