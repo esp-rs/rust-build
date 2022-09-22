@@ -24,6 +24,7 @@ EXTRA_CRATES="ldproxy cargo-espflash"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
+IS_SCCACHE_INSTALLED=0
 SYSTEM_PACKAGES="openssl@3"
 EXPORT_FILE="export-esp.sh"
 
@@ -348,6 +349,7 @@ function install_crate_from_xz() {
 function install_crate_from_tar_gz() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
+    STRIP_COMPONENTS="$3"
 
     if [[ -z "${CRATE_BIN}" ]]; then
         return
@@ -361,7 +363,11 @@ function install_crate_from_tar_gz() {
     if [[ ! -e "${CRATE_BIN}" ]]; then
         echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.tar.gz"
         curl -L "${CRATE_URL}" -o "${CRATE_BIN}.tar.gz"
-        tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        if [[ -z "${STRIP_COMPONENTS}" ]]; then
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        else
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin --strip-components 1
+        fi
         chmod u+x "${CRATE_BIN}"
         echo "Using ${CRATE_BIN} binary release"
     fi
@@ -386,6 +392,14 @@ function install_extra_crates() {
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [[ -n "${GENERATE_URL}" ]] && [[ -n "${GENERATE_BIN}" ]]; then
         install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
+    fi
+
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        IS_SCCACHE_INSTALLED=1
+        if [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
+            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}" "STRIP"
+            EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
+        fi
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
@@ -470,12 +484,17 @@ LDPROXY_URL=""
 LDPROXY_BIN=""
 GENERATE_URL=""
 GENERATE_BIN=""
+SCCACHE_URL=""
+SCCACHE_BIN=""
 WOKWI_SERVER_URL=""
 WOKWI_SERVER_BIN=""
 WEB_FLASH_URL=""
 WEB_FLASH_BIN=""
 if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     GENERATE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)
+fi
+if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+    SCCACHE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/mozilla/sccache" | cut -d/ -f3- | tail -n1)
 fi
 
 # Configuration overrides for specific architectures
@@ -488,6 +507,10 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -501,6 +524,10 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
@@ -549,6 +576,10 @@ elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
@@ -646,5 +677,30 @@ if [[ -n "${EXPORT_FILE:-}" ]]; then
         echo ". ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
+    fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0" >>"${EXPORT_FILE}"
+        echo "export RUSTC_WRAPPER=$(which sccache)" >>"${EXPORT_FILE}"
+    fi
+else
+    PROFILE_NAME="your default shell"
+    if grep -q "zsh" <<<"$SHELL"; then
+        PROFILE_NAME=~/.zshrc
+    elif grep -q "bash" <<<"$SHELL"; then
+        PROFILE_NAME=~/.bashrc
+    fi
+    echo "Add following command to $PROFILE_NAME"
+    if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
+        echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+    fi
+    if [[ -n "${ESP_IDF_VERSION}" ]]; then
+        echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
+        echo "source ${IDF_PATH}/export.sh"
+    else
+        echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
+    fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0"
+        echo "export RUSTC_WRAPPER=$(which sccache)"
     fi
 fi
