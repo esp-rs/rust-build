@@ -25,7 +25,6 @@ ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
 IS_SCCACHE_INSTALLED=0
-SYSTEM_PACKAGES="openssl@3"
 EXPORT_FILE="export-esp.sh"
 
 display_help() {
@@ -41,7 +40,6 @@ display_help() {
     echo "-l|--llvm-version               LLVM version"
     echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
     echo "-n|--nightly-version            Nightly Rust toolchain version"
-    echo "-p|--system-packages            Install missing system packages"
     echo "-r|--rustup-home                Path to .rustup"
     echo "-s|--esp-idf-version            ESP-IDF version. When empty, no esp-idf is installed. Default: \"\""
     echo "-t|--toolchain-version          Xtensa Rust toolchain version"
@@ -107,11 +105,6 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    -p | --system-packages)
-        SYSTEM_PACKAGES="$2"
-        shift # past argument
-        shift # past value
-        ;;
     -r | --rustup-home)
         RUSTUP_HOME="$2"
         shift # past argument
@@ -152,7 +145,6 @@ echo "--minified-esp-idf      = ${MINIFIED_ESP_IDF}"
 echo "--minified-llvm         = ${MINIFIED_LLVM}"
 echo "--nightly-version       = ${NIGHTLY_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
-echo "--system-packages       = ${SYSTEM_PACKAGES}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
 
@@ -425,22 +417,6 @@ function install_extra_crates() {
     fi
 }
 
-function install_system_packages() {
-    if [[ -z "${SYSTEM_PACKAGES}" ]]; then
-        return
-    fi
-
-    echo "Installing system packages: ${SYSTEM_PACKAGES}"
-
-    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin" ]]; then
-        command -v brew || {
-            echo "Warning: Unable to find command brew. Skipping installation of system package."
-            return
-        }
-        brew list "${SYSTEM_PACKAGES}" || brew install "${SYSTEM_PACKAGES}"
-    fi
-}
-
 # Check required tooling - rustc, rustfmt
 command -v rustup || install_rustup
 
@@ -539,7 +515,6 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
     LLVM_ARCH="linux-amd64"
-    SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -557,7 +532,6 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
-    SYSTEM_PACKAGES=""
     # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     # fi
@@ -569,7 +543,6 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
     LLVM_ARCH="win64"
-    SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -591,8 +564,6 @@ elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
-
-install_system_packages
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
