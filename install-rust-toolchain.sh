@@ -4,7 +4,7 @@ set -eu
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.63.0.2"
+TOOLCHAIN_VERSION="1.64.0.0"
 RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
 CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
@@ -24,8 +24,8 @@ EXTRA_CRATES="ldproxy cargo-espflash"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
-SYSTEM_PACKAGES="openssl@3"
-EXPORT_FILE=""
+IS_SCCACHE_INSTALLED=0
+EXPORT_FILE="export-esp.sh"
 
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
@@ -34,13 +34,12 @@ display_help() {
     echo "-c|--cargo-home                 Cargo path"
     echo "-d|--toolchain-destination      Toolchain installation folder."
     echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
-    echo "-f|--export-file                Destination of the export file generated."
+    echo "-f|--export-file                Destination of the export file generated. Defaults to: export-esp.sh"
     echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
     echo "-k|--minified-llvm              Use minified LLVM. Possible values [YES, NO]"
     echo "-l|--llvm-version               LLVM version"
     echo "-m|--minified-esp-idf           [Only applies if using -s|--esp-idf-version]. Deletes some esp-idf folder to save space. Possible values [YES, NO]"
     echo "-n|--nightly-version            Nightly Rust toolchain version"
-    echo "-p|--system-packages            Install missing system packages"
     echo "-r|--rustup-home                Path to .rustup"
     echo "-s|--esp-idf-version            ESP-IDF version. When empty, no esp-idf is installed. Default: \"\""
     echo "-t|--toolchain-version          Xtensa Rust toolchain version"
@@ -106,11 +105,6 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    -p | --system-packages)
-        SYSTEM_PACKAGES="$2"
-        shift # past argument
-        shift # past value
-        ;;
     -r | --rustup-home)
         RUSTUP_HOME="$2"
         shift # past argument
@@ -151,7 +145,6 @@ echo "--minified-esp-idf      = ${MINIFIED_ESP_IDF}"
 echo "--minified-llvm         = ${MINIFIED_LLVM}"
 echo "--nightly-version       = ${NIGHTLY_VERSION}"
 echo "--rustup-home           = ${RUSTUP_HOME}"
-echo "--system-packages       = ${SYSTEM_PACKAGES}"
 echo "--toolchain-version     = ${TOOLCHAIN_VERSION}"
 echo "--toolchain-destination = ${TOOLCHAIN_DESTINATION_DIR}"
 
@@ -348,6 +341,7 @@ function install_crate_from_xz() {
 function install_crate_from_tar_gz() {
     CRATE_URL="$1"
     CRATE_BIN="$2"
+    STRIP_COMPONENTS="$3"
 
     if [[ -z "${CRATE_BIN}" ]]; then
         return
@@ -361,7 +355,11 @@ function install_crate_from_tar_gz() {
     if [[ ! -e "${CRATE_BIN}" ]]; then
         echo "Downloading ${CRATE_URL} to ${CRATE_BIN}.tar.gz"
         curl -L "${CRATE_URL}" -o "${CRATE_BIN}.tar.gz"
-        tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        if [[ -z "${STRIP_COMPONENTS}" ]]; then
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin
+        else
+            tar xf "${CRATE_BIN}.tar.gz" -C ${CARGO_HOME}/bin --strip-components 1
+        fi
         chmod u+x "${CRATE_BIN}"
         echo "Using ${CRATE_BIN} binary release"
     fi
@@ -388,6 +386,14 @@ function install_extra_crates() {
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        IS_SCCACHE_INSTALLED=1
+        if [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
+            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}" "STRIP"
+            EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
+        fi
+    fi
+
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
         if [[ -n "${WEB_FLASH_URL}" ]] && [[ -n "${WEB_FLASH_BIN}" ]]; then
             install_crate_from_zip "${WEB_FLASH_URL}" "${WEB_FLASH_BIN}"
@@ -408,38 +414,6 @@ function install_extra_crates() {
 
     if ! [[ -z "${EXTRA_CRATES// /}" ]]; then
         cargo install $EXTRA_CRATES
-    fi
-}
-
-function install_system_packages() {
-    if [[ -z "${SYSTEM_PACKAGES}" ]]; then
-        return
-    fi
-
-    echo "Installing system packages: ${SYSTEM_PACKAGES}"
-
-    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin" ]]; then
-        command -v brew || {
-            echo "Warning: Unable to find command brew. Skipping installation of system package."
-            return
-        }
-        brew list "${SYSTEM_PACKAGES}" || brew install "${SYSTEM_PACKAGES}"
-    fi
-}
-
-function install_system_packages() {
-    if [ -z "${SYSTEM_PACKAGES}" ]; then
-        return
-    fi
-
-    echo "Installing system packages: ${SYSTEM_PACKAGES}"
-
-    if [[ ${ARCH} == "aarch64-apple-darwin" || ${ARCH} == "x86_64-apple-darwin" ]]; then
-        command -v brew || {
-            echo "Warning: Unable to find command brew. Skipping installation of system package."
-            return
-        }
-        brew list "${SYSTEM_PACKAGES}" || brew install "${SYSTEM_PACKAGES}"
     fi
 }
 
@@ -486,12 +460,17 @@ LDPROXY_URL=""
 LDPROXY_BIN=""
 GENERATE_URL=""
 GENERATE_BIN=""
+SCCACHE_URL=""
+SCCACHE_BIN=""
 WOKWI_SERVER_URL=""
 WOKWI_SERVER_BIN=""
 WEB_FLASH_URL=""
 WEB_FLASH_BIN=""
 if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     GENERATE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)
+fi
+if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+    SCCACHE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/mozilla/sccache" | cut -d/ -f3- | tail -n1)
 fi
 
 # Configuration overrides for specific architectures
@@ -504,6 +483,10 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -517,6 +500,10 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
@@ -528,7 +515,6 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
     LLVM_ARCH="linux-amd64"
-    SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -546,7 +532,6 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
-    SYSTEM_PACKAGES=""
     # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     # fi
@@ -558,13 +543,16 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
     LLVM_ARCH="win64"
-    SYSTEM_PACKAGES=""
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
+    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
+        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
+    fi
+    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
         GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
     fi
@@ -576,8 +564,6 @@ elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
 fi
 
 echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
-
-install_system_packages
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
@@ -630,18 +616,42 @@ if [[ "${CLEAR_DOWNLOAD_CACHE}" == "YES" ]]; then
     clear_download_cache
 fi
 
-# Either store the export instructions in a file to be sourced later or print instructions
-# directly to the terminal to be used immediately.
+printf "\n IMPORTANT!"
+printf "\n The following environment variables need to be updated:\n"
+if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
+    echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\"
+fi
+if [[ -n "${ESP_IDF_VERSION}" ]]; then
+    echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}"
+    echo ". ${IDF_PATH}/export.sh"
+else
+    echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
+fi
+PROFILE_NAME="your default shell"
+if grep -q "zsh" <<<"$SHELL"; then
+    PROFILE_NAME=~/.zshrc
+elif grep -q "bash" <<<"$SHELL"; then
+    PROFILE_NAME=~/.bashrc
+fi
+printf "\n If you want to activate the ESP-RS environment in every terminal session automatically, you can the previous commands to \"$PROFILE_NAME\""
+printf "\n However, it is not recommended, as doing so activates  ESP-RS virtual environment in every terminal session (including those where  ESP-RS is not needed), defeating the purpose of the virtual environment and likely affecting other software."
+
 if [[ -n "${EXPORT_FILE:-}" ]]; then
+    printf "\n The reccomended approach is to source the export file: \". ${EXPORT_FILE}\""
+    printf "\n Note: This should be done in every terminal session.\n"
     echo -n "" >"${EXPORT_FILE}"
     if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
         echo export LIBCLANG_PATH=\"${IDF_TOOL_XTENSA_ELF_CLANG}/lib/\" >>"${EXPORT_FILE}"
     fi
     if [[ -n "${ESP_IDF_VERSION}" ]]; then
         echo "export IDF_TOOLS_PATH=${IDF_TOOLS_PATH}" >>"${EXPORT_FILE}"
-        echo "source ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
+        echo ". ${IDF_PATH}/export.sh /dev/null 2>&1" >>"${EXPORT_FILE}"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\" >>"${EXPORT_FILE}"
+    fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0" >>"${EXPORT_FILE}"
+        echo "export RUSTC_WRAPPER=$(which sccache)" >>"${EXPORT_FILE}"
     fi
 else
     PROFILE_NAME="your default shell"
@@ -659,5 +669,9 @@ else
         echo "source ${IDF_PATH}/export.sh"
     else
         echo export PATH=\"${IDF_TOOL_GCC_PATH}:\$PATH\"
+    fi
+    if [[ ${IS_SCCACHE_INSTALLED} -eq 1 ]]; then
+        echo "export CARGO_INCREMENTAL=0"
+        echo "export RUSTC_WRAPPER=$(which sccache)"
     fi
 fi

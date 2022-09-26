@@ -1,10 +1,9 @@
-name: 'Build Rustc'
-description: 'Build the rustc toolchain'
+name: "Build Rustc"
+description: "Build the rustc toolchain"
 
 runs:
   using: "composite"
   steps:
-
     # Run the Windows Build using powershell
 
     - name: Prepare build
@@ -25,7 +24,6 @@ runs:
       working-directory: ${{ env.work_dir }}
       shell: pwsh
       run: python3 x.py dist
-
 
     # Run Linux builds using bash
 
@@ -53,7 +51,6 @@ runs:
       working-directory: ${{ env.work_dir }}
       shell: bash
       run: python3 x.py dist --stage 2 src/librustc
-
 
     # Save the result
 

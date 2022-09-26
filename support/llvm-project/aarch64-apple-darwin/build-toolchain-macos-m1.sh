@@ -19,8 +19,7 @@ else
   CLANG_XTENSA_TOOLCHAIN="$1"
 fi
 
-function build()
-{
+function build() {
   stage=$1
   mkdir -p $stage
   pushd $stage &>/dev/null
@@ -63,27 +62,26 @@ build build
 #export OSXCROSS_PATH=$PWD/osxcross/
 #export PATH=$OSXCROSS_PATH/target/bin:$PATH
 
-
 #Cross compile clang for MacOS
 mkdir -p build_xtensa
 cd build_xtensa
 cmake -G Ninja $PWD/../llvm \
-      -DCMAKE_CROSSCOMPILING=True \
-      -DCMAKE_SYSTEM_NAME=Darwin  \
-      -DCMAKE_OSX_ARCHITECTURES=arm64 \
-      -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9  \
-      -DCMAKE_SYSTEM_VERSION=10.9   \
-      -DLLVM_TARGETS_TO_BUILD="AArch64" \
-      -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="Xtensa" \
-      -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-apple-darwin20.4" \
-      -DLLVM_TARGET_ARCH="AArch64" \
-      -DLLVM_EXTERNAL_CLANG_SOURCE_DIR=$PWD/../clang \
-      -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;" \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DLLVM_TABLEGEN=${INSTALLPREFIX}/bin/llvm-tblgen \
-      -DCLANG_TABLEGEN=${INSTALLPREFIX}/bin/clang-tblgen \
-      -DLLVM_CONFIG_PATH=${INSTALLPREFIX}/bin/llvm-config \
-      -DLLVM_ENABLE_LIBXML2=OFF
+  -DCMAKE_CROSSCOMPILING=True \
+  -DCMAKE_SYSTEM_NAME=Darwin \
+  -DCMAKE_OSX_ARCHITECTURES=arm64 \
+  -DCMAKE_OSX_DEPLOYMENT_TARGET=10.9 \
+  -DCMAKE_SYSTEM_VERSION=10.9 \
+  -DLLVM_TARGETS_TO_BUILD="AArch64" \
+  -DLLVM_EXPERIMENTAL_TARGETS_TO_BUILD="Xtensa" \
+  -DLLVM_DEFAULT_TARGET_TRIPLE="aarch64-apple-darwin20.4" \
+  -DLLVM_TARGET_ARCH="AArch64" \
+  -DLLVM_EXTERNAL_CLANG_SOURCE_DIR=$PWD/../clang \
+  -DLLVM_ENABLE_PROJECTS="clang;clang-tools-extra;" \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DLLVM_TABLEGEN=${INSTALLPREFIX}/bin/llvm-tblgen \
+  -DCLANG_TABLEGEN=${INSTALLPREFIX}/bin/clang-tblgen \
+  -DLLVM_CONFIG_PATH=${INSTALLPREFIX}/bin/llvm-config \
+  -DLLVM_ENABLE_LIBXML2=OFF
 
 ninja -j 8
 
@@ -103,4 +101,3 @@ mv build_xtensa/bin/llvm-config ${CLANG_XTENSA_TOOLCHAIN}/bin/
 mv build_xtensa/libexec/* ${CLANG_XTENSA_TOOLCHAIN}/libexec/
 mv build_xtensa/lib/clang ${CLANG_XTENSA_TOOLCHAIN}/lib/
 mv build_xtensa/lib/libclang.* ${CLANG_XTENSA_TOOLCHAIN}/lib/
-

@@ -39,14 +39,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.63.0.2/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.64.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.63.0.2/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.64.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -72,27 +72,38 @@ No prerequisites are needed for macOS.
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
 ./install-rust-toolchain.sh
+. export-esp.sh
 ```
 
 Run `./install-rust-toolchain.sh --help` for more information about arguments.
 
-Export variables are displayed at the end of the script.
-> **Note**
-> If the export variables are added to the shell startup script, the shell may need to be refreshed.
-
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.63.0.2 --export-file export-esp-rust.sh
-source export-esp-rust.sh
+./install-rust-toolchain.sh --toolchain-version 1.64.0.0
+. export-esp.sh
 ```
+
+#### Set up the environment variables
+We need to update enviornment variables as some of the installed tools are not
+yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
+environment variable to avoid conflicts with the system Clang. The enviroment
+variables that we need to update are shown at the end of the install script and
+stored in an export file. By default this export file is `export-esp.sh` but can
+be modified with the `-f|--export-file` argument.
+
+We must set the environmet variables in every terminal session.
+
+
+> **Note**
+> If the export variables are added to the shell startup script, the shell may need to be refreshed.
 
 #### Arguments
 - `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain instalation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
-- `-f|--export-file`: Destination of the export file generated.
+- `-f|--export-file`: Destination of the export file generated. Defaults to: `export-esp.sh`
 - `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
 - `-k|--minified-llvm`: Use minified LLVM. Possible values: [`YES, NO`]. Defaults to: `YES`
 - `-l|--llvm-version`: LLVM version.
@@ -162,9 +173,22 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.63.0.2 -ExportFile Export-EspRust.ps1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.64.0.0
 . ./Export-EspRust.ps1
 ```
+
+#### Set up the environment variables
+We need to update enviornment variables as some of the installed tools are not
+yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
+environment variable to avoid conflicts with the system Clang. The enviroment
+variables that we need to update are stored in an export file. By default this
+export file is `Export-EspRust.ps1` but can be modified with the `-ExportFile` argument.
+
+We must set the environmet variables in every terminal session.
+
+
+> **Note**
+> If the export variables are added to the shell startup script, the shell may need to be refreshed.
 
 ## RISC-V Installation
 

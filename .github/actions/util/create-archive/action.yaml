@@ -1,5 +1,5 @@
-name: 'Create Archive'
-description: 'Create a release archive for upload'
+name: "Create Archive"
+description: "Create a release archive for upload"
 
 # To avoid disk space issues under github workflow
 # we need to split the build into multiple jobs
@@ -14,7 +14,6 @@ description: 'Create a release archive for upload'
 runs:
   using: "composite"
   steps:
-
     # Read in the built files
     - uses: ./rust-build/.github/actions/util/read-artifacts
 
@@ -52,7 +51,6 @@ runs:
 
         # Build the final zip
         7z a ${{ env.asset_name }} esp/
-
 
     # Create Archive - Linux tar.xz
     - name: Create Archive - Linux (tar.xz)

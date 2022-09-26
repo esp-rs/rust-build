@@ -1,10 +1,9 @@
-name: 'Build Src'
-description: 'Build the rustc src'
+name: "Build Src"
+description: "Build the rustc src"
 
 runs:
   using: "composite"
   steps:
-
     # Run the Windows Build using powershell
 
     - name: Prepare build - Windows
@@ -18,7 +17,6 @@ runs:
       working-directory: ${{ env.work_dir }}
       shell: pwsh
       run: python3 x.py dist dist rust-src
-
 
     # Run Linux builds using bash
 
@@ -39,7 +37,6 @@ runs:
       working-directory: ${{ env.work_dir }}
       shell: bash
       run: python3 x.py dist rust-src
-
 
     # Save the result
 

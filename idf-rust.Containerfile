@@ -8,7 +8,7 @@ ENV LANG=C.UTF-8
 ARG CONTAINER_USER=esp
 ARG CONTAINER_GROUP=esp
 ARG NIGHTLY_TOOLCHAIN_VERSION=nightly
-ARG XTENSA_TOOLCHAIN_VERSION=1.63.0.2
+ARG XTENSA_TOOLCHAIN_VERSION=1.64.0.0
 ARG ESP_IDF_VERSION=""
 ARG ESP_BOARD=esp32,esp32s2,esp32s3
 ARG INSTALL_RUST_TOOLCHAIN=install-rust-toolchain.sh
@@ -28,7 +28,7 @@ ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
     ${INSTALL_RUST_TOOLCHAIN}
 RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
     && ./${INSTALL_RUST_TOOLCHAIN} \
-    --extra-crates "ldproxy cargo-espflash cargo-generate" \
+    --extra-crates "ldproxy cargo-espflash cargo-generate sccache" \
     --build-target "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
     --esp-idf-version "${ESP_IDF_VERSION}" \

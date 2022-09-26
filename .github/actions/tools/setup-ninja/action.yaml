@@ -1,9 +1,8 @@
-name: 'Setup Ninja'
-description: 'Setup the Ninja Build System'
+name: "Setup Ninja"
+description: "Setup the Ninja Build System"
 
 runs:
   using: "composite"
   steps:
-
     - name: Setup Ninja
       uses: seanmiddleditch/gha-setup-ninja@master

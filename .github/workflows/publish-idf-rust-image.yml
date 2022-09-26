@@ -4,21 +4,21 @@ on:
   workflow_dispatch:
     inputs:
       rust_build_branch:
-        description: 'Branch with test scripts'
+        description: "Branch with test scripts"
         required: true
-        default: 'main'
+        default: "main"
       release_version:
-        description: 'Release version - long 4 places for tag'
+        description: "Release version - long 4 places for tag"
         required: true
-        default: '1.63.0.2'
+        default: "1.64.0.0"
       rust_patch_version:
-        description: 'Release patch version for generation - 3 places for tag'
+        description: "Release patch version for generation - 3 places for tag"
         required: true
-        default: '1.63.0'
+        default: "1.63.0"
       rust_minor_version:
-        description: 'Release minor version - 2 places for tag'
+        description: "Release minor version - 2 places for tag"
         required: true
-        default: '1.60'
+        default: "1.60"
 
 jobs:
   push_to_registry:
