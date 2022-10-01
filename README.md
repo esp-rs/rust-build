@@ -85,7 +85,7 @@ Installation of different version of the toolchain:
 ```
 
 #### Set up the environment variables
-We need to update enviornment variables as some of the installed tools are not
+We need to update environment variables as some of the installed tools are not
 yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
 environment variable to avoid conflicts with the system Clang. The enviroment
 variables that we need to update are shown at the end of the install script and
@@ -178,7 +178,7 @@ Installation of different versions of toolchain:
 ```
 
 #### Set up the environment variables
-We need to update enviornment variables as some of the installed tools are not
+We need to update environment variables as some of the installed tools are not
 yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
 environment variable to avoid conflicts with the system Clang. The enviroment
 variables that we need to update are stored in an export file. By default this
