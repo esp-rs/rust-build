@@ -72,7 +72,7 @@ No prerequisites are needed for macOS.
 git clone https://github.com/esp-rs/rust-build.git
 cd rust-build
 ./install-rust-toolchain.sh
-. export-esp.sh
+. ./export-esp.sh
 ```
 
 Run `./install-rust-toolchain.sh --help` for more information about arguments.
@@ -81,7 +81,7 @@ Installation of different version of the toolchain:
 
 ```
 ./install-rust-toolchain.sh --toolchain-version 1.64.0.0
-. export-esp.sh
+. ./export-esp.sh
 ```
 
 #### Set up the environment variables

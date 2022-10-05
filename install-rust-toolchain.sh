@@ -637,7 +637,7 @@ printf "\n If you want to activate the ESP-RS environment in every terminal sess
 printf "\n However, it is not recommended, as doing so activates  ESP-RS virtual environment in every terminal session (including those where  ESP-RS is not needed), defeating the purpose of the virtual environment and likely affecting other software."
 
 if [[ -n "${EXPORT_FILE:-}" ]]; then
-    printf "\n The recommended approach is to source the export file: \". ${EXPORT_FILE}\""
+    printf "\n The recommended approach is to source the export file: \". ./${EXPORT_FILE}\""
     printf "\n Note: This should be done in every terminal session.\n"
     echo -n "" >"${EXPORT_FILE}"
     if [[ ${IS_XTENSA_INSTALLED} -eq 1 ]]; then
