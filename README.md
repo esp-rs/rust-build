@@ -141,6 +141,14 @@ cd rust-build
 . ./Export-EspRust.ps1
 ```
 
+#### Windows x86_64 GNU - Long path limitation
+
+Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
+
+```
+subst "R:" "rust-project"
+```
+
 ### Windows x86_64 MSVC
 
 The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture. If you do not have Visual Studio and Windows 10 SDK installed, consider the alternative option [Windows x86_64 GNU](#windows-x86_64-gnu).
@@ -189,6 +197,16 @@ We must set the environment variables in every terminal session.
 
 > **Note**
 > If the export variables are added to the shell startup script, the shell may need to be refreshed.
+
+#### Windows  x86_64 MSVC - Long path limitation
+
+Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
+
+```
+subst "R:" "rust-project"
+```
+
+
 
 ## RISC-V Installation
 
