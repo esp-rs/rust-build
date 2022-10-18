@@ -172,7 +172,8 @@ Installation of prerequisites using Chocolatey (run PowerShell as Administrator)
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0 -y
+choco install visualstudio2022-workload-vctools windows-sdk-10.0 -y
+choco install cmake git ninja python3 -y  # requirements for ESP-IDF based development, skip in case of Bare metal
 ```
 
 #### Installation commands for PowerShell
