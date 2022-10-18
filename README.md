@@ -161,7 +161,14 @@ Instructions for ESP-C series based on RISC-V architecture are described  in [RI
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
-Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
+Installation of MSVC and Windows 10 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
+
+```powershell
+Invoke-WebRequest 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile .\vs_buildtools.exe
+.\vs_BuildTools.exe --passive --wait --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.20348
+```
+
+Installation of prerequisites using Chocolatey (run PowerShell as Administrator):
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
