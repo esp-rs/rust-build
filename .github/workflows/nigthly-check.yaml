@@ -40,14 +40,15 @@ jobs:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Set env
-        run: echo "NIGHTLY_VERSION=nightly-$(date -d '-1 day' '+%Y-%m-%d')" >> $GITHUB_ENV
+        run: |
+          echo "[toolchain]" > rust-toolchain.toml
+          echo "channel = \"nightly-$(date -d '-1 day' '+%Y-%m-%d')\"" >> rust-toolchain.toml
+          echo "components = \"rust-src\"" >> rust-toolchain.toml
+          echo "profile = \"minimal\"" >> rust-toolchain.toml
+          echo "default = \"true\"" >> rust-toolchain.toml
+          echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.NIGHTLY_VERSION }}
-          profile: minimal
-          components: rust-src
-          default: true
       - name: Setup | cargo-generate
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
@@ -64,14 +65,15 @@ jobs:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Set env
-        run: echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
+        run: |
+          echo "[toolchain]" > rust-toolchain.toml
+          echo "channel = \"nightly-$(date -d '-1 day' '+%Y-%m-%d')\"" >> rust-toolchain.toml
+          echo "components = \"rust-src\"" >> rust-toolchain.toml
+          echo "profile = \"minimal\"" >> rust-toolchain.toml
+          echo "default = \"true\"" >> rust-toolchain.toml
+          echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
-        with:
-          toolchain: ${{ env.NIGHTLY_VERSION }}
-          profile: minimal
-          components: rust-src
-          default: true
       - name: Setup | cargo-generate
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
