@@ -72,6 +72,7 @@ jobs:
           echo "profile = \"minimal\"" >> rust-toolchain.toml
           echo "default = \"true\"" >> rust-toolchain.toml
           echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
+          cat rust-toolchain.toml
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
       - name: Setup | cargo-generate
