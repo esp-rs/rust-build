@@ -15,10 +15,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        job:
-          - os: "ubuntu-latest"
-            toolchain:
-          - os: "windows-latest"
+        os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
@@ -38,7 +35,11 @@ jobs:
         run: cd test; cargo build
   prior-nightly:
     name: Prior nightly
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Set env
         run: echo "NIGHTLY_VERSION=nightly-$(date -d '-1 day' '+%Y-%m-%d')" >> $GITHUB_ENV
@@ -59,7 +60,11 @@ jobs:
         run: cd test; cargo +${{ env.NIGHTLY_VERSION }} build
   next-prior-nightly:
     name: Next prior nightly
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Set env
         run: echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
