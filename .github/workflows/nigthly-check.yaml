@@ -11,7 +11,11 @@ env:
 jobs:
   current-nightly:
     name: Current nightly
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
