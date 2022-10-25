@@ -21,11 +21,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
-          components: rustfmt, clippy
-      - name: Setup | Std
-        run: rustup component add rust-src --toolchain nightly
-      - name: Setup | Default to nightly
-        run: rustup default nightly
+          profile: minimal
+          components: rust-src
+          default: true
       - name: Setup | cargo-generate
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
@@ -47,10 +45,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
-      - name: Setup | Std
-        run: rustup component add rust-src --toolchain ${{ env.NIGHTLY_VERSION }}
-      - name: Setup | Default to nightly
-        run: rustup default ${{ env.NIGHTLY_VERSION }}
+          profile: minimal
+          components: rust-src
+          default: true
       - name: Setup | cargo-generate
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
@@ -72,10 +69,9 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: ${{ env.NIGHTLY_VERSION }}
-      - name: Setup | Std
-        run: rustup component add rust-src --toolchain ${{ env.NIGHTLY_VERSION }}
-      - name: Setup | Default to nightly
-        run: rustup default ${{ env.NIGHTLY_VERSION }}
+          profile: minimal
+          components: rust-src
+          default: true
       - name: Setup | cargo-generate
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
