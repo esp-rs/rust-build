@@ -39,6 +39,8 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set env
         run: |
           echo "[toolchain]" > rust-toolchain.toml
@@ -64,6 +66,8 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Set env
         run: |
           echo "[toolchain]" > rust-toolchain.toml
