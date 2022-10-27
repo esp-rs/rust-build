@@ -10,16 +10,13 @@ env:
 
 jobs:
   current-nightly:
-    name: nightly-${{ steps.date.outputs.date }}
+    name: Current nightly
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
         with:
