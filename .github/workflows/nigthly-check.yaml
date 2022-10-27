@@ -1,4 +1,4 @@
-name: Rust nightly channle check
+name: Rust nightly toolchain check
 
 on:
   schedule:
