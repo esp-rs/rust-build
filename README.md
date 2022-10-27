@@ -28,7 +28,7 @@ This repository contains:
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
   - [Using Containers](#using-containers)
-  - [Dev-Containers](#using-dev-containers)
+  - [Using Dev Containers](#using-dev-containers)
 
 ## Xtensa Installation
 
