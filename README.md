@@ -27,8 +27,8 @@ This repository contains:
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
-  - [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
-  - [Dev-Containers](#dev-containers)
+  - [Using Containers](#using-containers)
+  - [Dev-Containers](#using-dev-containers)
 
 ## Xtensa Installation
 
@@ -292,7 +292,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
     idf.py build flash
     ```
 
-## Containers with Rust ESP environment
+## Using Containers
 
 Alternatively, some container images with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
@@ -318,7 +318,7 @@ docker run -it espressif/idf-rust-examples
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
 
-## Dev Containers
+## Using Dev Containers
 
 Dev Container support is offered for VS Code, Gitpod, and GitHub Codespaces,
 resulting in a fully working environment to develop for ESP boards in Rust,
