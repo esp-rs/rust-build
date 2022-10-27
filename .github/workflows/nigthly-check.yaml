@@ -10,13 +10,16 @@ env:
 
 jobs:
   current-nightly:
-    name: Current nightly
+    name: nightly-${{ steps.date.outputs.date }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: Setup | Rust
         uses: actions-rs/toolchain@v1
         with:
@@ -24,65 +27,19 @@ jobs:
           profile: minimal
           components: rust-src
           default: true
+      - name: Setup | cargo-generate (binary)
+        if: runs-on == 'ubuntu-latest'
+        id: binaries
+        continue-on-error: true
+        run: |
+          sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
+          tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
+          chmod u+x /home/runner/.cargo/bin/cargo-generate
       - name: Setup | cargo-generate
+        if: steps.binaries.outcome != 'success' || runs-on == 'windows-latest'
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
       - name: Generate
         run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false -d alloc=false
       - name: Build Project
         run: cd test; cargo build
-  prior-nightly:
-    name: Prior nightly
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest", "windows-latest"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set env
-        run: |
-          echo "[toolchain]" > rust-toolchain.toml
-          echo "channel = \"nightly-$(date -d '-1 day' '+%Y-%m-%d')\"" >> rust-toolchain.toml
-          echo "components = \"rust-src\"" >> rust-toolchain.toml
-          echo "profile = \"minimal\"" >> rust-toolchain.toml
-          echo "default = \"true\"" >> rust-toolchain.toml
-          echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
-      - name: Setup | Rust
-        uses: actions-rs/toolchain@v1
-      - name: Setup | cargo-generate
-        run: cargo install cargo-generate
-      - uses: Swatinem/rust-cache@v1
-      - name: Generate
-        run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false -d alloc=false
-      - name: Build Project
-        run: cd test; cargo +${{ env.NIGHTLY_VERSION }} build
-  next-prior-nightly:
-    name: Next prior nightly
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: ["ubuntu-latest", "windows-latest"]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - name: Set env
-        run: |
-          echo "[toolchain]" > rust-toolchain.toml
-          echo "channel = \"nightly-$(date -d '-1 day' '+%Y-%m-%d')\"" >> rust-toolchain.toml
-          echo "components = \"rust-src\"" >> rust-toolchain.toml
-          echo "profile = \"minimal\"" >> rust-toolchain.toml
-          echo "default = \"true\"" >> rust-toolchain.toml
-          echo "NIGHTLY_VERSION=nightly-$(date -d '-2 day' '+%Y-%m-%d')" >> $GITHUB_ENV
-          cat rust-toolchain.toml
-      - name: Setup | Rust
-        uses: actions-rs/toolchain@v1
-      - name: Setup | cargo-generate
-        run: cargo install cargo-generate
-      - uses: Swatinem/rust-cache@v1
-      - name: Generate
-        run: cargo generate --git https://github.com/esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false -d alloc=false
-      - name: Build Project
-        run: cd test; cargo +${{ env.NIGHTLY_VERSION }} build
