@@ -1,4 +1,4 @@
-name: Nightly checks
+name: Rust nightly channle check
 
 on:
   schedule:
@@ -25,7 +25,7 @@ jobs:
           components: rust-src
           default: true
       - name: Setup | cargo-generate (binary)
-        if: runs-on == 'ubuntu-latest'
+        if: matrix.os == 'ubuntu-latest'
         id: binaries
         continue-on-error: true
         run: |
@@ -33,7 +33,7 @@ jobs:
           tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
           chmod u+x /home/runner/.cargo/bin/cargo-generate
       - name: Setup | cargo-generate
-        if: steps.binaries.outcome != 'success' || runs-on == 'windows-latest'
+        if: steps.binaries.outcome != 'success' || matrix.os == 'windows-latest'
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v1
       - name: Generate
