@@ -633,8 +633,8 @@ if grep -q "zsh" <<<"$SHELL"; then
 elif grep -q "bash" <<<"$SHELL"; then
     PROFILE_NAME=~/.bashrc
 fi
-printf "\n If you want to activate the ESP-RS environment in every terminal session automatically, you can add the previous commands to \"$PROFILE_NAME\""
-printf "\n However, it is not recommended, as doing so activates  ESP-RS virtual environment in every terminal session (including those where  ESP-RS is not needed), defeating the purpose of the virtual environment and likely affecting other software."
+printf "\n If you want to activate the environment required for Rust in ESP SoC's in every terminal session automatically, you can add the previous commands to \"$PROFILE_NAME\""
+printf "\n However, it is not recommended, as doing so activates the virtual environment in every terminal session (including those where is not needed), defeating the purpose of the virtual environment and likely affecting other software."
 
 if [[ -n "${EXPORT_FILE:-}" ]]; then
     printf "\n The recommended approach is to source the export file: \". ${EXPORT_FILE}\""
