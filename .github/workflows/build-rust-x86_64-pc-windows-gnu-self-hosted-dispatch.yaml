@@ -1,4 +1,4 @@
-name: build-rust-src-dispatch
+name: build-rust-x86_64-pc-windows-gnu-self-hosted-dispatch
 
 on:
   workflow_dispatch:
@@ -19,6 +19,10 @@ on:
         description: "Version of esp rust to use"
         required: true
         default: "nightly"
+      rust_target:
+        description: "Target triple"
+        required: true
+        default: "x86_64-pc-windows-gnu"
 
 jobs:
   get_release:
@@ -46,35 +50,47 @@ jobs:
 
   build-idf-rust:
     name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
     needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [x86_64-pc-windows-gnu-self-hosted]
         include:
-          - os: ubuntu-latest
-            ASSET_PATH: "rust/build/dist/rust-src-${{ github.event.inputs.rust_version }}.tar.xz"
-            ASSET_NAME: "rust-src-${{ github.event.inputs.release_version }}.tar.xz"
+          - os: x86_64-pc-windows-gnu-self-hosted
+            ASSET_PATH: "rust/build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Checkout repository - esp-rs/rust
+        uses: actions/checkout@v2
         with:
+          path: rust
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: true
-          path: "rust"
-      - name: Setup Ninja
-        uses: seanmiddleditch/gha-setup-ninja@master
-      - name: Configure Rust project
-        working-directory: rust
+      - name: Unmount local drive
+        id: unount_path_before
+        continue-on-error: true
+        run: subst "R:" /D
+      - name: Map local long path to new drive
+        id: map_path
+        shell: powershell
+        run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
+      - name: Prepare build
+        working-directory: "R:"
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --dist-compression-formats='xz'
-      - name: Build Rust src dist
-        working-directory: rust
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'"
+      - name: Build with x.py - dist packages
+        working-directory: "R:"
+        continue-on-error: true
+        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+      - name: Repackage binary
+        shell: powershell
+        working-directory: "R:/build/dist"
         run: |
-          python3 x.py dist rust-src
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
@@ -86,3 +102,7 @@ jobs:
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Unmount local drive
+        id: unount_path
+        continue-on-error: true
+        run: subst "R:" /D

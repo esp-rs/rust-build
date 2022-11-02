@@ -27,8 +27,8 @@ This repository contains:
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
-  - [Podman/Docker Rust ESP environment](#podmandocker-rust-esp-environment)
-  - [Dev-Containers](#dev-containers)
+  - [Using Containers](#using-containers)
+  - [Using Dev Containers](#using-dev-containers)
 
 ## Xtensa Installation
 
@@ -39,14 +39,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.64.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.65.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.64.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -80,7 +80,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.64.0.0
+./install-rust-toolchain.sh --toolchain-version 1.65.0.0
 . ./export-esp.sh
 ```
 
@@ -141,6 +141,14 @@ cd rust-build
 . ./Export-EspRust.ps1
 ```
 
+#### Windows x86_64 GNU - Long path limitation
+
+Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
+
+```
+subst "R:" "rust-project"
+```
+
 ### Windows x86_64 MSVC
 
 The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture. If you do not have Visual Studio and Windows 10 SDK installed, consider the alternative option [Windows x86_64 GNU](#windows-x86_64-gnu).
@@ -153,11 +161,19 @@ Instructions for ESP-C series based on RISC-V architecture are described  in [RI
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
-Installation of prerequisites with Chocolatey (run PowerShell as Administrator):
+Installation of MSVC and Windows 10 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
+
+```powershell
+Invoke-WebRequest 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile .\vs_buildtools.exe
+.\vs_BuildTools.exe --passive --wait --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows10SDK.20348
+```
+
+Installation of prerequisites using Chocolatey (run PowerShell as Administrator):
 
 ```powershell
 Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-choco install cmake git ninja visualstudio2022-workload-vctools windows-sdk-10.0 -y
+choco install visualstudio2022-workload-vctools windows-sdk-10.0 -y
+choco install cmake git ninja python3 -y  # requirements for ESP-IDF based development, skip in case of Bare metal
 ```
 
 #### Installation commands for PowerShell
@@ -173,7 +189,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.64.0.0
+./Install-RustToolchain.ps1 -ToolchainVersion 1.65.0.0
 . ./Export-EspRust.ps1
 ```
 
@@ -189,6 +205,16 @@ We must set the environment variables in every terminal session.
 
 > **Note**
 > If the export variables are added to the shell startup script, the shell may need to be refreshed.
+
+#### Windows  x86_64 MSVC - Long path limitation
+
+Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
+
+```
+subst "R:" "rust-project"
+```
+
+
 
 ## RISC-V Installation
 
@@ -266,7 +292,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
     idf.py build flash
     ```
 
-## Containers with Rust ESP environment
+## Using Containers
 
 Alternatively, some container images with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
@@ -292,7 +318,7 @@ docker run -it espressif/idf-rust-examples
 
 If you are using the `idf-rust-examples` image, instructions will be displayed on the screen.
 
-## Dev Containers
+## Using Dev Containers
 
 Dev Container support is offered for VS Code, Gitpod, and GitHub Codespaces,
 resulting in a fully working environment to develop for ESP boards in Rust,
