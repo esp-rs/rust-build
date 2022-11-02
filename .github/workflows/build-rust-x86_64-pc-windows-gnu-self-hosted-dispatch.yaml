@@ -62,35 +62,35 @@ jobs:
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
-       uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Checkout repository - esp-rs/rust
-       uses: actions/checkout@v2
-       with:
-         path: rust
-         repository: esp-rs/rust
-         ref: esp-${{ github.event.inputs.release_version }}
-         submodules: true
+        uses: actions/checkout@v2
+        with:
+          path: rust
+          repository: esp-rs/rust
+          ref: esp-${{ github.event.inputs.release_version }}
+          submodules: true
       - name: Unmount local drive
-       id: unount_path_before
-       continue-on-error: true
-       run: subst "R:" /D
+        id: unount_path_before
+        continue-on-error: true
+        run: subst "R:" /D
       - name: Map local long path to new drive
-       id: map_path
-       shell: powershell
-       run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
+        id: map_path
+        shell: powershell
+        run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
-       working-directory: "R:"
-       run: |
-         C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'"
+        working-directory: "R:"
+        run: |
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'"
       - name: Build with x.py - dist packages
-       working-directory: "R:"
-       continue-on-error: true
-       run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+        working-directory: "R:"
+        continue-on-error: true
+        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
       - name: Repackage binary
-       shell: powershell
-       working-directory: "R:/build/dist"
-       run: |
-         &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
+        shell: powershell
+        working-directory: "R:/build/dist"
+        run: |
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
@@ -99,7 +99,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: "C:/rust-1.65.0.0-x86_64-pc-windows-gnu.zip"
+          asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Unmount local drive
