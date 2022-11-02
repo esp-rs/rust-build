@@ -11,9 +11,8 @@ TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-14.0.0-20220415"
-LLVM_FULL_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
-LLVM_MINIFIED_DIST_MIRROR="https://github.com/esp-rs/rust-build/releases/download/llvm-project-14.0-minified"
+LLVM_VERSION="esp-15.0.0-20221014"
+LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 MINIFIED_LLVM="YES"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
 GCC_PATCH="esp-2021r2-patch3"
@@ -476,7 +475,7 @@ fi
 # Configuration overrides for specific architectures
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
-    LLVM_ARCH="macos"
+    LLVM_ARCH="macos-arm64"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
@@ -531,6 +530,7 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
+    LLVM_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
     # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
     #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
@@ -567,17 +567,14 @@ echo "Processing toolchain for ${ARCH} - operation: ${INSTALLATION_MODE}"
 
 RUST_DIST="rust-${TOOLCHAIN_VERSION}-${ARCH}"
 RUST_SRC_DIST="rust-src-${TOOLCHAIN_VERSION}"
-LLVM_ARTIFACT_VERSION=$(echo ${LLVM_VERSION} | sed -e 's/.*esp-//g' -e 's/-.*//g' -e 's/\./_/g')
-if [[ "${MINIFIED_LLVM}" == "NO" ]]; then
-    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
-    LLVM_DIST_URL="${LLVM_FULL_DIST_MIRROR}/${LLVM_FILE}"
-else
-    LLVM_FILE="xtensa-esp32-elf-llvm${LLVM_ARTIFACT_VERSION}-${LLVM_VERSION}-${ARCH}.tar.xz"
-    LLVM_DIST_URL="${LLVM_MINIFIED_DIST_MIRROR}/${LLVM_FILE}"
+LLVM_FILE="llvm-${LLVM_VERSION}-${LLVM_ARCH}.tar.xz"
+if [[ "${MINIFIED_LLVM}" == "YES" ]]; then
+    LLVM_FILE="libs_${LLVM_FILE}"
 fi
+LLVM_DIST_URL="${LLVM_DIST_MIRROR}/${LLVM_FILE}"
 IDF_TOOLS_PATH="${IDF_TOOLS_PATH:-${HOME}/.espressif}"
 IDF_TOOL_GCC_PATH=""
-IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}"
+IDF_TOOL_XTENSA_ELF_CLANG="${IDF_TOOLS_PATH}/tools/xtensa-esp32-elf-clang/${LLVM_VERSION}-${ARCH}/esp-clang"
 
 RUST_DIST_URL="https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_DIST}.tar.xz"
 
