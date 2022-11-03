@@ -381,7 +381,7 @@ function install_extra_crates() {
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [[ -n "${GENERATE_URL}" ]] && [[ -n "${GENERATE_BIN}" ]]; then
-        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}"
+        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}" ""
         EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
     fi
 
