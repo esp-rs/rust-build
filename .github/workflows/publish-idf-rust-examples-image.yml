@@ -10,11 +10,11 @@ on:
       release_version:
         description: "Release version - long 4 places for tag"
         required: true
-        default: "1.65.0.0"
+        default: "1.65.0.1"
       rust_patch_version:
         description: "Release patch version for generation - 3 places for tag"
         required: true
-        default: "1.63.0"
+        default: "1.65.0"
       rust_minor_version:
         description: "Release minor version - 2 places for tag"
         required: true
