@@ -6,6 +6,8 @@ This repository contains:
 - Binary artifacts in [Releases](https://github.com/esp-rs/rust-build/releases)
 - An [installation script](install-rust-toolchain.sh) to locally install a pre-compiled nightly ESP32 toolchain
 
+If you want to know more about the Rust ecosystem on ESP targets, see [The Rust on ESP Book chapter](https://esp-rs.github.io/book/installation/index.html)
+
 ## Table of Contents
 
 - [rust-build](#rust-build)
@@ -17,13 +19,18 @@ This repository contains:
     - [Linux and macOS](#linux-and-macos)
       - [Prerequisites](#prerequisites)
       - [Installation commands](#installation-commands)
-    - [Windows x64 GNU](#windows-x86_64-gnu)
-      - [Prerequisites](#prerequisites-x86_64-gnu)
+      - [Set up the environment variables](#set-up-the-environment-variables)
+      - [Arguments](#arguments)
+    - [Windows x86_64 GNU](#windows-x86_64-gnu)
+      - [Prerequisites x86_64 GNU](#prerequisites-x86_64-gnu)
       - [Installation commands for PowerShell](#installation-commands-for-powershell)
-    - [Windows x64 MSVC](#windows-x86_64-msvc)
-      - [Prerequisites](#prerequisites-x86_64-msvc)
+      - [Long path limitation](#long-path-limitation)
+    - [Windows x86_64 MSVC](#windows-x86_64-msvc)
+      - [Prerequisites x86_64 MSVC](#prerequisites-x86_64-msvc)
       - [Installation commands for PowerShell](#installation-commands-for-powershell-1)
-  - [RISC-V Installation](#riscv-installation)
+      - [Set up the environment variables](#set-up-the-environment-variables-1)
+      - [Long path limitation](#long-path-limitation-1)
+  - [RISC-V Installation](#risc-v-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
     - [Idf first approach](#idf-first-approach)
@@ -31,6 +38,10 @@ This repository contains:
   - [Using Dev Containers](#using-dev-containers)
 
 ## Xtensa Installation
+
+> **Warning**
+>
+>  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup), a Rust version of the install scripts.
 
 Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
 
@@ -53,7 +64,7 @@ Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.
 
 The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture.
 
-Instructions for ESP-C series based on RISC-V architecture are described in [RISC-V section](#riscv-installation).
+Instructions for ESP-C series based on RISC-V architecture are described in [RISC-V section](#risc-v-installation).
 
 #### Prerequisites
 
@@ -141,7 +152,7 @@ cd rust-build
 . ./Export-EspRust.ps1
 ```
 
-#### Windows x86_64 GNU - Long path limitation
+#### Long path limitation
 
 Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
 
@@ -153,7 +164,7 @@ subst "R:" "rust-project"
 
 The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture. If you do not have Visual Studio and Windows 10 SDK installed, consider the alternative option [Windows x86_64 GNU](#windows-x86_64-gnu).
 
-Instructions for ESP-C series based on RISC-V architecture are described  in [RISC-V section](#riscv-installation).
+Instructions for ESP-C series based on RISC-V architecture are described  in [RISC-V section](#risc-v-installation).
 
 #### Prerequisites x86_64 MSVC
 
@@ -206,7 +217,7 @@ We must set the environment variables in every terminal session.
 > **Note**
 > If the export variables are added to the shell startup script, the shell may need to be refreshed.
 
-#### Windows  x86_64 MSVC - Long path limitation
+#### Long path limitation
 
 Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
 
@@ -298,10 +309,14 @@ Alternatively, some container images with pre-installed Rust and ESP-IDF, are pu
 
 - [idf-rust](https://hub.docker.com/r/espressif/idf-rust)
  - Some tags contain only the toolchain. The naming convention for those tags is: `<xtensa-version>`
- - Some tags contain full environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
+ - Some tags contain full `std` environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
    and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
    in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
    and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
+ - Some tags contain full `no_std`environment, [wokwi-server](https://github.com/MabezDev/wokwi-server)
+   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
+   in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
+   and use the following naming convention: `<board>_<xtensa-version>`
 - [idf-rust-examples](https://hub.docker.com/r/espressif/idf-rust-examples) - includes two examples: [rust-esp32-example](https://github.com/espressif/rust-esp32-example) and [rust-esp32-std-demo](https://github.com/ivmarkov/rust-esp32-std-demo).
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
