@@ -23,6 +23,10 @@ on:
         description: "Target triple"
         required: true
         default: "x86_64-pc-windows-gnu"
+      shutdown_vm:
+        description: "Shut down VM after finishing the build"
+        required: true
+        default: "yes"
 
 jobs:
   get_release:
@@ -106,3 +110,6 @@ jobs:
         id: unount_path
         continue-on-error: true
         run: subst "R:" /D
+      - name: Shut down
+        if: github.event.inputs.shutdown_vm == 'yes'
+        run: shutdown /s
