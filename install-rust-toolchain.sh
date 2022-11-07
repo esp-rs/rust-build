@@ -91,6 +91,7 @@ while [[ $# -gt 0 ]]; do
         ;;
     -l | --llvm-version)
         LLVM_VERSION="$2"
+        LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
         shift # past argument
         shift # past value
         ;;
