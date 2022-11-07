@@ -30,6 +30,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
       - name: Build Docker image
         if: matrix.board != 'all'
         run: |
@@ -72,13 +76,17 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Set Swap Space
+        uses: pierotofy/set-swap-space@master
+        with:
+          swap-size-gb: 10
       - name: Build Docker image
         if: matrix.board != 'all'
         run: |
           docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_BOARD=${{ matrix.board }} .
-      - name: Build template project using generated tag (master)
+      - name: Build template project using generated tag
         if: matrix.board != 'all'
         run: |
           docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
