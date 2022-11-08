@@ -31,7 +31,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: brew install wget
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install wget
       - name: Setup Docker
         uses: docker-practice/actions-setup-docker@1.0.11
       # - name: Set Swap Space
@@ -81,7 +83,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: brew install wget
+        run: |
+          /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+          brew install wget
       - name: Setup Docker
         uses: docker-practice/actions-setup-docker@1.0.11
       # - name: Build Docker image
