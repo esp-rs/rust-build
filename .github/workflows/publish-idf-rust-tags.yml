@@ -15,10 +15,11 @@ on:
 jobs:
   esp-idf:
     name: ${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} tag
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        os: [macos-m1-self-hosted]
         board: ["esp32", "esp32s2", "esp32s3", "esp32c3", "all"]
         esp-idf:
           - name: v4.4
