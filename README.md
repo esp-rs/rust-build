@@ -276,6 +276,9 @@ rustup target add riscv32imc-unknown-none-elf
 
     > If `espflash` is installed (`cargo install espflash`), `cargo run` will build, flash the device, and open a serial monitor.
 
+If you are looking for inspiration or more complext projects see:
+- [Awesome ESP Rust - Projects Section](https://github.com/esp-rs/awesome-esp-rust#projects)
+- [Rust on ESP32 STD demo app](https://github.com/ivmarkov/rust-esp32-std-demo)
 ### Idf first approach
 
 When building for Xtensa targets, we need to [override the `esp` toolchain](https://rust-lang.github.io/rustup/overrides.html), there are several solutions:
