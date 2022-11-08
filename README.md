@@ -241,30 +241,40 @@ rustup target add riscv32imc-unknown-none-elf
 
 ### Cargo first approach
 
-1. Get example source code
+1. Install `cargo-generate`
 
     ```sh
-    git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
-    cd rust-esp32-std-demo/
+    cargo install cargo-generate
     ```
-
-2. Build and flash:
+2. Generate project from template with one of the following templates
 
     ```sh
-    cargo espflash --target <TARGET> <SERIAL>
+    # STD Project
+    cargo generate https://github.com/esp-rs/esp-idf-template cargo
+    # NO-STD (Bare-metal) Project
+    cargo generate https://github.com/esp-rs/esp-template
     ```
 
-    Where `TARGET` can be:
+  To understand the differences between the two ecosystems, see [Ecosystem Overview chapter of the book](https://esp-rs.github.io/book/overview/index.html). There is also a Chapter that explains boths template projects:
+  * [`std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/std-applications/understanding-esp-idf-template.html)
+  * [`no_std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/no-std-applications/understanding-esp-template.html)
 
-    - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
-    - `xtensa-esp32s2-espidf` for the ESP32-S2(Xtensa architecture).
-    - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
-    - `riscv32imc-esp-espidf` for the ESP32-C3(RISC-V architecture).
+3. Build and flash:
 
-    And `SERIAL` is the serial port connected to the target device.
+    ```sh
+    cargo espflash  <SERIAL>
+    ```
 
-    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+    Where  `SERIAL` is the serial port connected to the target device.
 
+    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option.
+    >
+    > If no `SERIAL` argument is used, `cargo-espflash` will print a list of the connected devices, so the user can choose
+    > which one to flash.
+    >
+    > See [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+
+    > If `espflash` is installed (`cargo install espflash`), `cargo run` will build, flash the device, and open a serial monitor.
 
 ### Idf first approach
 
