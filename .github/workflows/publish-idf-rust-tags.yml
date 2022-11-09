@@ -43,12 +43,12 @@ jobs:
           docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
                  --rm idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_amd64 /bin/bash /workspace/build-template-project.sh esp-idf-template ${{ matrix.board }} ${{ matrix.esp-idf.template-name }}
       - name: Publish
-        run: docker push espressif/idf-rust:${{ input.board }}_${{ inputs.toolchain-version }_amd64
+        run: docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_amd64
       - name: Build and push linux/arm64 tag
         uses: ./.github/workflows/build-idf-rust-arm64-tag.yml
         with:
           board: ${{ matrix.board }}
-          esp-idf: =${{ matrix.esp-idf.name }}
+          esp-idf: ${{ matrix.esp-idf.name }}
           toolchain-version: ${{ github.event.inputs.toolchain-version }}
       - name: Create manifest
         run: |
