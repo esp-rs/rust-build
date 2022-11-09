@@ -35,7 +35,7 @@ jobs:
       - name: Build Docker tag
         run: |
           docker image build --tag idf-rust:${{ inputs.board }}_${{ inputs.esp-idf }}_${{ inputs.toolchain-version }}_arm64 \
-           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ inputs.toolchain-version }} \
+           --file /home/runner/work/rust-build/rust-build/idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ inputs.esp-idf }} --build-arg ESP_BOARD=${{ inputs.board }} .
       - name: Publish
         run: docker push espressif/idf-rust:${{ inputs.board }}_${{ inputs.esp-idf }}_${{ inputs.toolchain-version }}_arm64
