@@ -41,7 +41,7 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 
 > **Warning**
 >
->  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup), a Rust version of the install scripts.
+>  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup#installation), a Rust version of the install scripts.
 
 Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
 
@@ -50,14 +50,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.65.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -91,7 +91,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.65.0.0
+./install-rust-toolchain.sh --toolchain-version 1.65.0.1
 . ./export-esp.sh
 ```
 
@@ -168,11 +168,20 @@ Instructions for ESP-C series based on RISC-V architecture are described  in [RI
 
 #### Prerequisites x86_64 MSVC
 
-- Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
+Installation of prerequisites using [Winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/):
+
+```powershell
+winget install --id Git.Git
+winget install Python # requirements for ESP-IDF based development, skip in case of Bare metal
+winget install -e --id Microsoft.WindowsSDK
+winget install Microsoft.VisualStudio.2022.BuildTools --silent --override "--wait --quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+```
+
+Installation of prerequisites using Visual Studio installer GUI - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 11 SDK
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
-Installation of MSVC and Windows 10 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
+Installation of MSVC and Windows 11 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
 
 ```powershell
 Invoke-WebRequest 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile .\vs_buildtools.exe
@@ -200,7 +209,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.65.0.0
+./Install-RustToolchain.ps1 -ToolchainVersion 1.65.0.1
 . ./Export-EspRust.ps1
 ```
 
@@ -241,31 +250,44 @@ rustup target add riscv32imc-unknown-none-elf
 
 ### Cargo first approach
 
-1. Get example source code
+1. Install `cargo-generate`
 
     ```sh
-    git clone https://github.com/ivmarkov/rust-esp32-std-demo.git
-    cd rust-esp32-std-demo/
+    cargo install cargo-generate
     ```
-
-2. Build and flash:
+2. Generate project from template with one of the following templates
 
     ```sh
-    cargo espflash --target <TARGET> <SERIAL>
+    # STD Project
+    cargo generate https://github.com/esp-rs/esp-idf-template cargo
+    # NO-STD (Bare-metal) Project
+    cargo generate https://github.com/esp-rs/esp-template
     ```
 
-    Where `TARGET` can be:
+  To understand the differences between the two ecosystems, see [Ecosystem Overview chapter of the book](https://esp-rs.github.io/book/overview/index.html). There is also a Chapter that explains boths template projects:
+  * [`std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/std-applications/understanding-esp-idf-template.html)
+  * [`no_std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/no-std-applications/understanding-esp-template.html)
 
-    - `xtensa-esp32-espidf` for the ESP32(Xtensa architecture). [Default]
-    - `xtensa-esp32s2-espidf` for the ESP32-S2(Xtensa architecture).
-    - `xtensa-esp32s3-espidf` for the ESP32-S3(Xtensa architecture).
-    - `riscv32imc-esp-espidf` for the ESP32-C3(RISC-V architecture).
+3. Build and flash:
 
-    And `SERIAL` is the serial port connected to the target device.
+    ```sh
+    cargo espflash  <SERIAL>
+    ```
 
-    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option, see [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
+    Where  `SERIAL` is the serial port connected to the target device.
 
+    > [cargo-espflash](https://github.com/esp-rs/espflash/tree/master/cargo-espflash) also allows opening a serial monitor after flashing with `--monitor` option.
+    >
+    > If no `SERIAL` argument is used, `cargo-espflash` will print a list of the connected devices, so the user can choose
+    > which one to flash.
+    >
+    > See [Usage](https://github.com/esp-rs/espflash/tree/master/cargo-espflash#usage) section for more information about arguments.
 
+    > If `espflash` is installed (`cargo install espflash`), `cargo run` will build, flash the device, and open a serial monitor.
+
+If you are looking for inspiration or more complext projects see:
+- [Awesome ESP Rust - Projects Section](https://github.com/esp-rs/awesome-esp-rust#projects)
+- [Rust on ESP32 STD demo app](https://github.com/ivmarkov/rust-esp32-std-demo)
 ### Idf first approach
 
 When building for Xtensa targets, we need to [override the `esp` toolchain](https://rust-lang.github.io/rustup/overrides.html), there are several solutions:
