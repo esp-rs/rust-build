@@ -41,7 +41,7 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 
 > **Warning**
 >
->  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup), a Rust version of the install scripts.
+>  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup#installation), a Rust version of the install scripts.
 
 Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
 
@@ -168,11 +168,20 @@ Instructions for ESP-C series based on RISC-V architecture are described  in [RI
 
 #### Prerequisites x86_64 MSVC
 
-- Visual Studio - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 10 SDK
+Installation of prerequisites using [Winget](https://learn.microsoft.com/en-us/windows/package-manager/winget/):
+
+```powershell
+winget install --id Git.Git
+winget install Python # requirements for ESP-IDF based development, skip in case of Bare metal
+winget install -e --id Microsoft.WindowsSDK
+winget install Microsoft.VisualStudio.2022.BuildTools --silent --override "--wait --quiet --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64"
+```
+
+Installation of prerequisites using Visual Studio installer GUI - installed with option Desktop development with C++ - components: MSVCv142 - VS2019 C++ x86/64 build tools, Windows 11 SDK
 
 ![Visual Studio Installer - configuration](support/img/rust-windows-requirements.png?raw=true)
 
-Installation of MSVC and Windows 10 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
+Installation of MSVC and Windows 11 SDK using [vs_buildtools.exe](https://learn.microsoft.com/en-us/visualstudio/install/use-command-line-parameters-to-install-visual-studio?view=vs-2022):
 
 ```powershell
 Invoke-WebRequest 'https://aka.ms/vs/17/release/vs_buildtools.exe' -OutFile .\vs_buildtools.exe
