@@ -1,0 +1,39 @@
+name: Package
+
+on:
+  workflow_call:
+    inputs:
+      board:
+        required: true
+        type: string
+      esp-idf:
+        required: false
+        type: string
+      toolchain-version:
+        required: false
+        default: ""
+        type: string
+      rust-build-branch:
+        required: false
+        default: "main"
+        type: string
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build-linux-arm64-tag:
+    runs-on: macos-m1-self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          branch: ${{ inputs.rust-build-branch }}
+      - name: Setup Docker
+      - name: Build Docker tag
+        run: |
+          docker image build --tag idf-rust:${{ input.board }}_${{ inputs.toolchain-version }_arm64 \
+           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ inputs.toolchain-version }} \
+           --build-arg ESP_BOARD=${{ input.board }} .
+      - name: Publish
+        run: docker push espressif/idf-rust:${{ input.board }}_${{ inputs.toolchain-version }_arm64
