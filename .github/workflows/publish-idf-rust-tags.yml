@@ -30,8 +30,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        # with:
-        #   branch: ${{ github.event.inputs.rust-build-branch }}
       # - name: Build Docker image
       #   run: |
       #     docker image build --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_amd64 \
