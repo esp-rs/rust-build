@@ -37,8 +37,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Set up QEMU
-        run: brew install docker-machine docker
+      # - name: Set up QEMU
+      #   run: brew install docker-machine docker
       - name: Build Docker image
         if: matrix.os.runner == 'ubuntu-latest'
         run: |
