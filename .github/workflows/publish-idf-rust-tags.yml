@@ -29,20 +29,44 @@ jobs:
             template-name: mainline
         os:
           - runner: ubuntu-latest
-            platform: amd64
+            platform: linux/amd64
+            arch: amd64
           - runner: macos-m1-self-hosted
-            platform: arm64
+            platform: linux/arm64
+            arch: amd64
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Install dependencies
-        if: matrix.os.runner == 'macos-m1-self-hosted'
-        run: brew install docker-machine docker
-      - name: Build Docker image
-        run: |
-          docker image build --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.platform }} \
-           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
-           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+      - name: Build and publish tag
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: idf-rust.Containerfile
+          build-args: |
+            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
+            ESP_IDF_VERSION=${{ matrix.esp-idf.branch }}
+            ESP_BOARD=${{ matrix.board }}
+          tags: espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
+          push: true
+          platforms: ${{ matrix.os.platform }}
+      # - name: Install dependencies
+      #   if: matrix.os.runner == 'macos-m1-self-hosted'
+      #   run: brew install docker-machine docker
+      # - name: Build Docker image
+      #   run: |
+      #     docker image build --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.platform }} \
+      #      --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
+      #      --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+
   # esp-idf:
   #   name: ${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} tag
   #   runs-on: ${{ matrix.os.runner }}
