@@ -1,4 +1,4 @@
-name: build-rust-macos-m1-dispatch
+name: build-rust-x86_64-pc-windows-gnu-self-hosted-dispatch
 
 on:
   workflow_dispatch:
@@ -22,7 +22,11 @@ on:
       rust_target:
         description: "Target triple"
         required: true
-        default: "aarch64-apple-darwin"
+        default: "x86_64-pc-windows-gnu"
+      shutdown_vm:
+        description: "Shut down VM after finishing the build"
+        required: true
+        default: "yes"
 
 jobs:
   get_release:
@@ -50,29 +54,47 @@ jobs:
 
   build-idf-rust:
     name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
     needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-m1-self-hosted]
+        os: [x86_64-pc-windows-gnu-self-hosted]
         include:
-          - os: macos-m1-self-hosted
-            ASSET_PATH: "build/dist/rust-${{ github.event.inputs.rust_version }}-${{ github.event.inputs.rust_target }}.tar.xz"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.tar.xz"
+          - os: x86_64-pc-windows-gnu-self-hosted
+            ASSET_PATH: "rust/build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Checkout repository - esp-rs/rust
+        uses: actions/checkout@v2
         with:
+          path: rust
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
           submodules: true
+      - name: Unmount local drive
+        id: unount_path_before
+        continue-on-error: true
+        run: subst "R:" /D
+      - name: Map local long path to new drive
+        id: map_path
+        shell: powershell
+        run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
+        working-directory: "R:"
         run: |
-          arch -arm64 python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --enable-cargo-native-static --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --set rust.jemalloc
-      - name: Build with x.py - dist packages - with cached LLVM
-        run: arch -arm64 python3 x.py dist --stage 2 || echo "silence pkg build error"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'"
+      - name: Build with x.py - dist packages
+        working-directory: "R:"
+        continue-on-error: true
+        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+      - name: Repackage binary
+        shell: powershell
+        working-directory: "R:/build/dist"
+        run: |
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
       - name: Upload Release Asset
         if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
@@ -84,3 +106,10 @@ jobs:
           asset_path: ${{ matrix.ASSET_PATH }}
           asset_name: ${{ matrix.ASSET_NAME }}
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
+      - name: Unmount local drive
+        id: unount_path
+        continue-on-error: true
+        run: subst "R:" /D
+      - name: Shut down
+        if: github.event.inputs.shutdown_vm == 'yes'
+        run: shutdown /s
