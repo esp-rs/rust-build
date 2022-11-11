@@ -38,31 +38,23 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Build Docker image
+      - name: Build and push Docker image
         if: matrix.os.runner == 'ubuntu-latest'
         run: |
           docker image build --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
-      - name: Build Podman image
+      - name: Build and push Podman image
         if: matrix.os.runner == 'macos-m1-self-hosted'
         run: |
           podman ps >/dev/null 2>/dev/null || podman machine start
           podman image build --net=host --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Push Podman image
-        if: matrix.os.runner == 'macos-m1-self-hosted'
-        run: podman push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
-      - name: Push Docker image
-        if: matrix.os.runner == 'macos-m1-self-hosted'
-        run: docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
+          podman login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
+          podman push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
       - name: Create manifest
         if: matrix.os.runner == 'ubuntu-latest'
         run: |
