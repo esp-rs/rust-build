@@ -48,6 +48,7 @@ jobs:
       - name: Build Podman image
         if: matrix.os.runner == 'macos-m1-self-hosted'
         run: |
+          podman ps >/dev/null 2>/dev/null || podman machine start
           podman image build --net=host --tag idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.platform }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
