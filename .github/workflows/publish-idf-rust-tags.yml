@@ -41,6 +41,7 @@ jobs:
       - name: Setup Podman
         if: matrix.os.runner == 'macos-m1-self-hosted'
         run: |
+          shopt -s expand_aliases
           podman ps >/dev/null 2>/dev/null || podman machine start
           alias docker=podman
       - name: Build Docker image
