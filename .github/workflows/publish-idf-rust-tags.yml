@@ -38,15 +38,18 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup Podman
-        if: matrix.os.runner == 'macos-m1-self-hosted'
-        run: |
-          shopt -s expand_aliases
-          podman ps >/dev/null 2>/dev/null || podman machine start
-          alias docker=podman
       - name: Build Docker image
+        if: matrix.os.runner == 'ubuntu-latest'
         run: |
           docker image build --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
+           --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
+           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+          docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
+      - name: Build Podman image
+        if: matrix.os.runner == 'macos-m1-self-hosted'
+        run: |
+          podman ps >/dev/null 2>/dev/null || podman machine start
+          podman image build --net=host --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
       - name: Login to DockerHub
@@ -54,7 +57,10 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      - name: Push docker image
+      - name: Push Podman image
+        if: matrix.os.runner == 'macos-m1-self-hosted'
+        run: podman push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
+      - name: Push Docker image
         if: matrix.os.runner == 'macos-m1-self-hosted'
         run: docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
       - name: Create manifest
@@ -64,8 +70,10 @@ jobs:
           espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} \
           --amend espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_amd64 \
           --amend espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_arm64
-      - name: Push combined tag
-        run: docker manifest push espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}
+          docker manifest push espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}
+          docker manifest push espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_latest
+      # - name: Push combined tag
+      #   run:
   # esp-idf:
   #   name: ${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} tag
   #   runs-on: ${{ matrix.os.runner }}
