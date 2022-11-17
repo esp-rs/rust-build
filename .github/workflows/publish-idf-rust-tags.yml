@@ -60,6 +60,7 @@ jobs:
       - name: Create manifest
         if: matrix.os.runner == 'ubuntu-latest'
         run: |
+          docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker manifest create \
           espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} \
           --amend espresif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_amd64 \
