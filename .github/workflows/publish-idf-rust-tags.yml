@@ -43,7 +43,7 @@ jobs:
       - name: Build and push Docker image
         if: matrix.os.runner == 'ubuntu-latest'
         run: |
-          docker image build --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
+          docker image build --no-cache --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} --build-arg HOST_TRIPLE=${{ matrix.os.host-triple }} .
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
@@ -52,7 +52,7 @@ jobs:
         if: matrix.os.runner == 'macos-m1-self-hosted'
         run: |
           podman ps >/dev/null 2>/dev/null || podman machine start
-          podman image build --net=host --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
+          podman image build --no-cache --net=host --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
            --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} --build-arg HOST_TRIPLE=${{ matrix.os.host-triple }} .
           podman login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }} docker.io
