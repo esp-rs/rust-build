@@ -49,7 +49,6 @@ jobs:
             XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
             ESP_IDF_VERSION=${{ matrix.esp-idf.branch }}
             ESP_BOARD=${{ matrix.board }}
-            HOST_TRIPLE=${{ matrix.os.host-triple }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }},espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_latest
           push: true
           platforms: linux/amd64, linux/arm64

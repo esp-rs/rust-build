@@ -24,12 +24,13 @@ USER ${CONTAINER_USER}
 WORKDIR /home/${CONTAINER_USER}
 # Install rust toolchain(s), extra crates and esp-idf.
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
-ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
-    https://github.com/esp-rs/espup/releases/latest/download/espup-${HOST_TRIPLE} \
-    espup
-
-RUN chmod a+x espup \
-    && ./espup install \
+# ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
+#     https://github.com/esp-rs/espup/releases/latest/download/espup-${HOST_TRIPLE} \
+#     espup
+# RUN chmod a+x espup \
+#     && ./espup install \
+RUN cargo install espup
+RUN espup install \
     --extra-crates "ldproxy cargo-generate" \
     --targets "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
