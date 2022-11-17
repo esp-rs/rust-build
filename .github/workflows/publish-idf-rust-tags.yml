@@ -58,7 +58,7 @@ jobs:
           podman login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }} docker.io
           podman push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
       - name: Create manifest
-        if: matrix.os.runner == 'ubuntu-latest'
+        if: matrix.os.runner == 'ubuntu-latest' && success()
         run: |
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker manifest create \
