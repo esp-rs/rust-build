@@ -14,7 +14,7 @@ on:
 
 jobs:
   esp-idf:
-    name: ${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} tag
+    name: ${{ matrix.os.runner }} - ${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }} tag
     runs-on: ${{ matrix.os.runner }}
     strategy:
       fail-fast: false
