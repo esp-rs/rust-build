@@ -32,9 +32,11 @@ jobs:
           - runner: ubuntu-latest
             platform: linux/amd64
             arch: amd64
+            host-triple: x86_64-unknown-linux-gnu
           - runner: macos-m1-self-hosted
             platform: linux/arm64
             arch: amd64
+            host-triple: aarch64-unknown-linux-gnu
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -43,7 +45,7 @@ jobs:
         run: |
           docker image build --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
-           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} --build-arg HOST_TRIPLE=${{ matrix.os.host-triple }} .
           docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }}
           docker push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
       - name: Build and push Podman image
@@ -52,7 +54,7 @@ jobs:
           podman ps >/dev/null 2>/dev/null || podman machine start
           podman image build --net=host --tag espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }} \
            --file idf-rust.Containerfile --build-arg XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }} \
-           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} .
+           --build-arg ESP_IDF_VERSION=${{ matrix.esp-idf.branch }} --build-arg ESP_BOARD=${{ matrix.board }} --build-arg HOST_TRIPLE=${{ matrix.os.host-triple }} .
           podman login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_TOKEN }} docker.io
           podman push espressif/idf-rust:${{ matrix.board }}_${{ matrix.esp-idf.name }}_${{ github.event.inputs.toolchain-version }}_${{ matrix.os.arch }}
       - name: Create manifest

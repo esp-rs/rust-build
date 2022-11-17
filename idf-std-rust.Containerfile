@@ -11,6 +11,8 @@ ARG NIGHTLY_TOOLCHAIN_VERSION=nightly
 ARG XTENSA_TOOLCHAIN_VERSION=1.65.0.0
 ARG ESP_IDF_VERSION=""
 ARG ESP_BOARD=esp32,esp32s2,esp32s3
+ARG HOST_TRIPLE=x86_64-unknown-linux-gnu
+
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils \
@@ -23,12 +25,12 @@ WORKDIR /home/${CONTAINER_USER}
 # Install rust toolchain(s), extra crates and esp-idf.
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
 ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
-    https://github.com/esp-rs/espup/releases/latest/download/espup-aarch64-unknown-linux-gnu \
+    https://github.com/esp-rs/espup/releases/latest/download/espup-${HOST_TRIPLE} \
     espup
 
 RUN chmod a+x espup \
     && ./espup install \
-    --extra-crates "ldproxy cargo-espflash cargo-generate" \
+    --extra-crates "ldproxy cargo-generate" \
     --targets "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
     --esp-idf-version "${ESP_IDF_VERSION}" \
