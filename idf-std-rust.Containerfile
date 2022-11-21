@@ -23,14 +23,15 @@ RUN adduser --disabled-password --gecos "" ${CONTAINER_USER}
 USER ${CONTAINER_USER}
 WORKDIR /home/${CONTAINER_USER}
 # Install rust toolchain(s), extra crates and esp-idf.
+RUN curl https://sh.rustup.rs -sSf | bash -s -- -y
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
 # ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
 #     https://github.com/esp-rs/espup/releases/latest/download/espup-${HOST_TRIPLE} \
 #     espup
 # RUN chmod a+x espup \
 #     && ./espup install \
-RUN ${HOME}/.cargo/bin/cargo install espup
-RUN ${HOME}/.cargo/bin/espup install \
+RUN cargo install espup
+RUN espup install \
     --extra-crates "ldproxy" \
     --targets "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
