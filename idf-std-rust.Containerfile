@@ -29,9 +29,9 @@ ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
 #     espup
 # RUN chmod a+x espup \
 #     && ./espup install \
-RUN cargo install espup
-RUN espup install \
-    --extra-crates "ldproxy cargo-generate" \
+RUN ${HOME}/.cargo/bin/cargo install espup
+RUN ${HOME}/.cargo/bin/espup install \
+    --extra-crates "ldproxy" \
     --targets "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
     --esp-idf-version "${ESP_IDF_VERSION}" \
