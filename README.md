@@ -50,14 +50,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.66.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.66.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -91,7 +91,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.65.0.1
+./install-rust-toolchain.sh --toolchain-version 1.66.0.0
 . ./export-esp.sh
 ```
 
@@ -209,7 +209,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.65.0.1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.66.0.0
 . ./Export-EspRust.ps1
 ```
 
