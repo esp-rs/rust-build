@@ -2,7 +2,10 @@
 
 pacman -Sy pacman-mirrors
 
-pacman -S git \
+# Warning! Do not install git from MinGW-w64, it will break the build in rustbuild step.
+# Affected version Rust 1.66.0, previous versions are not affected.
+
+pacman -S \
             make \
             diffutils \
             tar \
