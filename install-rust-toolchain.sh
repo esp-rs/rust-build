@@ -224,14 +224,13 @@ function install_rust_xtensa_toolchain() {
             mkdir -p ${RUST_DIST}
             tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
         fi
-        ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
-
+        ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs-json-preview,rust-docs
         if [[ ! -f ${RUST_SRC_DIST}.tar.xz ]]; then
             curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
             mkdir -p ${RUST_SRC_DIST}
             tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
         fi
-        ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+        ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs-json-preview,rust-docs
     fi
 
     if [[ -z "${ESP_IDF_VERSION}" ]]; then
