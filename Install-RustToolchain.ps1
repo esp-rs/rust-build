@@ -11,7 +11,7 @@ param (
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
-    $LlvmVersion = "esp-14.0.0-20220415",
+    $LlvmVersion = "esp-15.0.0-20221201",
     [String]
     [ValidateSet("install", "reinstall", "uninstall", "export")]
     $InstallationMode = 'install'
