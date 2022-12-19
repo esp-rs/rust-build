@@ -21,12 +21,12 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
       - [Installation commands](#installation-commands)
       - [Set up the environment variables](#set-up-the-environment-variables)
       - [Arguments](#arguments)
-    - [Windows x86_64 GNU](#windows-x86_64-gnu)
-      - [Prerequisites x86_64 GNU](#prerequisites-x86_64-gnu)
+    - [Windows x86\_64 GNU](#windows-x86_64-gnu)
+      - [Prerequisites x86\_64 GNU](#prerequisites-x86_64-gnu)
       - [Installation commands for PowerShell](#installation-commands-for-powershell)
       - [Long path limitation](#long-path-limitation)
-    - [Windows x86_64 MSVC](#windows-x86_64-msvc)
-      - [Prerequisites x86_64 MSVC](#prerequisites-x86_64-msvc)
+    - [Windows x86\_64 MSVC](#windows-x86_64-msvc)
+      - [Prerequisites x86\_64 MSVC](#prerequisites-x86_64-msvc)
       - [Installation commands for PowerShell](#installation-commands-for-powershell-1)
       - [Set up the environment variables](#set-up-the-environment-variables-1)
       - [Long path limitation](#long-path-limitation-1)
@@ -50,14 +50,14 @@ Download the installer from the [Release section](https://github.com/esp-rs/rust
 #### Download installer in Bash
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.66.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
 #### Download installer in PowerShell
 
 ```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.65.0.1/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
+Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.66.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -72,7 +72,7 @@ Instructions for ESP-C series based on RISC-V architecture are described in [RIS
   - [Dependencies (command for Ubuntu/Debian)](https://github.com/esp-rs/esp-idf-template/blob/master/cargo/.devcontainer/Dockerfile#L16):
     ```sh
     apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils \
-    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5 libpython2.7
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libpython2.7
     ```
 
 No prerequisites are needed for macOS.
@@ -91,7 +91,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.65.0.1
+./install-rust-toolchain.sh --toolchain-version 1.66.0.0
 . ./export-esp.sh
 ```
 
@@ -110,20 +110,20 @@ We must set the environment variables in every terminal session.
 > If the export variables are added to the shell startup script, the shell may need to be refreshed.
 
 #### Arguments
-- `-b|--build-target`: Comma separated list of targets [`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
+- `-b|--build-target`: Comma separated list of targets \[`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
 - `-c|--cargo-home`: Cargo path.
 - `-d|--toolchain-destination`: Toolchain installation folder. Defaults to: `<rustup_home>/toolchains/esp`
 - `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
 - `-f|--export-file`: Destination of the export file generated. Defaults to: `export-esp.sh`
-- `-i|--installation-mode`: Installation mode: [`install, reinstall, uninstall`]. Defaults to: `install`
-- `-k|--minified-llvm`: Use minified LLVM. Possible values: [`YES, NO`]. Defaults to: `YES`
+- `-i|--installation-mode`: Installation mode: \[`install, reinstall, uninstall`]. Defaults to: `install`
+- `-k|--minified-llvm`: Use minified LLVM. Possible values: \[`YES, NO`]. Defaults to: `YES`
 - `-l|--llvm-version`: LLVM version.
-- `-m|--minified-esp-idf`: [Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values [`YES, NO`]. Defaults to: `NO`
+- `-m|--minified-esp-idf`: \[Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values \[`YES, NO`]. Defaults to: `NO`
 - `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
 - `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
 - `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
-- `-x|--clear-cache`: Removes cached distribution files. Possible values: [`YES, NO`]. Defaults to: `YES`
+- `-x|--clear-cache`: Removes cached distribution files. Possible values: \[`YES, NO`]. Defaults to: `YES`
 
 ### Windows x86_64 GNU
 
@@ -209,7 +209,7 @@ Export variables are displayed at the end of the output from the script.
 Installation of different versions of toolchain:
 
 ```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.65.0.1
+./Install-RustToolchain.ps1 -ToolchainVersion 1.66.0.0
 . ./Export-EspRust.ps1
 ```
 
@@ -315,7 +315,7 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
 
     Where `TARGET` can be:
 
-    - `esp32` for the ESP32(Xtensa architecture). [Default]
+    - `esp32` for the ESP32(Xtensa architecture). \[Default]
     - `esp32s2` for the ESP32-S2(Xtensa architecture).
     - `esp32s3` for the ESP32-S3(Xtensa architecture).
 

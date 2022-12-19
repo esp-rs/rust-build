@@ -4,14 +4,14 @@ set -eu
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.65.0.1"
+TOOLCHAIN_VERSION="1.66.0.0"
 RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
 CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-15.0.0-20221014"
+LLVM_VERSION="esp-15.0.0-20221201"
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 MINIFIED_LLVM="YES"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
@@ -224,14 +224,13 @@ function install_rust_xtensa_toolchain() {
             mkdir -p ${RUST_DIST}
             tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
         fi
-        ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
-
+        ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs-json-preview,rust-docs
         if [[ ! -f ${RUST_SRC_DIST}.tar.xz ]]; then
             curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
             mkdir -p ${RUST_SRC_DIST}
             tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
         fi
-        ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs
+        ./${RUST_SRC_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs-json-preview,rust-docs
     fi
 
     if [[ -z "${ESP_IDF_VERSION}" ]]; then
