@@ -10,11 +10,11 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "main"
+        default: "build/1.67.0.0"
       release_version:
         description: "Release Version for generation"
         required: true
-        default: '1.66.0.0'
+        default: '1.67.0.0'
       rust_version:
         description: "Version of esp rust to use"
         required: true
@@ -27,6 +27,10 @@ on:
         description: "Shut down VM after finishing the build"
         required: true
         default: "yes"
+      release_tag:
+        description: "Tag used for uploading (e.g. v1.67.0.0, untagged-00000)"
+        required: true
+        default: "untagged-06704172812884cde852"
 
 jobs:
   get_release:
@@ -39,7 +43,7 @@ jobs:
       - uses: octokit/request-action@v2.x
         id: get_release
         with:
-          route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
+          route: GET /repos/{owner}/{repo}/releases/tags/${{ github.event.inputs.release_tag }}
           owner: esp-rs
           repo: rust-build
         env:
@@ -85,7 +89,7 @@ jobs:
       - name: Prepare build
         working-directory: "R:"
         run: |
-          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz'"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --enable-lld"
       - name: Build with x.py - dist packages
         working-directory: "R:"
         continue-on-error: true
