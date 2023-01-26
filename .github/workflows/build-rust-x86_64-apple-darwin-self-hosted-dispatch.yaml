@@ -10,7 +10,7 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "main"
+        default: "build/1.67.0.0"
       release_version:
         description: "Release Version for generation"
         required: true
@@ -23,6 +23,10 @@ on:
         description: "Target triple"
         required: true
         default: "x86_64-apple-darwin"
+      release_tag:
+        description: "Tag used for uploading (e.g. v1.67.0.0, untagged-00000)"
+        required: true
+        default: "untagged-06704172812884cde852"
 
 jobs:
   get_release:
@@ -35,7 +39,7 @@ jobs:
       - uses: octokit/request-action@v2.x
         id: get_release
         with:
-          route: GET /repos/{owner}/{repo}/releases/tags/v${{ github.event.inputs.release_version }}
+          route: GET /repos/{owner}/{repo}/releases/tags/${{ github.event.inputs.release_tag }}
           owner: esp-rs
           repo: rust-build
         env:
