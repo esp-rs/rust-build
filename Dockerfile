@@ -10,9 +10,3 @@ WORKDIR /opt
 
 COPY install-rust-toolchain.sh .
 RUN ./install-rust-toolchain.sh
-
-RUN apt update
-RUN apt -y upgrade
-
-RUN apt install -y pkg-config
-RUN apt install libudev-dev
