@@ -19,7 +19,7 @@ GCC_PATCH="esp-2021r2-patch3"
 GCC_VERSION="8_4_0-esp-2021r2-patch3"
 NIGHTLY_VERSION="nightly"
 CLEAR_DOWNLOAD_CACHE="YES"
-EXTRA_CRATES="ldproxy cargo-espflash"
+EXTRA_CRATES="ldproxy"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
@@ -32,7 +32,7 @@ display_help() {
     echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
     echo "-c|--cargo-home                 Cargo path"
     echo "-d|--toolchain-destination      Toolchain installation folder."
-    echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
+    echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy"
     echo "-f|--export-file                Destination of the export file generated. Defaults to: export-esp.sh"
     echo "-i|--installation-mode          Installation mode: [install, reinstall, uninstall]. Defaults to: install"
     echo "-k|--minified-llvm              Use minified LLVM. Possible values [YES, NO]"
@@ -365,32 +365,9 @@ function install_crate_from_tar_gz() {
 }
 
 function install_extra_crates() {
-    if [[ "${EXTRA_CRATES}" =~ "cargo-espflash" ]] && [[ -n "${CARGO_ESPFLASH_URL}" ]] && [[ -n "${CARGO_ESPFLASH_BIN}" ]]; then
-        install_crate_from_zip "${CARGO_ESPFLASH_URL}" "${CARGO_ESPFLASH_BIN}"
-        EXTRA_CRATES="${EXTRA_CRATES/cargo-espflash/}"
-    fi
-
-    if [[ "${EXTRA_CRATES}" =~ "espflash" ]] && [[ -n "${ESPFLASH_URL}" ]] && [[ -n "${ESPFLASH_BIN}" ]]; then
-        install_crate_from_zip "${ESPFLASH_URL}" "${ESPFLASH_BIN}"
-        EXTRA_CRATES="${EXTRA_CRATES/espflash/}"
-    fi
-
     if [[ "${EXTRA_CRATES}" =~ "ldproxy" ]] && [[ -n "${LDPROXY_URL}" ]] && [[ -n "${LDPROXY_BIN}" ]]; then
         install_crate_from_zip "${LDPROXY_URL}" "${LDPROXY_BIN}"
         EXTRA_CRATES="${EXTRA_CRATES/ldproxy/}"
-    fi
-
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]] && [[ -n "${GENERATE_URL}" ]] && [[ -n "${GENERATE_BIN}" ]]; then
-        install_crate_from_tar_gz "${GENERATE_URL}" "${GENERATE_BIN}" ""
-        EXTRA_CRATES="${EXTRA_CRATES/cargo-generate/}"
-    fi
-
-    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
-        IS_SCCACHE_INSTALLED=1
-        if [[ -n "${SCCACHE_URL}" ]] && [[ -n "${SCCACHE_BIN}" ]]; then
-            install_crate_from_tar_gz "${SCCACHE_URL}" "${SCCACHE_BIN}" "STRIP"
-            EXTRA_CRATES="${EXTRA_CRATES/sccache/}"
-        fi
     fi
 
     if [[ "${EXTRA_CRATES}" =~ "web-flash" ]]; then
@@ -400,15 +377,6 @@ function install_extra_crates() {
             cargo install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
         fi
         EXTRA_CRATES="${EXTRA_CRATES/web-flash/}"
-    fi
-
-    if [[ "${EXTRA_CRATES}" =~ "wokwi-server" ]]; then
-        if [[ -n "${WOKWI_SERVER_URL}" ]] && [[ -n "${WOKWI_SERVER_BIN}" ]]; then
-            install_crate_from_zip "${WOKWI_SERVER_URL}" "${WOKWI_SERVER_BIN}"
-        else
-            RUSTFLAGS="--cfg tokio_unstable" cargo install wokwi-server --git https://github.com/MabezDev/wokwi-server --locked
-        fi
-        EXTRA_CRATES="${EXTRA_CRATES/wokwi-server/}"
     fi
 
     if ! [[ -z "${EXTRA_CRATES// /}" ]]; then
@@ -451,114 +419,44 @@ ARCH=$(rustup show | grep "Default host" | sed -e 's/.* //')
 #ARCH="x86_64-pc-windows-msvc"
 
 # Extra crates binary download support
-ESPFLASH_URL=""
-ESPFLASH_BIN=""
-CARGO_ESPFLASH_URL=""
-CARGO_ESPFLASH_BIN=""
 LDPROXY_URL=""
 LDPROXY_BIN=""
-GENERATE_URL=""
-GENERATE_BIN=""
-SCCACHE_URL=""
-SCCACHE_BIN=""
-WOKWI_SERVER_URL=""
-WOKWI_SERVER_BIN=""
+
 WEB_FLASH_URL=""
 WEB_FLASH_BIN=""
-if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-    GENERATE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)
-fi
-if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
-    SCCACHE_VERSION=$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/mozilla/sccache" | cut -d/ -f3- | tail -n1)
-fi
 
 # Configuration overrides for specific architectures
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     LLVM_ARCH="macos-arm64"
-    CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
-    CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
-        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
-    fi
-    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
-    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
-    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
+
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     LLVM_ARCH="macos"
-    CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
-    CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
-        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
-    fi
-    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    fi
-    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
-    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
-    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
     LLVM_ARCH="linux-amd64"
-    CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
-    CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
-    # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-    #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    # fi
-    # GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
-    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
-    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-arm64"
     LLVM_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
-    # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-    #     GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    # fi
-    # GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
-    CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
-    CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
     LLVM_ARCH="win64"
-    CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
-    CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"
-    ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
-    ESPFLASH_BIN="${CARGO_HOME}/bin/espflash.exe"
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
-    if [[ "${EXTRA_CRATES}" =~ "sccache" ]]; then
-        SCCACHE_URL="https://github.com/mozilla/sccache/releases/latest/download/sccache-${SCCACHE_VERSION}-${ARCH}.tar.gz"
-    fi
-    SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
-    if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
-        GENERATE_URL="https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-${GENERATE_VERSION}-${ARCH}.tar.gz"
-    fi
-    GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
-    WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
-    WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server.exe"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash.exe"
 fi
