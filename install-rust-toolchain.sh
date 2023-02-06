@@ -23,7 +23,6 @@ EXTRA_CRATES="ldproxy"
 ESP_IDF_VERSION=""
 MINIFIED_ESP_IDF="NO"
 IS_XTENSA_INSTALLED=0
-IS_SCCACHE_INSTALLED=0
 EXPORT_FILE="export-esp.sh"
 
 display_help() {
@@ -429,6 +428,7 @@ WEB_FLASH_BIN=""
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     LLVM_ARCH="macos-arm64"
+
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -437,6 +437,7 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="macos"
     LLVM_ARCH="macos"
+
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -444,6 +445,7 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="linux-amd64"
     LLVM_ARCH="linux-amd64"
+
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
@@ -455,6 +457,7 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GCC_ARCH="win64"
     LLVM_ARCH="win64"
+    
     LDPROXY_URL="https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip"
     LDPROXY_BIN="${CARGO_HOME}/bin/ldproxy.exe"
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"

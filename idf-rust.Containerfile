@@ -23,12 +23,10 @@ USER ${CONTAINER_USER}
 WORKDIR /home/${CONTAINER_USER}
 # Install rust toolchain(s), extra crates and esp-idf.
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
-ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
-    https://github.com/esp-rs/rust-build/releases/download/v${XTENSA_TOOLCHAIN_VERSION}/${INSTALL_RUST_TOOLCHAIN} \
-    ${INSTALL_RUST_TOOLCHAIN}
+ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} ./${INSTALL_RUST_TOOLCHAIN} ${INSTALL_RUST_TOOLCHAIN}
 RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
     && ./${INSTALL_RUST_TOOLCHAIN} \
-    --extra-crates "ldproxy" \
+    --extra-crates "ldproxy web-flash" \
     --build-target "${ESP_BOARD}" \
     --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
     --esp-idf-version "${ESP_IDF_VERSION}" \
