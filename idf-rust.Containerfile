@@ -34,6 +34,8 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     curl -L "https://github.com/esp-rs/espup/releases/latest/download/espup-${ARCH}" -o "${HOME}/.cargo/bin/espup" && \
     chmod u+x "${HOME}/.cargo/bin/espup"
 
+RUN ${HOME}/.cargo/bin/cargo +esp install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
+
 # Install Xtensa Rust
 RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  \
     && ${HOME}/.cargo/bin/espup install\
@@ -42,12 +44,10 @@ RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  \
     --profile-minimal \
     --export-file /home/${CONTAINER_USER}/export-esp.sh
 
-
-RUN ${HOME}/.cargo/bin/cargo +esp install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
-
 # Activate ESP environment
 RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
 
+# Install and add to PATH linker for esp32s2
 RUN curl -L "https://github.com/espressif/crosstool-NG/releases/latest/download/xtensa-esp32s2-elf-gcc11_2_0-esp-2022r1-linux-arm64.tar.xz" -o "${HOME}/linker_s2.tar.xz" && \
     tar -xf "${HOME}/linker_s2.tar.xz" -C "${HOME}/.cargo/bin" && \
     rm "${HOME}/linker_s2.tar.xz"
