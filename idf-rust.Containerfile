@@ -11,7 +11,6 @@ ARG ESP_BOARD=esp32,esp32s2,esp32s3,esp32c3
 ARG GITHUB_TOKEN
 
 # Install dependencies
-# TODO: Update dependencies
 RUN apt-get update \
     && apt-get install -y git curl gcc clang ninja-build unzip libudev-dev tar xz-utils \
     python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5  libpython2.7 \
@@ -24,7 +23,7 @@ WORKDIR /home/${CONTAINER_USER}
 
 # Install rustup
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
-    --default-toolchain nightly -y --profile minimal
+    --default-toolchain none -y --profile minimal
 
 # Update envs
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
