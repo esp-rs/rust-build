@@ -34,8 +34,6 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     curl -L "https://github.com/esp-rs/espup/releases/latest/download/espup-${ARCH}" -o "${HOME}/.cargo/bin/espup" && \
     chmod u+x "${HOME}/.cargo/bin/espup"
 
-RUN ${HOME}/.cargo/bin/cargo +esp install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
-
 # Install Xtensa Rust
 RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  \
     && ${HOME}/.cargo/bin/espup install\
@@ -43,6 +41,8 @@ RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  \
     --log-level debug \
     --profile-minimal \
     --export-file /home/${CONTAINER_USER}/export-esp.sh
+
+RUN ${HOME}/.cargo/bin/cargo install web-flash --git https://github.com/bjoernQ/esp-web-flash-server
 
 # Activate ESP environment
 RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
