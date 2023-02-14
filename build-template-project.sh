@@ -1,8 +1,8 @@
 set -ef
 
 curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-aarch64-unknown-linux-gnu.tar.gz" -o "${HOME}/.cargo/bin/cargo-generate.tar.gz"
-tar xf "${HOME}/.cargo/bin/cargo-generate.tar.gz" -C ${HOME}.cargo/bin
-chmod u+x ${HOME}.cargo/bin/cargo-generate
+tar xf "${HOME}/.cargo/bin/cargo-generate.tar.gz" -C ${HOME}/.cargo/bin
+chmod u+x ${HOME}/.cargo/bin/cargo-generate
 
 export USER=esp
 source /home/esp/export-esp.sh
