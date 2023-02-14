@@ -1,6 +1,8 @@
 set -ef
 
-cargo install cargo-generate
+sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-aarch64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
+tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
+chmod u+x /home/runner/.cargo/bin/cargo-generate
 
 export USER=esp
 source /home/esp/export-esp.sh
