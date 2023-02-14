@@ -1,5 +1,7 @@
 set -ef
 
+cargo install cargo-generate
+
 export USER=esp
 source /home/esp/export-esp.sh
 if [[ "$1" == 'esp-idf-template' ]]; then
