@@ -48,7 +48,6 @@ jobs:
           context: .
           file: idf-rust.Containerfile
           build-args: |
-            XTENSA_TOOLCHAIN_VERSION=${{ github.event.inputs.toolchain-version }}
             ESP_BOARD=${{ matrix.board }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }},espressif/idf-rust:${{ matrix.board }}_latest
           push: false
