@@ -51,7 +51,6 @@ RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
 # Set default toolchain
 RUN if [ "${ESP_BOARD}" = "all" ] || echo "$ESP_BOARD" | grep -q "esp32c3"; then \
     rustup default nightly; \
-    rustup component add rust-src; \
     else \
     rustup default esp; \
     fi
