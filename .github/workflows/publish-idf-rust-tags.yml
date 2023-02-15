@@ -6,7 +6,7 @@ on:
       toolchain-version:
         description: "Version of Rust toolchain"
         required: true
-        default: "latest"
+        default: "1.67.0.0"
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
