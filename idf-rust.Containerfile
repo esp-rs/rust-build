@@ -14,7 +14,7 @@ ARG XTENSA_VERSION
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y git curl gcc clang ninja-build unzip libudev-dev tar xz-utils \
-    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5  libpython2.7 \
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libpython2.7 \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
 # Set users
@@ -43,7 +43,7 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     chmod u+x "${HOME}/.cargo/bin/web-flash"
 
 # Install Xtensa Rust
-RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  && \
+RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi && \
     [[ "${XTENSA_VERSION}" != latest ]] && version="--toolchain-version ${XTENSA_VERSION}" || version="" && \
     ${HOME}/.cargo/bin/espup install\
     --targets "${ESP_BOARD}" \
