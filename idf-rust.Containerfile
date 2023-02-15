@@ -9,6 +9,7 @@ ARG CONTAINER_USER=esp
 ARG CONTAINER_GROUP=esp
 ARG ESP_BOARD=all
 ARG GITHUB_TOKEN
+ARG XTENSA_VERSION
 
 # Install dependencies
 RUN apt-get update \
@@ -42,12 +43,14 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     chmod u+x "${HOME}/.cargo/bin/web-flash"
 
 # Install Xtensa Rust
-RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  \
-    && ${HOME}/.cargo/bin/espup install\
+RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi  && \
+    [[ "${XTENSA_VERSION}" != latest ]] && version="--toolchain-version ${XTENSA_VERSION}" || version="" && \
+    ${HOME}/.cargo/bin/espup install\
     --targets "${ESP_BOARD}" \
     --log-level debug \
     --profile-minimal \
-    --export-file /home/${CONTAINER_USER}/export-esp.sh
+    --export-file /home/${CONTAINER_USER}/export-esp.sh \
+    $version
 
 # Activate ESP environment
 RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc

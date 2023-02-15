@@ -10,7 +10,7 @@ on:
       toolchain-version:
         description: "Version of Rust toolchain"
         required: true
-        default: "1.67.0.0"
+        default: "latest"
 
 jobs:
   bare-metal:
@@ -27,7 +27,7 @@ jobs:
         if: matrix.board != 'all'
         run: |
           docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
-           --file idf-rust.Containerfile --build-arg ESP_BOARD=${{ matrix.board }} .
+           --file idf-rust.Containerfile --build-arg ESP_BOARD=${{ matrix.board }} --build-arg XTENSA_VERSION=${{ github.event.inputs.toolchain-version }} .
       - name: Build template project using generated tag (master)
         if: matrix.board != 'all'
         run: |
@@ -49,6 +49,7 @@ jobs:
           file: idf-rust.Containerfile
           build-args: |
             ESP_BOARD=${{ matrix.board }}
+            XTENSA_VERSION=${{ github.event.inputs.toolchain-version }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }},espressif/idf-rust:${{ matrix.board }}_latest
           push: false
           platforms: linux/amd64, linux/arm64
