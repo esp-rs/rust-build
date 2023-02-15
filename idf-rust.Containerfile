@@ -1,3 +1,4 @@
+# Base image
 ARG VARIANT=bullseye-slim
 FROM debian:${VARIANT}
 ENV DEBIAN_FRONTEND=noninteractive
@@ -42,7 +43,7 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     rm "${HOME}/.cargo/bin/web-flash.zip" && \
     chmod u+x "${HOME}/.cargo/bin/web-flash"
 
-# Install Xtensa Rust
+# Install Rust toolchain for our ESP_BOARD
 RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi && \
     [[ "${XTENSA_VERSION}" != latest ]] && version="--toolchain-version ${XTENSA_VERSION}" || version="" && \
     ${HOME}/.cargo/bin/espup install\
