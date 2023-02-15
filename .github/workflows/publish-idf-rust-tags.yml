@@ -7,6 +7,8 @@ on:
         description: "Version of Rust toolchain"
         required: true
         default: "latest"
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   bare-metal:
