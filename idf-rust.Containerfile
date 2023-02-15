@@ -7,7 +7,7 @@ ENV LANG=C.UTF-8
 # Arguments
 ARG CONTAINER_USER=esp
 ARG CONTAINER_GROUP=esp
-ARG ESP_BOARD=esp32,esp32s2,esp32s3,esp32c3
+ARG ESP_BOARD=all
 ARG GITHUB_TOKEN
 
 # Install dependencies
