@@ -26,7 +26,7 @@ jobs:
         run: |
           docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
            --file idf-rust.Containerfile --build-arg ESP_BOARD=${{ matrix.board }} --build-arg XTENSA_VERSION=${{ github.event.inputs.toolchain-version }} --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} .
-      - name: Build template project using generated tag (master)
+      - name: Build template projects using generated tag
         if: matrix.board != 'all'
         run: |
           docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
