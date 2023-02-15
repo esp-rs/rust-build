@@ -45,7 +45,8 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
 
 # Install Rust toolchain for our ESP_BOARD
 RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi && \
-    [[ "${XTENSA_VERSION}" != latest ]] && version="--toolchain-version ${XTENSA_VERSION}" || version="" && \
+    version="" && \
+    if [ "${XTENSA_VERSION}" != "latest" ];then version="--toolchain-version ${XTENSA_VERSION}"; fi && \
     ${HOME}/.cargo/bin/espup install\
     --targets "${ESP_BOARD}" \
     --log-level debug \
