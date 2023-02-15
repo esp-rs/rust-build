@@ -3,10 +3,6 @@ name: Publish IDF-Rust Tags
 on:
   workflow_dispatch:
     inputs:
-      rust-build-branch:
-        description: "Branch of rust-build to use"
-        required: true
-        default: "main"
       toolchain-version:
         description: "Version of Rust toolchain"
         required: true
