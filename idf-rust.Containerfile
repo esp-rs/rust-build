@@ -50,7 +50,6 @@ RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi &&
     ${HOME}/.cargo/bin/espup install\
     --targets "${ESP_BOARD}" \
     --log-level debug \
-    --profile-minimal \
     --export-file /home/${CONTAINER_USER}/export-esp.sh \
     $version
 
