@@ -4,35 +4,63 @@ FROM debian:${VARIANT}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
+
 # Arguments
 ARG CONTAINER_USER=esp
 ARG CONTAINER_GROUP=esp
-ARG NIGHTLY_TOOLCHAIN_VERSION=nightly
-ARG XTENSA_TOOLCHAIN_VERSION=1.67.0.0
-ARG ESP_IDF_VERSION=""
-ARG ESP_BOARD=esp32,esp32s2,esp32s3
-ARG INSTALL_RUST_TOOLCHAIN=install-rust-toolchain.sh
+ARG ESP_BOARD=all
+ARG GITHUB_TOKEN
+ARG XTENSA_VERSION=latest
+
 # Install dependencies
 RUN apt-get update \
-    && apt-get install -y git curl gcc clang ninja-build libudev-dev unzip xz-utils \
-    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libtinfo5  libpython2.7 \
+    && apt-get install -y git curl gcc clang ninja-build unzip libudev-dev tar xz-utils \
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libpython2.7 \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
-# Set user
+
+# Set users
 RUN adduser --disabled-password --gecos "" ${CONTAINER_USER}
 USER ${CONTAINER_USER}
 WORKDIR /home/${CONTAINER_USER}
-# Install rust toolchain(s), extra crates and esp-idf.
+
+# Install rustup
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- \
+    --default-toolchain none -y --profile minimal
+
+# Update envs
 ENV PATH=${PATH}:/home/${CONTAINER_USER}/.cargo/bin
-ADD --chown=${CONTAINER_USER}:${CONTAINER_GROUP} \
-    https://github.com/esp-rs/rust-build/releases/download/v${XTENSA_TOOLCHAIN_VERSION}/${INSTALL_RUST_TOOLCHAIN} \
-    ${INSTALL_RUST_TOOLCHAIN}
-RUN chmod a+x ${INSTALL_RUST_TOOLCHAIN} \
-    && ./${INSTALL_RUST_TOOLCHAIN} \
-    --extra-crates "ldproxy cargo-espflash cargo-generate sccache" \
-    --build-target "${ESP_BOARD}" \
-    --nightly-version "${NIGHTLY_TOOLCHAIN_VERSION}" \
-    --esp-idf-version "${ESP_IDF_VERSION}" \
-    --minified-esp-idf "YES" \
-    --export-file  ${HOME}/export-esp.sh
-# Activate ESP-IDF and Xtensa Rust toolchain environment
-RUN echo "source ${HOME}/export-esp.sh" >> ~/.bashrc
+
+# Install extra crates
+RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //') && \
+    curl -L "https://github.com/esp-rs/espup/releases/latest/download/espup-${ARCH}" -o "${HOME}/.cargo/bin/espup" && \
+    chmod u+x "${HOME}/.cargo/bin/espup" && \
+    curl -L "https://github.com/esp-rs/embuild/releases/latest/download/ldproxy-${ARCH}.zip" -o "${HOME}/.cargo/bin/ldproxy.zip" && \
+    unzip "${HOME}/.cargo/bin/ldproxy.zip" -d "${HOME}/.cargo/bin/" && \
+    rm "${HOME}/.cargo/bin/ldproxy.zip" && \
+    chmod u+x "${HOME}/.cargo/bin/ldproxy" && \
+    curl -L "https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip" -o "${HOME}/.cargo/bin/web-flash.zip" && \
+    unzip "${HOME}/.cargo/bin/web-flash.zip" -d "${HOME}/.cargo/bin/" && \
+    rm "${HOME}/.cargo/bin/web-flash.zip" && \
+    chmod u+x "${HOME}/.cargo/bin/web-flash"
+
+# Install Rust toolchain for our ESP_BOARD
+RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi && \
+    version="" && \
+    if [ "${XTENSA_VERSION}" != "latest" ];then version="--toolchain-version ${XTENSA_VERSION}"; fi && \
+    ${HOME}/.cargo/bin/espup install\
+    --targets "${ESP_BOARD}" \
+    --log-level debug \
+    --export-file /home/${CONTAINER_USER}/export-esp.sh \
+    $version
+
+# Activate ESP environment
+RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
+
+# Set default toolchain
+RUN if [ "${ESP_BOARD}" = "all" ] || echo "$ESP_BOARD" | grep -q "esp32c"; then \
+    rustup default nightly; \
+    else \
+    rustup default esp; \
+    fi
+
+CMD [ "/bin/bash" ]
