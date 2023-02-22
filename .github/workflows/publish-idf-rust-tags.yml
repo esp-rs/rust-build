@@ -50,5 +50,5 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             XTENSA_VERSION=${{ github.event.inputs.toolchain-version }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }},espressif/idf-rust:${{ matrix.board }}_latest
-          push: false
+          push: true
           platforms: linux/amd64, linux/arm64
