@@ -103,7 +103,7 @@ jobs:
       - name: Build template project
         run: |
           source ${HOME}/export-esp.sh
-          cargo generate --git https://github.com/esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false -d alloc=false
+          cargo generate -a esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d devcontainer=false -d alloc=false
           cd test-${{ matrix.board }}
           cargo build
   crate-check:

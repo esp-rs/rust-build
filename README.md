@@ -263,7 +263,7 @@ rustup target add riscv32imc-unknown-none-elf
     # STD Project
     cargo generate https://github.com/esp-rs/esp-idf-template cargo
     # NO-STD (Bare-metal) Project
-    cargo generate https://github.com/esp-rs/esp-template
+    cargo generate -a esp-rs/esp-template
     ```
 
   To understand the differences between the two ecosystems, see [Ecosystem Overview chapter of the book](https://esp-rs.github.io/book/overview/index.html). There is also a Chapter that explains boths template projects:
