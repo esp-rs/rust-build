@@ -7,6 +7,10 @@ on:
         description: "Version of Rust toolchain"
         required: true
         default: "1.67.0.0"
+      publish:
+        description: "Publish the tags to Dockehub?"
+        required: true
+        default: "true"
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -50,5 +54,5 @@ jobs:
             GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}
             XTENSA_VERSION=${{ github.event.inputs.toolchain-version }}
           tags: espressif/idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }},espressif/idf-rust:${{ matrix.board }}_latest
-          push: true
+          push: ${{ github.event.inputs.publish }}
           platforms: linux/amd64, linux/arm64
