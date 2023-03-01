@@ -18,12 +18,10 @@ jobs:
         os: ["ubuntu-latest", "windows-latest"]
     steps:
       - name: Setup | Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
-          profile: minimal
           components: rust-src,rustfmt
-          default: true
       - name: Setup | cargo-generate (binary)
         if: matrix.os == 'ubuntu-latest'
         id: binaries
@@ -35,7 +33,7 @@ jobs:
       - name: Setup | cargo-generate
         if: steps.binaries.outcome != 'success' || matrix.os == 'windows-latest'
         run: cargo install cargo-generate
-      - uses: Swatinem/rust-cache@v1
+      - uses: Swatinem/rust-cache@v2
       - name: Generate
         run: cargo generate -a esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false -d alloc=false
       - name: Build Project
