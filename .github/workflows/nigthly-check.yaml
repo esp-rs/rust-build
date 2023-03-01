@@ -22,7 +22,7 @@ jobs:
         with:
           toolchain: nightly
           components: rust-src,rustfmt
-      - name: Setup | cargo-generate (Ubuntu - binary)
+      - name: Setup | cargo-generate (binary)
         id: binaries
         continue-on-error: true
         run: |
