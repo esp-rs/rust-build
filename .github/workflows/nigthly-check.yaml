@@ -22,24 +22,16 @@ jobs:
         with:
           toolchain: nightly
           components: rust-src,rustfmt
-      - name: Setup | cargo-generate (Ubuntu - binary)
+      - name: Setup | cargo-generate (Ubuntu binary)
         if: matrix.os == 'ubuntu-latest'
-        id: ubuntu-binary
+        id: binaries
         continue-on-error: true
         run: |
           sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
           tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
           chmod u+x /home/runner/.cargo/bin/cargo-generate
-      - name: Setup | cargo-generate (Windows - binary)
-        if: matrix.os == 'windows-latest'
-        id: windows-binary
-        continue-on-error: true
-        run: |
-          sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-pc-windows-msvc.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
-          tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
-          chmod u+x /home/runner/.cargo/bin/cargo-generate
       - name: Setup | cargo-generate
-        if: steps.ubuntu-binary.outcome != 'success' || steps.windows-binary.outcome != 'success'
+        if: steps.binaries.outcome != 'success' || matrix.os == 'windows-latest'
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v2
       - name: Generate
