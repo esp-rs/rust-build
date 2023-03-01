@@ -22,7 +22,7 @@ jobs:
         with:
           toolchain: nightly
           profile: minimal
-          components: rust-src
+          components: rust-src,rustfmt
           default: true
       - name: Setup | cargo-generate (binary)
         if: matrix.os == 'ubuntu-latest'
