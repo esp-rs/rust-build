@@ -22,12 +22,12 @@ jobs:
         with:
           toolchain: nightly
           components: rust-src,rustfmt
-      - name: Setup | cargo-generate (binary)
-        if: matrix.os == 'ubuntu-latest'
+      - name: Setup | cargo-generate (Ubuntu - binary)
         id: binaries
         continue-on-error: true
         run: |
-          sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-x86_64-unknown-linux-gnu.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
+          ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //')
+          sudo curl -L "https://github.com/cargo-generate/cargo-generate/releases/latest/download/cargo-generate-$(git ls-remote --refs --sort="version:refname" --tags "https://github.com/cargo-generate/cargo-generate" | cut -d/ -f3- | tail -n1)-$ARCH.tar.gz" -o "/home/runner/.cargo/bin/cargo-generate.tar.gz"
           tar xf "/home/runner/.cargo/bin/cargo-generate.tar.gz" -C /home/runner/.cargo/bin
           chmod u+x /home/runner/.cargo/bin/cargo-generate
       - name: Setup | cargo-generate
