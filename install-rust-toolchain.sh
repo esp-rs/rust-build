@@ -74,7 +74,7 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    -o | --cargo-home)
+    -c | --cargo-home)
         CARGO_HOME="$2"
         shift # past argument
         shift # past value
@@ -158,17 +158,12 @@ function install_rust_toolchain() {
 }
 
 function source_cargo() {
-    if [[ -e "${HOME}/.cargo/env" ]]; then
-        source "${HOME}/.cargo/env"
-        export CARGO_HOME="${HOME}/.cargo"
+    if [[ -e "${CARGO_HOME}/env" ]]; then
+        source "${CARGO_HOME}/env"
     else
-        if [[ -n "${CARGO_HOME}" ]] && [[ -e "${CARGO_HOME}/env" ]]; then
-            source ${CARGO_HOME}/env
-        else
-            echo "Warning: Unable to source .cargo/env"
-            export CARGO_HOME="${HOME}/.cargo"
-        fi
+        echo "Warning: Unable to source ${CARGO_HOME}/env"
     fi
+    export CARGO_HOME
 }
 
 function install_esp_idf() {
