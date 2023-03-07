@@ -79,7 +79,7 @@ jobs:
           podman build -t ubuntu-builder  .
       - name: Build Rust
         run: |
-          podman run -e RELEASE_DESCRIPTION='${ github.event.inputs.release_version }' --name rust-linux ubuntu-builder ./build.sh
+          podman run -e RELEASE_DESCRIPTION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
           mkdir -p build
           podman cp rust-linux:rust/build/dist build/dist
       - name: Upload Release Asset
