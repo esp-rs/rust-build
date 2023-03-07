@@ -18,10 +18,12 @@ if (Test-Path -Path esp -PathType Container) {
     rm *.tar
 }
 
+$RustVersionHost = "${RustVersion}-${DefaultHost}"
+
 mkdir esp
-7z e rust-${RustVersion}-${DefaultHost}.tar.xz
-7z x rust-${RustVersion}-${DefaultHost}.tar
-pushd rust-${RustVersion}-${DefaultHost}
+7z e rust-${RustVersionHost}.tar.xz
+7z x rust-${RustVersionHost}.tar
+pushd rust-${RustVersionHost}
 cp -Recurse .\rustc\bin ..\esp\
 cp -Recurse .\rustc\lib ..\esp\
 cp -Recurse .\rustc\share ..\esp\
@@ -34,22 +36,22 @@ pushd rust-src-${RustVersion}
 cp -ErrorAction SilentlyContinue -Recurse .\rust-src\lib\* ..\esp\lib\
 popd
 
-7z e cargo-${RustVersion}.tar.xz
-7z x cargo-${RustVersion}.tar
-pushd cargo-${RustVersion}
+7z e cargo-${RustVersionHost}.tar.xz
+7z x cargo-${RustVersionHost}.tar
+pushd cargo-${RustVersionHost}
 cp -ErrorAction SilentlyContinue -Recurse .\cargo\bin\* ..\esp\bin\
 cp -ErrorAction SilentlyContinue -Recurse .\cargo\libexec ..\esp\
 popd
 
-7z e clippy-${RustVersion}.tar.xz
-7z x clippy-${RustVersion}.tar
-pushd clippy-${RustVersion}
+7z e clippy-${RustVersionHost}.tar.xz
+7z x clippy-${RustVersionHost}.tar
+pushd clippy-${RustVersionHost}
 cp -ErrorAction SilentlyContinue -Recurse .\clippy-preview\bin\* ..\esp\bin\
 popd
 
-7z e rustfmt-${RustVersion}.tar.xz
-7z x rustfmt-${RustVersion}.tar
-pushd rustfmt-${RustVersion}
+7z e rustfmt-${RustVersionHost}.tar.xz
+7z x rustfmt-${RustVersionHost}.tar
+pushd rustfmt-${RustVersionHost}
 cp -ErrorAction SilentlyContinue -Recurse .\rustfmt-preview\bin\* ..\esp\bin\
 popd
 
