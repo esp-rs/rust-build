@@ -7,7 +7,7 @@ param (
     [String]
     $ExportFile = 'Export-EspRust.ps1',
     [String]
-    $ToolchainVersion = '1.67.0.0',
+    $ToolchainVersion = '1.68.0.0',
     [String]
     $ToolchainDestination = "${HOME}/.rustup/toolchains/esp",
     [String]
