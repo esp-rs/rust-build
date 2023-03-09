@@ -161,7 +161,7 @@ function source_cargo() {
     if [[ -e "${CARGO_HOME}/env" ]]; then
         source "${CARGO_HOME}/env"
     else
-        echo "Warning: Unable to source ${CARGO_HOME}/env"
+        echo "Warning: Unable to source ${CARGO_HOME}/env. Verify that the path specified for ${CARGO_HOME} exists"
     fi
     export CARGO_HOME
 }
