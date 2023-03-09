@@ -25,7 +25,7 @@ param (
 
 $ErrorActionPreference = "Stop"
 $RustStdDemo = "rust-esp32-std-demo"
-
+"WARNING: This installation script is deprecated. Use espup(https://github.com/esp-rs/espup) instead."
 "Processing configuration:"
 "-DefaultHost      = ${DefaultHost}"
 "-Features         = ${Features}"
