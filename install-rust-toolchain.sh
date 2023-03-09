@@ -74,7 +74,7 @@ while [[ $# -gt 0 ]]; do
         shift # past argument
         shift # past value
         ;;
-    -o | --cargo-home)
+    -c | --cargo-home)
         CARGO_HOME="$2"
         shift # past argument
         shift # past value
@@ -158,17 +158,12 @@ function install_rust_toolchain() {
 }
 
 function source_cargo() {
-    if [[ -e "${HOME}/.cargo/env" ]]; then
-        source "${HOME}/.cargo/env"
-        export CARGO_HOME="${HOME}/.cargo"
+    if [[ -e "${CARGO_HOME}/env" ]]; then
+        source "${CARGO_HOME}/env"
     else
-        if [[ -n "${CARGO_HOME}" ]] && [[ -e "${CARGO_HOME}/env" ]]; then
-            source ${CARGO_HOME}/env
-        else
-            echo "Warning: Unable to source .cargo/env"
-            export CARGO_HOME="${HOME}/.cargo"
-        fi
+        echo "Warning: Unable to source ${CARGO_HOME}/env. Verify that the path specified for ${CARGO_HOME} exists"
     fi
+    export CARGO_HOME
 }
 
 function install_esp_idf() {
@@ -218,14 +213,14 @@ function install_rust_xtensa_toolchain() {
 
     if [[ ! -d ${TOOLCHAIN_DESTINATION_DIR} ]]; then
         mkdir -p ${TOOLCHAIN_DESTINATION_DIR}
-        if [[ ! -f ${RUST_DIST}.tar.xz ]]; then
+        if [[ ! -f ./${RUST_DIST}/install.sh ]]; then
             echo "** downloading: ${RUST_DIST_URL}"
             curl -LO "${RUST_DIST_URL}"
             mkdir -p ${RUST_DIST}
             tar xf ${RUST_DIST}.tar.xz --strip-components=1 -C ${RUST_DIST}
         fi
         ./${RUST_DIST}/install.sh --destdir=${TOOLCHAIN_DESTINATION_DIR} --prefix="" --without=rust-docs-json-preview,rust-docs
-        if [[ ! -f ${RUST_SRC_DIST}.tar.xz ]]; then
+        if [[ ! -f ./${RUST_SRC_DIST}/install.sh ]]; then
             curl -LO "https://github.com/esp-rs/rust-build/releases/download/v${TOOLCHAIN_VERSION}/${RUST_SRC_DIST}.tar.xz"
             mkdir -p ${RUST_SRC_DIST}
             tar xf ${RUST_SRC_DIST}.tar.xz --strip-components=1 -C ${RUST_SRC_DIST}
