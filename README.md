@@ -43,7 +43,7 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 
 > **Warning**
 >
->  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup#installation), a Rust version of the install scripts.
+>  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup#installation), a Rust version of the installation scripts.
 
 Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
 
