@@ -26,7 +26,7 @@ IS_XTENSA_INSTALLED=0
 IS_SCCACHE_INSTALLED=0
 EXPORT_FILE="export-esp.sh"
 
-echo "WARNING: Install scripts from this repository will now be feature freeze. New features will be added to espup (https://github.com/esp-rs/espup#installation), a Rust version of the install script."
+echo "WARNING: This installation script is deprecated. Use espup(https://github.com/esp-rs/espup) instead."
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
     echo "Arguments: "

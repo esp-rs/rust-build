@@ -25,7 +25,7 @@ param (
 
 $ErrorActionPreference = "Stop"
 $RustStdDemo = "rust-esp32-std-demo"
-"WARNING: Install scripts from this repository will now be feature freeze. New features will be added to espup (https://github.com/esp-rs/espup#installation), a Rust version of this install script."
+"WARNING: This installation script is deprecated. Use espup(https://github.com/esp-rs/espup) instead."
 "Processing configuration:"
 "-DefaultHost      = ${DefaultHost}"
 "-Features         = ${Features}"
