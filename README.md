@@ -15,20 +15,7 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 - [rust-build](#rust-build)
   - [Table of Contents](#table-of-contents)
   - [Xtensa Installation](#xtensa-installation)
-    - [Linux and macOS](#linux-and-macos)
-      - [Prerequisites](#prerequisites)
-      - [Installation commands](#installation-commands)
-      - [Set up the environment variables](#set-up-the-environment-variables)
-      - [Arguments](#arguments)
-    - [Windows x86\_64 GNU](#windows-x86_64-gnu)
-      - [Prerequisites x86\_64 GNU](#prerequisites-x86_64-gnu)
-      - [Installation commands for PowerShell](#installation-commands-for-powershell)
-      - [Long path limitation](#long-path-limitation)
-    - [Windows x86\_64 MSVC](#windows-x86_64-msvc)
-      - [Prerequisites x86\_64 MSVC](#prerequisites-x86_64-msvc)
-      - [Installation commands for PowerShell](#installation-commands-for-powershell-1)
-      - [Set up the environment variables](#set-up-the-environment-variables-1)
-      - [Long path limitation](#long-path-limitation-1)
+      - [Windows long path limitation](#windows-long-path-limitation-1)
   - [RISC-V Installation](#risc-v-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
@@ -151,7 +138,7 @@ We must set the environment variables in every terminal session.
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
 - `-x|--clear-cache`: Removes cached distribution files. Possible values: \[`YES, NO`]. Defaults to: `YES`
 
-#### Long path limitation
+#### Windows Long path limitation
 
 Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
 
