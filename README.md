@@ -37,7 +37,7 @@ Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
   ```sh
   curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
   chmod a+x espup
-    ./espup install
+  ./espup install
   ```
 - macOS aarch64
   ```sh
@@ -52,12 +52,12 @@ Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
   ./espup install
   ```
 - Windows MSVC/GNU using Universal Online idf-installer: https://dl.espressif.com/dl/esp-idf/
-- Windows MSVC
+- Windows MSVC using espup
   ```powershell
   Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
   .\espup.exe install
   ```
-- Windows GNU
+- Windows GNU using espup
   ```powershell
   Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
   .\espup.exe install
