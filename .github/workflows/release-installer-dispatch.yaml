@@ -10,11 +10,11 @@ on:
       release_version:
         description: "Release Version for generation"
         required: true
-        default: "1.67.0.0"
+        default: "1.68.0.0"
       rust_version:
         description: "Version of esp rust to use"
         required: true
-        default: "1.67.0"
+        default: "1.68.0"
 
 # We Break this down into individual jobs to avoid disk space issues
 jobs:
@@ -59,13 +59,3 @@ jobs:
           asset_path: install-rust-toolchain.sh
           asset_name: install-rust-toolchain.sh
           asset_content_type: text/plain
-      - name: Upload PowerShell installer
-        id: upload-powershell-installer
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.get_release.outputs.upload_url }}
-          asset_path: Install-RustToolchain.ps1
-          asset_name: Install-RustToolchain.ps1
-          asset_content_type: text/x-shellscript

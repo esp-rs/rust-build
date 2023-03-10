@@ -15,23 +15,7 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 - [rust-build](#rust-build)
   - [Table of Contents](#table-of-contents)
   - [Xtensa Installation](#xtensa-installation)
-    - [Download installer](#download-installer)
-      - [Download installer in Bash](#download-installer-in-bash)
-      - [Download installer in PowerShell](#download-installer-in-powershell)
-    - [Linux and macOS](#linux-and-macos)
-      - [Prerequisites](#prerequisites)
-      - [Installation commands](#installation-commands)
-      - [Set up the environment variables](#set-up-the-environment-variables)
-      - [Arguments](#arguments)
-    - [Windows x86\_64 GNU](#windows-x86_64-gnu)
-      - [Prerequisites x86\_64 GNU](#prerequisites-x86_64-gnu)
-      - [Installation commands for PowerShell](#installation-commands-for-powershell)
-      - [Long path limitation](#long-path-limitation)
-    - [Windows x86\_64 MSVC](#windows-x86_64-msvc)
-      - [Prerequisites x86\_64 MSVC](#prerequisites-x86_64-msvc)
-      - [Installation commands for PowerShell](#installation-commands-for-powershell-1)
-      - [Set up the environment variables](#set-up-the-environment-variables-1)
-      - [Long path limitation](#long-path-limitation-1)
+      - [Windows long path limitation](#windows-long-path-limitation-1)
   - [RISC-V Installation](#risc-v-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
@@ -41,25 +25,52 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 
 ## Xtensa Installation
 
-> **Warning**
->
->  Install scripts from this repository will now be feature freeze. New features will be added to [`espup`](https://github.com/esp-rs/espup#installation), a Rust version of the install scripts.
+Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
 
-Download the installer from the [Release section](https://github.com/esp-rs/rust-build/releases).
+- Linux aarch64
+  ```sh
+  curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-aarch64-unknown-linux-gnu -o espup
+  chmod a+x espup
+  ./espup install
+  ```
+- Linux x86_64
+  ```sh
+  curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
+  chmod a+x espup
+  ./espup install
+  ```
+- macOS aarch64
+  ```sh
+  curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-aarch64-apple-darwin -o espup
+  chmod a+x espup
+  ./espup install
+  ```
+- macOS x86_64
+  ```sh
+  curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-apple-darwin -o espup
+  chmod a+x espup
+  ./espup install
+  ```
+- Windows MSVC/GNU using Universal Online idf-installer: https://dl.espressif.com/dl/esp-idf/
+- Windows MSVC using espup
+  ```powershell
+  Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
+  .\espup.exe install
+  ```
+- Windows GNU using espup
+  ```powershell
+  Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
+  .\espup.exe install
+  ```
 
-### Download installer
 
 #### Download installer in Bash
 
+** Deprecated method **
+
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.67.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.68.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
-```
-
-#### Download installer in PowerShell
-
-```powershell
-Invoke-WebRequest 'https://github.com/esp-rs/rust-build/releases/download/v1.67.0.0/Install-RustToolchain.ps1' -OutFile .\Install-RustToolchain.ps1
 ```
 
 ### Linux and macOS
@@ -93,7 +104,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.67.0.0
+./install-rust-toolchain.sh --toolchain-version 1.68.0.0
 . ./export-esp.sh
 ```
 
@@ -127,34 +138,7 @@ We must set the environment variables in every terminal session.
 - `-t|--toolchain-version`: Xtensa Rust toolchain version
 - `-x|--clear-cache`: Removes cached distribution files. Possible values: \[`YES, NO`]. Defaults to: `YES`
 
-### Windows x86_64 GNU
-
-The following instructions describe deployment with the GNU toolchain. If you're using Visual Studio with Windows 10 SDK, consider option [Windows x86_64 MSVC](#windows-x86_64-msvc).
-
-#### Prerequisites x86_64 GNU
-
-Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
-
-```powershell
-choco install 7zip -y
-Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
-7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
-$env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
-```
-
-Install ESP-IDF using Windows installer https://dl.espressif.com/dl/esp-idf/
-#### Installation commands for PowerShell
-
-Activate ESP-IDF PowerShell and enter following command:
-
-```powershell
-git clone https://github.com/esp-rs/rust-build.git
-cd rust-build
-./Install-RustToolchain.ps1 -DefaultHost x86_64-pc-windows-gnu -ExportFile Export-EspRust.ps1
-. ./Export-EspRust.ps1
-```
-
-#### Long path limitation
+#### Windows Long path limitation
 
 Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
 
@@ -198,21 +182,11 @@ choco install visualstudio2022-workload-vctools windows-sdk-10.0 -y
 choco install cmake git ninja python3 -y  # requirements for ESP-IDF based development, skip in case of Bare metal
 ```
 
-#### Installation commands for PowerShell
+Main installation:
 
-```sh
-git clone https://github.com/esp-rs/rust-build.git
-cd rust-build
-./Install-RustToolchain.ps1
-```
-
-Export variables are displayed at the end of the output from the script.
-
-Installation of different versions of toolchain:
-
-```sh
-./Install-RustToolchain.ps1 -ToolchainVersion 1.67.0.0
-. ./Export-EspRust.ps1
+```powershell
+Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
+.\espup.exe install
 ```
 
 #### Set up the environment variables

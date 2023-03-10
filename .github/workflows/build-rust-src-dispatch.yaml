@@ -10,17 +10,17 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "build/1.67.0.0"
+        default: "build/1.68.0.0"
       release_version:
         description: "Release Version for generation"
         required: true
-        default: '1.67.0.0'
+        default: '1.68.0.0'
       rust_version:
         description: "Version of esp rust to use"
         required: true
         default: "nightly"
       release_tag:
-        description: "Tag used for uploading (e.g. v1.67.0.0, untagged-00000)"
+        description: "Tag used for uploading (e.g. v1.68.0.0, untagged-00000)"
         required: true
         default: "untagged-06704172812884cde852"
 
@@ -74,7 +74,7 @@ jobs:
       - name: Configure Rust project
         working-directory: rust
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --enable-extended --dist-compression-formats='xz'
+          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --dist-compression-formats='xz'
       - name: Build Rust src dist
         working-directory: rust
         run: |
