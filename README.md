@@ -15,7 +15,19 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 - [rust-build](#rust-build)
   - [Table of Contents](#table-of-contents)
   - [Xtensa Installation](#xtensa-installation)
-      - [Windows long path limitation](#windows-long-path-limitation-1)
+  - [`espup` installation](#espup-installation)
+      - [Download installer in Bash](#download-installer-in-bash)
+    - [Linux and macOS](#linux-and-macos)
+      - [Prerequisites](#prerequisites)
+      - [Installation commands](#installation-commands)
+      - [Set up the environment variables](#set-up-the-environment-variables)
+      - [Arguments](#arguments)
+      - [Windows Long path limitation](#windows-long-path-limitation)
+    - [Windows x86\_64 MSVC](#windows-x86_64-msvc)
+      - [Prerequisites x86\_64 MSVC](#prerequisites-x86_64-msvc)
+    - [Windows x86\_64 GNU](#windows-x86_64-gnu)
+      - [Prerequisites x86\_64 GNU](#prerequisites-x86_64-gnu)
+      - [Long path limitation](#long-path-limitation)
   - [RISC-V Installation](#risc-v-installation)
   - [Building projects](#building-projects)
     - [Cargo first approach](#cargo-first-approach)
@@ -26,47 +38,62 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 ## Xtensa Installation
 
 Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
-
+## `espup` installation
+```sh
+cargo install espup
+# [Unix]: Source the following file in every terminal before building a project
+. $HOME/export-esp.sh
+```
+Or, downloading the pre-compiled release binaries:
 - Linux aarch64
   ```sh
   curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-aarch64-unknown-linux-gnu -o espup
   chmod a+x espup
   ./espup install
+  # Source the following file in every terminal before building a project
+  . $HOME/export-esp.sh
   ```
 - Linux x86_64
   ```sh
   curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-unknown-linux-gnu -o espup
   chmod a+x espup
   ./espup install
+  # Source the following file in every terminal before building a project
+  . $HOME/export-esp.sh
   ```
 - macOS aarch64
   ```sh
   curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-aarch64-apple-darwin -o espup
   chmod a+x espup
   ./espup install
+  # Source the following file in every terminal before building a project
+  . $HOME/export-esp.sh
   ```
 - macOS x86_64
   ```sh
   curl -L https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-apple-darwin -o espup
   chmod a+x espup
   ./espup install
+  # Source the following file in every terminal before building a project
+  . $HOME/export-esp.sh
   ```
-- Windows MSVC/GNU using Universal Online idf-installer: https://dl.espressif.com/dl/esp-idf/
-- Windows MSVC using espup
+- Windows MSVC
   ```powershell
   Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
   .\espup.exe install
   ```
-- Windows GNU using espup
+- Windows GNU
   ```powershell
   Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
   .\espup.exe install
   ```
+
+> For Windows MSVC/GNU, Rust environment can also be installed with Universal Online idf-installer: https://dl.espressif.com/dl/esp-idf/
 
 
 #### Download installer in Bash
 
-** Deprecated method **
+**Deprecated method**
 
 ```bash
 curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.68.0.0/install-rust-toolchain.sh
@@ -189,18 +216,27 @@ Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espu
 .\espup.exe install
 ```
 
-#### Set up the environment variables
-We need to update environment variables as some of the installed tools are not
-yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
-environment variable to avoid conflicts with the system Clang. The environment
-variables that we need to update are stored in an export file. By default this
-export file is `Export-EspRust.ps1` but can be modified with the `-ExportFile` argument.
+### Windows x86_64 GNU
 
-We must set the environment variables in every terminal session.
+The following instructions describe deployment with the GNU toolchain. If you're using Visual Studio with Windows 10 SDK, consider option [Windows x86_64 MSVC](#windows-x86_64-msvc).
 
+#### Prerequisites x86_64 GNU
 
-> **Note**
-> If the export variables are added to the shell startup script, the shell may need to be refreshed.
+Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-binaries/releases and add bin to environment variable PATH
+
+```powershell
+choco install 7zip -y
+Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
+7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
+$env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
+```
+
+Main installation:
+
+```powershell
+Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
+.\espup.exe install
+```
 
 #### Long path limitation
 
@@ -209,8 +245,6 @@ Several build tools have problem with long paths on Windows including Git and CM
 ```
 subst "R:" "rust-project"
 ```
-
-
 
 ## RISC-V Installation
 
