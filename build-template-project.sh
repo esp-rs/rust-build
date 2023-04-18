@@ -8,10 +8,10 @@ export USER=esp
 source /home/esp/export-esp.sh
 
 # Build esp-idf-template (release/v4.4)
-cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-std-$1 --vcs none --silent -d mcu=$1 -d std=true -d espidfver=v4.4 -d devcontainer=false
+cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-std-$1 --vcs none --silent -d mcu=$1 -d defaults=true
 cd test-std-$1
 cargo build
 # Build esp-tempalte
-cargo generate -a esp-rs/esp-template --name test-nostd-$1 --vcs none --silent -d mcu=$1 -d devcontainer=false -d alloc=false
+cargo generate -a esp-rs/esp-template --name test-nostd-$1 --vcs none --silent -d mcu=$1 -d devcontainer=false -d alloc=false -d wokwi=false
 cd test-nostd-$1
 cargo build
