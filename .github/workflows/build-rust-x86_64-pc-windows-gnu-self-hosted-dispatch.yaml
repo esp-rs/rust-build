@@ -10,11 +10,11 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "build/1.68.0.0"
+        default: "build/1.69.0.0"
       release_version:
         description: "Release Version for generation"
         required: true
-        default: '1.68.0.0'
+        default: '1.69.0.0'
       rust_version:
         description: "Version of esp rust to use"
         required: true
@@ -28,7 +28,7 @@ on:
         required: true
         default: "yes"
       release_tag:
-        description: "Tag used for uploading (e.g. v1.68.0.0, untagged-00000)"
+        description: "Tag used for uploading (e.g. v1.69.0.0, untagged-00000)"
         required: true
         default: "untagged-06704172812884cde852"
 
@@ -91,17 +91,27 @@ jobs:
         run: |
           C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description='${{ github.event.inputs.release_version }}' --enable-extended --tools=clippy,cargo,rustfmt --dist-compression-formats='xz' --enable-lld"
       - name: Build with x.py - dist packages
+        id: build-rust
+        working-directory: "R:"
+        continue-on-error: true
+        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+      - name: Retry build with x.py - dist packages - in case of failure on LLVM OOM
+        id: retry-build-rust
+        if: steps.build-rust.outcome == 'failure'
         working-directory: "R:"
         continue-on-error: true
         run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
       - name: Repackage binary
+        id: repackage-binary
+        continue-on-error: true
         shell: powershell
         working-directory: "R:/build/dist"
         run: |
           &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
       - name: Upload Release Asset
-        if: github.event.inputs.upload_artifacts == 'yes'
+        if: github.event.inputs.upload_artifacts == 'yes' && steps.repackage-binary.outcome != 'failure'
         id: upload-release-asset
+        continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -117,3 +127,6 @@ jobs:
       - name: Shut down
         if: github.event.inputs.shutdown_vm == 'yes'
         run: shutdown /s
+      - name: Fail if build failed
+        if: steps.repackage-binary.outcome == 'failure'
+        run: exit 1
