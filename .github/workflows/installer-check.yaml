@@ -102,6 +102,7 @@ jobs:
           --export-file  "${HOME}/export-esp.sh"
       - name: Build template project
         run: |
+          rustup component add rustfmt
           source ${HOME}/export-esp.sh
           cargo generate -a esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d defaults=true
           cd test-${{ matrix.board }}
