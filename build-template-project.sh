@@ -12,6 +12,6 @@ cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name tes
 cd test-std-$1
 cargo build
 # Build esp-tempalte
-cargo generate -a esp-rs/esp-template --name test-nostd-$1 --vcs none --silent -d mcu=$1 -d devcontainer=false -d alloc=false -d wokwi=false
+cargo generate -a esp-rs/esp-template --name test-nostd-$1 --vcs none --silent -d mcu=$1 -d defaults=true
 cd test-nostd-$1
 cargo build
