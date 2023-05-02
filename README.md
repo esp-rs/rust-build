@@ -269,7 +269,7 @@ rustup target add riscv32imc-unknown-none-elf
 
     ```sh
     # STD Project
-    cargo generate https://github.com/esp-rs/esp-idf-template cargo
+    cargo generate esp-rs/esp-idf-template cargo
     # NO-STD (Bare-metal) Project
     cargo generate -a esp-rs/esp-template
     ```

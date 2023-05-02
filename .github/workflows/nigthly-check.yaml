@@ -35,6 +35,6 @@ jobs:
         run: cargo install cargo-generate
       - uses: Swatinem/rust-cache@v2
       - name: Generate
-        run: cargo generate -a esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d devcontainer=false -d alloc=false
+        run: cargo generate -a esp-rs/esp-template --name test --vcs none --silent -d mcu=esp32c3 -d defaults=true
       - name: Build Project
         run: cd test; cargo build
