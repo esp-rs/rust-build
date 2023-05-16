@@ -1,0 +1,55 @@
+name: Build Rust - launch all build workflows at once
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_artifacts:
+        description: "Upload final artifacts to Release?"
+        required: true
+        default: "yes"
+      rust_build_branch:
+        description: "Branch of rust-build to use"
+        required: true
+        default: "build/1.69.0.1"
+      release_version:
+        description: "Release Version for generation"
+        required: true
+        default: '1.69.0.1'
+      rust_version:
+        description: "Version of esp rust to use"
+        required: true
+        default: "nightly"
+      release_tag:
+        description: "Tag used for uploading (e.g. v1.69.0.1, untagged-00000)"
+        required: true
+        default: "untagged-06704172812884cde852"
+
+jobs:
+  launch_workflows:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        workflow_name: [
+          "build-rust-aarch64-apple-darwin-self-hosted-dispatch",
+          "build-rust-aarch64-unknown-linux-gnu-self-hosted-dispatch",
+          "build-rust-x86_64-apple-darwin-self-hosted-dispatch.",
+          "build-rust-x86_64-pc-windows-gnu-self-hosted-dispatch",
+          "build-rust-x86_64-pc-windows-msvc-self-hosted-dispatch",
+          "build-rust-x86_64-unknown-linux-gnu-self-hosted-dispatch"
+        ]
+
+    steps:
+      - name: Launch ${{ matrix.workflow_name }} workflow
+        uses: actions/checkout@v2
+
+     - name: Set up environment variables
+        run: |
+          echo "upload_artifacts=${{ github.event.inputs.upload_artifacts }}" >> $GITHUB_ENV
+          echo "rust_build_branch=${{ github.event.inputs.rust_build_branch }}" >> $GITHUB_ENV
+          echo "release_version=${{ github.event.inputs.release_version }}" >> $GITHUB_ENV
+          echo "rust_version=${{ github.event.inputs.rust_version }}" >> $GITHUB_ENV
+          echo "release_tag=${{ github.event.inputs.release_tag }}" >> $GITHUB_ENV
+
+      - name: Run ${{ matrix.workflow_name }} workflow
+        uses: ./${{ matrix.workflow_name }}
