@@ -4,7 +4,7 @@ set -eu
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.69.0.0"
+TOOLCHAIN_VERSION="1.69.0.1"
 RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
 CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
