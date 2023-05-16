@@ -43,7 +43,7 @@ jobs:
       - name: Launch ${{ matrix.workflow_name }} workflow
         uses: actions/checkout@v2
 
-     - name: Set up environment variables
+      - name: Set up environment variables
         run: |
           echo "upload_artifacts=${{ github.event.inputs.upload_artifacts }}" >> $GITHUB_ENV
           echo "rust_build_branch=${{ github.event.inputs.rust_build_branch }}" >> $GITHUB_ENV
