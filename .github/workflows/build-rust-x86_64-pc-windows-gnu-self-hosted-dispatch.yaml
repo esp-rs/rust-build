@@ -126,7 +126,7 @@ jobs:
         run: subst "R:" /D
       - name: Shut down
         if: github.event.inputs.shutdown_vm == 'yes'
-        run: shutdown /s
+        run: shutdown /s /f /t 30
       - name: Fail if build failed
         if: steps.repackage-binary.outcome == 'failure'
         run: exit 1
