@@ -187,7 +187,7 @@ function install_esp_idf() {
 
 function install_gcc() {
     IDF_TOOL_GCC="${IDF_TOOLS_PATH}/tools/$1-gcc/${GCC_VERSION}-${ARCH}"
-    GCC_FILE="$1-${GCC_VERSION}-${GCC_ARCH}.tar.gz"
+    GCC_FILE="$1-${GCC_VERSION}-${GCC_ARCH}.tar.xz"
     GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
     echo "* installing ${IDF_TOOL_GCC} "
     if [[ ! -d ${IDF_TOOL_GCC} ]]; then
