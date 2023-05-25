@@ -4,19 +4,19 @@ set -eu
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.69.0.0"
+TOOLCHAIN_VERSION="1.69.0.1"
 RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
 CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
 BUILD_TARGET="esp32,esp32s2,esp32s3"
 RUSTC_MINIMAL_MINOR_VERSION="55"
 INSTALLATION_MODE="install" # reinstall, uninstall
-LLVM_VERSION="esp-15.0.0-20221201"
+LLVM_VERSION="esp-16.0.0-20230516"
 LLVM_DIST_MIRROR="https://github.com/espressif/llvm-project/releases/download/${LLVM_VERSION}"
 MINIFIED_LLVM="YES"
 GCC_DIST_MIRROR="https://github.com/espressif/crosstool-NG/releases/download"
-GCC_PATCH="esp-2021r2-patch3"
-GCC_VERSION="8_4_0-esp-2021r2-patch3"
+GCC_PATCH="esp-12.2.0_20230208"
+GCC_VERSION="12.2.0_20230208"
 NIGHTLY_VERSION="nightly"
 CLEAR_DOWNLOAD_CACHE="YES"
 EXTRA_CRATES="ldproxy cargo-espflash"
@@ -187,7 +187,7 @@ function install_esp_idf() {
 
 function install_gcc() {
     IDF_TOOL_GCC="${IDF_TOOLS_PATH}/tools/$1-gcc/${GCC_VERSION}-${ARCH}"
-    GCC_FILE="$1-gcc${GCC_VERSION}-${GCC_ARCH}.tar.gz"
+    GCC_FILE="$1-${GCC_VERSION}-${GCC_ARCH}.tar.xz"
     GCC_DIST_URL="${GCC_DIST_MIRROR}/${GCC_PATCH}/${GCC_FILE}"
     echo "* installing ${IDF_TOOL_GCC} "
     if [[ ! -d ${IDF_TOOL_GCC} ]]; then
@@ -470,7 +470,7 @@ fi
 
 # Configuration overrides for specific architectures
 if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
-    GCC_ARCH="macos"
+    GCC_ARCH="${ARCH}"
     LLVM_ARCH="macos-arm64"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -487,7 +487,7 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
-    GCC_ARCH="macos"
+    GCC_ARCH="${ARCH}"
     LLVM_ARCH="macos"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -508,7 +508,7 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
-    GCC_ARCH="linux-amd64"
+    GCC_ARCH="x86_64-linux-gnu"
     LLVM_ARCH="linux-amd64"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash"
@@ -525,7 +525,7 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
-    GCC_ARCH="linux-arm64"
+    GCC_ARCH="aarch64-linux-gnu"
     LLVM_ARCH="linux-arm64"
     MINIFIED_LLVM="YES"
     # if [[ "${EXTRA_CRATES}" =~ "cargo-generate" ]]; then
@@ -537,7 +537,7 @@ elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/espflash-${ARCH}.zip"
     ESPFLASH_BIN="${CARGO_HOME}/bin/espflash"
 elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
-    GCC_ARCH="win64"
+    GCC_ARCH="x86_64-w64-mingw32"
     LLVM_ARCH="win64"
     CARGO_ESPFLASH_URL="https://github.com/esp-rs/espflash/releases/latest/download/cargo-espflash-${ARCH}.zip"
     CARGO_ESPFLASH_BIN="${CARGO_HOME}/bin/cargo-espflash.exe"

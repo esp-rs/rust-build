@@ -10,17 +10,17 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "build/1.69.0.0"
+        default: "build/1.69.0.1"
       release_version:
         description: "Release Version for generation"
         required: true
-        default: '1.69.0.0'
+        default: '1.69.0.1'
       rust_version:
         description: "Version of esp rust to use"
         required: true
         default: "nightly"
       release_tag:
-        description: "Tag used for uploading (e.g. v1.69.0.0, untagged-00000)"
+        description: "Tag used for uploading (e.g. v1.69.0.1, untagged-00000)"
         required: true
         default: "untagged-06704172812884cde852"
 
