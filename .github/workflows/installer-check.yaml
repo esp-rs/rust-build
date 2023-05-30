@@ -1,7 +1,7 @@
 name: Test installer by building template projects
 
 env:
-  xtensa-toolchain-version: "1.69.0.1"
+  xtensa-toolchain-version: "1.70.0.0"
 
 on:
   push:
