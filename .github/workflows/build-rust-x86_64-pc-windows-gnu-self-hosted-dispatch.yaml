@@ -26,7 +26,7 @@ on:
       shutdown_vm:
         description: "Shut down VM after finishing the build"
         required: true
-        default: "yes"
+        default: "no"
       release_tag:
         description: "Tag used for uploading (e.g. v1.70.0.1, untagged-00000)"
         required: true
@@ -95,12 +95,14 @@ jobs:
         working-directory: "R:"
         continue-on-error: true
         run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
-      - name: Retry build with x.py - dist packages - in case of failure on LLVM OOM
-        id: retry-build-rust
-        if: steps.build-rust.outcome == 'failure'
-        working-directory: "R:"
-        continue-on-error: true
-        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+      # This step make sense only on Azure runners with 8 cores and 16 GB RAM,
+      # because LLVM OOMs. Either increase memory or decrease number of parallel processes.
+      #- name: Retry build with x.py - dist packages - in case of failure on LLVM OOM
+      #  id: retry-build-rust
+      #  if: steps.build-rust.outcome == 'failure'
+      #  working-directory: "R:"
+      #  continue-on-error: true
+      #  run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
       - name: Repackage binary
         id: repackage-binary
         continue-on-error: true
