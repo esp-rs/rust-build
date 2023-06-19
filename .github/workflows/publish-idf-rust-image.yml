@@ -1,4 +1,4 @@
-name: Publish idf-rust-examples image on DockerHub
+name: Publish idf-rust image on DockerHub
 
 on:
   workflow_dispatch:
@@ -37,6 +37,6 @@ jobs:
       - name: Push to Docker Hub
         uses: docker/build-push-action@v2
         with:
-          context: support/idf-rust-examples
+          context: .
           push: true
-          tags: espressif/idf-rust-examples:latest,espressif/idf-rust-examples:${{ github.event.inputs.release_version }},espressif/idf-rust-examples:${{ github.event.inputs.rust_patch_version }},espressif/idf-rust-examples:${{ github.event.inputs.rust_minor_version }}
+          tags: espressif/idf-rust:latest,espressif/idf-rust:${{ github.event.inputs.release_version }},espressif/idf-rust:${{ github.event.inputs.rust_patch_version }},espressif/idf-rust:${{ github.event.inputs.rust_minor_version }}
