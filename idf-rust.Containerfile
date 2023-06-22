@@ -46,7 +46,7 @@ RUN ARCH=$($HOME/.cargo/bin/rustup show | grep "Default host" | sed -e 's/.* //'
     unzip "${HOME}/.cargo/bin/espflash.zip" -d "${HOME}/.cargo/bin/" && \
     rm "${HOME}/.cargo/bin/espflash.zip" && \
     chmod u+x "${HOME}/.cargo/bin/espflash" && \
-    curl -L "https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip" -o "${HOME}/.cargo/bin/web-flash.zip" && \
+    curl -L "https://github.com/esp-rs/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip" -o "${HOME}/.cargo/bin/web-flash.zip" && \
     unzip "${HOME}/.cargo/bin/web-flash.zip" -d "${HOME}/.cargo/bin/" && \
     rm "${HOME}/.cargo/bin/web-flash.zip" && \
     chmod u+x "${HOME}/.cargo/bin/web-flash"
@@ -65,7 +65,7 @@ RUN if [ -n "${GITHUB_TOKEN}" ]; then export GITHUB_TOKEN=${GITHUB_TOKEN}; fi &&
 RUN echo "source /home/${CONTAINER_USER}/export-esp.sh" >> ~/.bashrc
 
 # Set default toolchain
-RUN if [ "${ESP_BOARD}" = "all" ] || echo "$ESP_BOARD" | grep -q "esp32c"; then \
+RUN if [ "${ESP_BOARD}" = "all" ] || echo "$ESP_BOARD" | grep -q "esp32c" || echo "$ESP_BOARD" | grep -q "esp32h"; then \
     rustup default nightly; \
     rustup component add rustfmt ; \
     else \
