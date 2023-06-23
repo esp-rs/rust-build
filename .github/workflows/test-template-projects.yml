@@ -1,0 +1,32 @@
+name: Build esp-template and esp-idf-template for all the targets with Container file
+
+on:
+  workflow_dispatch:
+    inputs:
+      toolchain-version:
+        description: "Version of Rust toolchain"
+        required: true
+        default: "1.70.0.1"
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  bare-metal:
+    name: ${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} tag
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        board: ["esp32", "esp32c2", "esp32c3", "esp32c6", "esp32h2", "esp32s2", "esp32s3"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Build Docker image
+        run: |
+          docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
+           --file idf-rust.Containerfile --build-arg ESP_BOARD=${{ matrix.board }} --build-arg XTENSA_VERSION=${{ github.event.inputs.toolchain-version }} --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} .
+      - name: Build template projects using generated tag
+        run: |
+          docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
+                 --rm idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/build-template-project.sh ${{ matrix.board }}
