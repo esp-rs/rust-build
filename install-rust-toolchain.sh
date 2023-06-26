@@ -30,7 +30,7 @@ echo "WARNING: This installation script is deprecated. Use espup(https://github.
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
     echo "Arguments: "
-    echo "-b|--build-target               Comma separated list of targets [esp32,esp32s2,esp32s3,esp32c3,all]. Defaults to: esp32,esp32s2,esp32s3"
+    echo "-b|--build-target               Comma separated list of targets [esp32,esp32c2,esp32c3,esp32c6,esp32h2,esp32s2,esp32s3,all]. Defaults to: esp32,esp32s2,esp32s3"
     echo "-c|--cargo-home                 Cargo path"
     echo "-d|--toolchain-destination      Toolchain installation folder."
     echo "-e|--extra-crates               Extra crates to install. Defaults to: ldproxy cargo-espflash"
@@ -418,7 +418,7 @@ command -v rustup || install_rustup
 source_cargo
 
 if [[ "${BUILD_TARGET}" == all ]]; then
-    BUILD_TARGET="esp32,esp32s2,esp32s3,esp32c3"
+    BUILD_TARGET="esp32,esp32c2,esp32c3,esp32c6,esp32h2,esp32s2,esp32s3"
 fi
 
 # Deploy missing toolchains - Xtensa toolchain should be used on top of these
@@ -426,7 +426,7 @@ if [[ "${BUILD_TARGET}" =~ esp32s[2|3] || "${BUILD_TARGET}" =~ esp32[,|\ ] || "$
     rustup toolchain list | grep ${NIGHTLY_VERSION} || install_rust_toolchain ${NIGHTLY_VERSION}
 fi
 
-if [[ "${BUILD_TARGET}" =~ esp32c3 ]]; then
+if [[ "${BUILD_TARGET}" =~ esp32c2 || "${BUILD_TARGET}" =~ esp32c3 || "${BUILD_TARGET}" =~ esp32c6 || "${BUILD_TARGET}" =~ esp32h2 ]]; then
     install_rust_riscv_toolchain
 fi
 
@@ -484,7 +484,7 @@ if [[ ${ARCH} == "aarch64-apple-darwin" ]]; then
     SCCACHE_BIN="${CARGO_HOME}/bin/sccache"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
-    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_URL="https://github.com/esp-rs/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GCC_ARCH="${ARCH}"
@@ -505,7 +505,7 @@ elif [[ ${ARCH} == "x86_64-apple-darwin" ]]; then
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
-    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_URL="https://github.com/esp-rs/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     GCC_ARCH="x86_64-linux-gnu"
@@ -522,7 +522,7 @@ elif [[ ${ARCH} == "x86_64-unknown-linux-gnu" ]]; then
     # GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server"
-    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_URL="https://github.com/esp-rs/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash"
 elif [[ ${ARCH} == "aarch64-unknown-linux-gnu" ]]; then
     GCC_ARCH="aarch64-linux-gnu"
@@ -555,7 +555,7 @@ elif [[ ${ARCH} == "x86_64-pc-windows-msvc" ]]; then
     GENERATE_BIN="${CARGO_HOME}/bin/cargo-generate.exe"
     WOKWI_SERVER_URL="https://github.com/MabezDev/wokwi-server/releases/latest/download/wokwi-server-${ARCH}.zip"
     WOKWI_SERVER_BIN="${CARGO_HOME}/bin/wokwi-server.exe"
-    WEB_FLASH_URL="https://github.com/bjoernQ/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
+    WEB_FLASH_URL="https://github.com/esp-rs/esp-web-flash-server/releases/latest/download/web-flash-${ARCH}.zip"
     WEB_FLASH_BIN="${CARGO_HOME}/bin/web-flash.exe"
 fi
 
@@ -600,7 +600,7 @@ fi
 
 if [[ -n "${ESP_IDF_VERSION}" ]]; then
     install_esp_idf
-elif [[ "${BUILD_TARGET}" =~ "esp32c3" ]]; then
+elif [[ "${BUILD_TARGET}" =~ "esp32c2" || "${BUILD_TARGET}" =~ "esp32c3" || "${BUILD_TARGET}" =~ "esp32c6" || "${BUILD_TARGET}" =~ "esp32h2" ]]; then
     install_gcc "riscv32-esp-elf"
 fi
 install_extra_crates

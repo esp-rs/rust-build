@@ -43,8 +43,8 @@ jobs:
           cd test-${{ matrix.board }}
           cargo build
           cd ..
-          cargo generate esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d defaults=true
-          cd test-${{ matrix.board }}
+          cargo generate esp-rs/esp-idf-template cargo --name test-std-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d defaults=true
+          cd test-std-${{ matrix.board }}
           cargo build
   crate-check:
     if: github.event_name == 'workflow_dispatch'
