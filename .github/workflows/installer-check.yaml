@@ -23,7 +23,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
+        board: ["esp32", "esp32c2", "esp32c3", "esp32c6", "esp32h2", "esp32s3", "esp32s3"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -55,7 +55,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
+        board: ["esp32", "esp32c2", "esp32c3", "esp32c6", "esp32h2", "esp32s3", "esp32s3"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
