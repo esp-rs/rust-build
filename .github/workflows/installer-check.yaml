@@ -44,7 +44,7 @@ jobs:
       - name: Build template project
         run: |
           source ${HOME}/export-esp.sh
-          cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d defaults=true
+          cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d advanced=false
           cd test-${{ matrix.board }}
           cargo build
   # esp-idf-master:
@@ -104,7 +104,7 @@ jobs:
         run: |
           rustup component add rustfmt
           source ${HOME}/export-esp.sh
-          cargo generate -a esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d defaults=true
+          cargo generate -a esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d advanced=false
           cd test-${{ matrix.board }}
           cargo build
   crate-check:
