@@ -15,7 +15,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  test-projects:
+  esp-idf-v4-4:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -23,7 +23,72 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        board: ["esp32", "esp32c2", "esp32c3", "esp32c6", "esp32h2", "esp32s3", "esp32s3"]
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.rust-build-branch }}
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install ninja-build
+      - name: Install toolchain
+        run: |
+          ./install-rust-toolchain.sh \
+          --extra-crates "ldproxy cargo-generate" \
+          --build-target "${{ matrix.board }}" \
+          --esp-idf-version "release/v4.4" \
+          --minified-esp-idf "YES" \
+          --export-file  "${HOME}/export-esp.sh"
+      - name: Build template project
+        run: |
+          source ${HOME}/export-esp.sh
+          cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d advanced=false
+          cd test-${{ matrix.board }}
+          cargo build
+  # esp-idf-master:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       shell: bash
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       board: ['esp32', 'esp32s3', 'esp32s3', 'esp32c3']
+  #   steps:
+  #     -
+  #       name: Checkout
+  #       uses: actions/checkout@v2
+  #       with:
+  #         ref: ${{ github.event.inputs.rust-build-branch }}
+  #     - name: Install dependencies
+  #       run: |
+  #         sudo apt-get update
+  #         sudo apt-get install ninja-build
+  #     - name: Install toolchain
+  #       run: |
+  #         ./install-rust-toolchain.sh \
+  #         --extra-crates "ldproxy cargo-generate" \
+  #         --build-target "${{ matrix.board }}" \
+  #         --esp-idf-version "master" \
+  #         --minified-esp-idf "YES" \
+  #         --export-file  "${HOME}/export-esp.sh"
+  #     - name: Build template project
+  #       run: |
+  #         source ${HOME}/export-esp.sh
+  #         cargo generate --git https://github.com/esp-rs/esp-idf-template cargo --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d std=true -d espidfver=mainline -d devcontainer=false
+  #         cd test-${{ matrix.board }}
+  #         cargo build
+  bare-metal:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    strategy:
+      fail-fast: false
+      matrix:
+        board: ["esp32", "esp32s3", "esp32s3", "esp32c3"]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -35,16 +100,12 @@ jobs:
           --extra-crates "ldproxy cargo-generate" \
           --build-target "${{ matrix.board }}" \
           --export-file  "${HOME}/export-esp.sh"
-      - name: Build template projects
+      - name: Build template project
         run: |
           rustup component add rustfmt
           source ${HOME}/export-esp.sh
           cargo generate -a esp-rs/esp-template --name test-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d advanced=false
           cd test-${{ matrix.board }}
-          cargo build
-          cd ..
-          cargo generate esp-rs/esp-idf-template cargo --name test-std-${{ matrix.board }} --vcs none --silent -d mcu=${{ matrix.board }} -d advanced=false
-          cd test-std-${{ matrix.board }}
           cargo build
   crate-check:
     if: github.event_name == 'workflow_dispatch'
