@@ -26,6 +26,7 @@ mkdir esp
 pushd rust-${RustVersionHost}
 cp -Recurse .\rustc\bin ..\esp\
 cp -Recurse .\rustc\lib ..\esp\
+cp -Recurse .\rustc\libexec ..\esp\
 cp -Recurse .\rustc\share ..\esp\
 cp -ErrorAction SilentlyContinue -Recurse .\rust-std-${DefaultHost}\lib\* ..\esp\lib\
 popd
