@@ -74,7 +74,7 @@ jobs:
       - name: Build construction container
         run: |
           cd support/rust-build/${{ github.event.inputs.rust_target }}
-          docker build -t ubuntu-builder  .
+          docker build -f Containerfile -t ubuntu-builder  .
       - name: Build Rust
         run: |
           docker run -e RELEASE_DESCRIPTION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
