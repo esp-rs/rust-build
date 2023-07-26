@@ -96,7 +96,7 @@ Or, downloading the pre-compiled release binaries:
 **Deprecated method**
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.70.0.1/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.71.0.1/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
@@ -131,7 +131,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.70.0.1
+./install-rust-toolchain.sh --toolchain-version 1.71.0.1
 . ./export-esp.sh
 ```
 
@@ -227,7 +227,7 @@ Install MinGW x86_64 e.g., from releases https://github.com/niXman/mingw-builds-
 ```powershell
 choco install 7zip -y
 Invoke-WebRequest https://github.com/niXman/mingw-builds-binaries/releases/download/12.1.0-rt_v10-rev3/x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z -OutFile x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
-7z e x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
+7z x x86_64-12.1.0-release-posix-seh-rt_v10-rev3.7z
 $env:PATH+=";.....\x86_64-12.1.0-release-posix-seh-rt_v10-rev3\mingw64\bin"
 ```
 

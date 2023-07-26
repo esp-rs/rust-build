@@ -10,11 +10,11 @@ on:
       release_version:
         description: "Release Version for generation"
         required: true
-        default: "1.70.0.1"
+        default: "1.71.0.1"
       rust_version:
         description: "Version of esp rust to use"
         required: true
-        default: "1.70.0"
+        default: "1.71.0"
 
 # We Break this down into individual jobs to avoid disk space issues
 jobs:

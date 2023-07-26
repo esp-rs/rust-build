@@ -11,7 +11,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $RustVersion="nightly"
-$ReleaseVersion="1.70.0.1"
+$ReleaseVersion="1.71.0.1"
 
 if (Test-Path -Path esp -PathType Container) {
     Remove-Item -Recurse -Force -Path esp
@@ -26,6 +26,7 @@ mkdir esp
 pushd rust-${RustVersionHost}
 cp -Recurse .\rustc\bin ..\esp\
 cp -Recurse .\rustc\lib ..\esp\
+cp -Recurse .\rustc\libexec ..\esp\
 cp -Recurse .\rustc\share ..\esp\
 cp -ErrorAction SilentlyContinue -Recurse .\rust-std-${DefaultHost}\lib\* ..\esp\lib\
 popd
