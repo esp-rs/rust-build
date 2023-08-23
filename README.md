@@ -41,6 +41,7 @@ Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
 ## `espup` installation
 ```sh
 cargo install espup
+espup install # To install Espressif Rust ecosystem
 # [Unix]: Source the following file in every terminal before building a project
 . $HOME/export-esp.sh
 ```
