@@ -41,6 +41,7 @@ Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
 ## `espup` installation
 ```sh
 cargo install espup
+espup install # To install Espressif Rust ecosystem
 # [Unix]: Source the following file in every terminal before building a project
 . $HOME/export-esp.sh
 ```
@@ -96,7 +97,7 @@ Or, downloading the pre-compiled release binaries:
 **Deprecated method**
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.71.0.1/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.72.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
@@ -131,7 +132,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.71.0.1
+./install-rust-toolchain.sh --toolchain-version 1.72.0.0
 . ./export-esp.sh
 ```
 
