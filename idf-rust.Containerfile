@@ -15,7 +15,7 @@ ARG XTENSA_VERSION=latest
 # Install dependencies
 RUN apt-get update \
     && apt-get install -y git curl gcc clang ninja-build unzip libudev-dev tar xz-utils \
-    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libpython2.7 \
+    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts
 
 # Set users
