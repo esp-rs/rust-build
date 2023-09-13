@@ -1,5 +1,5 @@
 # Base image
-ARG VARIANT=bookworm-slim
+ARG VARIANT=bullseye-slim
 FROM debian:${VARIANT}
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
