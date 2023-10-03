@@ -10,11 +10,11 @@ on:
       rust_build_branch:
         description: "Branch of rust-build to use"
         required: true
-        default: "build/1.72.1.0"
+        default: "build/1.73.0.0"
       release_version:
         description: "Release Version for generation"
         required: true
-        default: '1.72.1.0'
+        default: '1.73.0.0'
       rust_version:
         description: "Version of esp rust to use"
         required: true
@@ -24,7 +24,7 @@ on:
         required: true
         default: "x86_64-pc-windows-msvc"
       release_tag:
-        description: "Tag used for uploading (e.g. v1.72.1.0, untagged-00000)"
+        description: "Tag used for uploading (e.g. v1.73.0.0, untagged-00000)"
         required: true
         default: "untagged-06704172812884cde852"
 
