@@ -272,17 +272,17 @@ rustup target add riscv32imc-unknown-none-elf
     # STD Project
     cargo generate esp-rs/esp-idf-template cargo
     # NO-STD (Bare-metal) Project
-    cargo generate -a esp-rs/esp-template
+    cargo generate esp-rs/esp-template
     ```
 
   To understand the differences between the two ecosystems, see [Ecosystem Overview chapter of the book](https://esp-rs.github.io/book/overview/index.html). There is also a Chapter that explains boths template projects:
-  * [`std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/std-applications/understanding-esp-idf-template.html)
+  * [`std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/generate-project/esp-idf-template.html)
   * [`no_std` template explanation](https://esp-rs.github.io/book/writing-your-own-application/no-std-applications/understanding-esp-template.html)
 
 3. Build and flash:
 
     ```sh
-    cargo espflash  <SERIAL>
+    cargo espflash flash <SERIAL>
     ```
 
     Where  `SERIAL` is the serial port connected to the target device.
@@ -341,15 +341,11 @@ When building for Xtensa targets, we need to [override the `esp` toolchain](http
 Alternatively, some container images with pre-installed Rust and ESP-IDF, are published to Dockerhub and can be used to build Rust projects for ESP boards:
 
 - [idf-rust](https://hub.docker.com/r/espressif/idf-rust)
- - Some tags contain only the toolchain. The naming convention for those tags is: `<xtensa-version>`
- - Some tags contain full `std` environment with esp-idf installed, [wokwi-server](https://github.com/MabezDev/wokwi-server)
-   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
-   in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
-   and use the following naming convention: `<board>_<esp-idf>_<xtensa-version>`
- - Some tags contain full `no_std`environment, [wokwi-server](https://github.com/MabezDev/wokwi-server)
-   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) to use them
-   in Dev Containers. This tags are generated for `linux/arm64` and `linux/amd64`,
-   and use the following naming convention: `<board>_<xtensa-version>`
+ - Tags contain the required toolchain. The naming convention for those tags is: `<board>_<xtensa-version>`
+ - Tags contain [wokwi-server](https://github.com/MabezDev/wokwi-server)
+   and [web-flash](https://github.com/bjoernQ/esp-web-flash-server) installed to use them
+   in Dev Containers.
+ - Tags are generated for `linux/arm64` and `linux/amd64`,
 - [idf-rust-examples](https://hub.docker.com/r/espressif/idf-rust-examples) - includes two examples: [rust-esp32-example](https://github.com/espressif/rust-esp32-example) and [rust-esp32-std-demo](https://github.com/ivmarkov/rust-esp32-std-demo).
 
 Podman example with mapping multiple /dev/ttyUSB from host computer to the container:
