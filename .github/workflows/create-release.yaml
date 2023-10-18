@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
     inputs:
       tag_name:
-        description: "Tag for draft release (e.g. v1.73.0.0)"
+        description: "Tag for draft release (e.g. v1.73.0.1)"
         required: true
-        default: "v1.73.0.0"
+        default: "v1.73.0.1"
 
 jobs:
   create_release:
