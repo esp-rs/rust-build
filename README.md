@@ -97,7 +97,7 @@ Or, downloading the pre-compiled release binaries:
 **Deprecated method**
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.73.0.0/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.73.0.1/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
@@ -132,7 +132,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.73.0.0
+./install-rust-toolchain.sh --toolchain-version 1.73.0.1
 . ./export-esp.sh
 ```
 
