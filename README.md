@@ -371,43 +371,41 @@ flash and simulate projects with Wokwi from the container.
 Template projects [esp-template](https://github.com/esp-rs/esp-template/) and
 [esp-idf-template](https://github.com/esp-rs/esp-idf-template/) include a question for Dev Containers support.
 
-# Build and release process for Rust toolchain with Xtensa support
-
-## Preparing new release
+## Release process
 
 Before beginning preparation for a new release create branch `build/X.Y.Z.W` where `X.Y.Z` matches Rust release number and `W` is build number assigned by esp-rs. `W` has a tendency to be in the range 0-2 during one release.
 
 On the branch change all version numbers from the previous release to the new one using replace function (e.g. in VS Code). Examples of replace: `1.63.0.1 -> 1.64.0.0`. Commit files including CI files to the branch.
 
-## Building release
+### Building release
 
 All build operations must be performed on custom runners, because of large storage required by the build process. Check Settings that all runners are online.
 
 Perform custom dispatch. Change branch to `build/X.Y.Z.W`, change *Branch of rust-build to us* to `build/X.Y.Z.W`:
 
-* [aarch64-unknown-linux-gnu](actions/workflows/build-rust-aarch64-unknown-linux-gnu-self-hosted-dispatch.yaml)
-* [aarch64-apple-darwin](actions/workflows/build-rust-aarch64-apple-darwin-self-hosted-dispatch.yaml)
-* [x86_64-apple-darwin](actions/workflows/build-rust-x86_64-apple-darwin-self-hosted-dispatch.yaml)
-* [x86_64-pc-windows-gnu](actions/workflows/build-rust-x86_64-pc-windows-gnu-self-hosted-dispatch.yaml)
-* [x86_64-pc-windows-msvc](actions/workflows/build-rust-x86_64-pc-windows-msvc-self-hosted-dispatch.yaml)
-* [x86_64-unknown-linux-gnu](actions/workflows/build-rust-x86_64-unknown-linux-gnu-self-hosted-dispatch.yaml)
-* [src](actions/workflows/build-rust-src-dispatch.yaml)
+* [aarch64-unknown-linux-gnu](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-aarch64-unknown-linux-gnu-self-hosted-dispatch.yaml)
+* [aarch64-apple-darwin](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-aarch64-apple-darwin-self-hosted-dispatch.yaml)
+* [x86_64-apple-darwin](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-x86_64-apple-darwin-self-hosted-dispatch.yaml)
+* [x86_64-pc-windows-gnu](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-x86_64-pc-windows-gnu-self-hosted-dispatch.yaml)
+* [x86_64-pc-windows-msvc](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-x86_64-pc-windows-msvc-self-hosted-dispatch.yaml)
+* [x86_64-unknown-linux-gnu](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-x86_64-unknown-linux-gnu-self-hosted-dispatch.yaml)
+* [src](https://github.com/esp-rs/rust-build/actions/workflows/build-rust-src-dispatch.yaml)
 
 Once all things are in place, also upload the installer to releases:
 
-* [installer workflow](actions/workflows/release-installer-dispatch.yaml)
+* [installer workflow](https://github.com/esp-rs/rust-build/actions/workflows/release-installer-dispatch.yaml)
 
 Perform test jobs.
 
 Send notification to Matrix channel about the pre-release.
 
-## Finalization of release (about 2-3 days later)
+### Finalization of release (about 2-3 days later)
 
 Edit Release, turn off Pre-release flag, and Save
 
 Send notification to Matrix channel about the pre-release.
 
-## Rollback release
+### Rollback release
 
 Rollback of the release is possible when a significant bug occurs that damages the release for all platforms.
 
@@ -415,7 +413,7 @@ First rule: Do not panic. :-) Just mark the release as Pre-release in GitHub rel
 
 If `build/X.Y.Z.W` branch was already merged to main, change the default version in main to `build/a.b.c.d` where `a.b.c.d` corresponds to previously known working release. E.g. from `build/1.63.0.1` to `build/1.63.0.0`.
 
-## Uploading new image tags to [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust)
+### Uploading new image tags to [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust)
 
 Once the release is ready, [manually run the `Publish IDF-Rust Tags` workflow](https://github.com/esp-rs/rust-build/actions/workflows/publish-idf-rust-tags.yml) with: 
 - `Branch of rust-build to use` pointing to `main` if the `build/X.Y.Z.W` branch was already merged to `main`, or pointing to `build/X.Y.Z.W` if has not been merged yet, but the branch is ready and feature complete.
