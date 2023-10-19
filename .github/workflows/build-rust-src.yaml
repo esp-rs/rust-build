@@ -12,8 +12,6 @@ on:
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
 
-env:
-
 jobs:
   get_release:
     name: Get release

@@ -49,7 +49,7 @@ on:
 
 jobs:
   aarch64-apple-darwin:
-    if: github.event.inputs.aarch64-apple-darwin
+    if: github.event.inputs.aarch64-apple-darwin == true
     name: aarch64-apple-darwin
     runs-on: ubuntu-latest
     steps:
@@ -64,7 +64,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-aarch64-apple-darwin.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   aarch64-unknown-linux-gnu:
-    if: github.event.inputs.aarch64-unknown-linux-gnu
+    if: github.event.inputs.aarch64-unknown-linux-gnu == true
     name: aarch64-unknown-linux-gnu
     runs-on: ubuntu-latest
     steps:
@@ -79,7 +79,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-aarch64-unknown-linux-gnu.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   x86_64-apple-darwin:
-    if: github.event.inputs.x86_64-apple-darwin
+    if: github.event.inputs.x86_64-apple-darwin == true
     name: x86_64-apple-darwin
     runs-on: ubuntu-latest
     steps:
@@ -94,7 +94,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-x86_64-apple-darwin.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   x86_64-pc-windows-gnu:
-    if: github.event.inputs.x86_64-pc-windows-gnu
+    if: github.event.inputs.x86_64-pc-windows-gnu == true
     name: x86_64-pc-windows-gnu
     runs-on: ubuntu-latest
     steps:
@@ -109,7 +109,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-x86_64-pc-windows-gnu.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   x86_64-pc-windows-msvc:
-    if: github.event.inputs.x86_64-pc-windows-msvc
+    if: github.event.inputs.x86_64-pc-windows-msvc == true
     name: x86_64-pc-windows-msvc
     runs-on: ubuntu-latest
     steps:
@@ -124,7 +124,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-x86_64-pc-windows-msvc.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   x86_64-unknown-linux-gnu:
-    if: github.event.inputs.x86_64-unknown-linux-gnu
+    if: github.event.inputs.x86_64-unknown-linux-gnu == true
     name: x86_64-unknown-linux-gnu
     runs-on: ubuntu-latest
     steps:
@@ -139,7 +139,7 @@ jobs:
             https://api.github.com/repos/esp-rs/rust-build/actions/workflows/build-x86_64-unknown-linux-gnu.yaml/dispatches \
             -d '{"ref":"${{ github.ref_name }}", "inputs": { "release_version":"${{ github.event.inputs.release_version }}", "release_tag":"${{ github.event.inputs.release_tag }}" }}'
   rust-src:
-    if: github.event.inputs.rust-src
+    if: github.event.inputs.rust-src == true
     name: rust-src
     runs-on: ubuntu-latest
     steps:
