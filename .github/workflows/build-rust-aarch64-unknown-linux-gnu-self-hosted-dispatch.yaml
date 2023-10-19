@@ -1,4 +1,4 @@
-name: build-rust-aarch64-linux-dispatch
+name: Xtensa Rust | aarch64-linux-dispatch
 
 on:
   workflow_dispatch:
@@ -30,7 +30,6 @@ on:
 
 jobs:
   get_release:
-    # https://github.com/octokit/request-action
     name: Get release
     runs-on: ubuntu-latest
     outputs:
@@ -39,9 +38,7 @@ jobs:
       - uses: octokit/request-action@v2.x
         id: get_release
         with:
-          route: GET /repos/{owner}/{repo}/releases/tags/${{ github.event.inputs.release_tag }}
-          owner: esp-rs
-          repo: rust-build
+          route: GET /repos/esp-rs/rust-build/releases/tags/${{ github.event.inputs.release_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: get upload url
@@ -52,9 +49,8 @@ jobs:
         env:
           response: ${{ steps.get_release.outputs.data }}
 
-  build-idf-rust:
-    name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
+  build-xtensa-rust:
+    name: Build Xtensa Rust for ${{ matrix.os }}
     needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
