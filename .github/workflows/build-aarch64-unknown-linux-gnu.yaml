@@ -12,9 +12,6 @@ on:
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
 
-env:
-  TARGET_TRIPLE: aarch64-unknown-linux-gnu
-
 jobs:
   get_release:
     name: Get release
@@ -45,8 +42,8 @@ jobs:
         os: [macos-m1-self-hosted]
         include:
           - os: macos-m1-self-hosted
-            ASSET_PATH: "build/dist/rust-nightly-$TARGET_TRIPLE.tar.xz"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-$TARGET_TRIPLE.tar.xz"
+            ASSET_PATH: "build/dist/rust-nightly-aarch64-unknown-linux-gnu.tar.xz"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-aarch64-unknown-linux-gnu.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Initialize Podman
@@ -58,7 +55,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Build construction container
         run: |
-          cd support/rust-build/$TARGET_TRIPLE
+          cd support/rust-build/aarch64-unknown-linux-gnu
           podman build -t ubuntu-builder  .
       - name: Build Rust
         run: |

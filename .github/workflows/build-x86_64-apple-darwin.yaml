@@ -10,8 +10,6 @@ on:
         description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
-env:
-  TARGET_TRIPLE: x86_64-apple-darwin
 
 jobs:
   get_release:
@@ -43,8 +41,8 @@ jobs:
         os: [macos-x86_64-self-hosted]
         include:
           - os: macos-x86_64-self-hosted
-            ASSET_PATH: "build/dist/rust-nightly-$TARGET_TRIPLE.tar.xz"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-$TARGET_TRIPLE.tar.xz"
+            ASSET_PATH: "build/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.xz"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-unknown-linux-gnu.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
