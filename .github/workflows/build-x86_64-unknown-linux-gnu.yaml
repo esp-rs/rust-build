@@ -10,7 +10,7 @@ on:
       release_tag:
         description: "Release tag where artifacts will be stored (e.g. v1.73.0.0, untagged-00000)"
         required: true
-        default: "untagged-3ecdd54e672f465cad2e"s
+        default: "untagged-3ecdd54e672f465cad2e"
 
 env:
   TARGET_TRIPLE: x86_64-unknown-linux-gnus
