@@ -33,7 +33,7 @@ jobs:
           response: ${{ steps.get_release.outputs.data }}
 
   build-xtensa-rust:
-    name: Build Xtensa Rust for  ${{ matrix.os }}
+    name: Build Xtensa Rust
     needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
