@@ -1,4 +1,4 @@
-name: Xtensa Rust | $TARGET_TRIPLE
+name: Xtensa Rust | x86_64-pc-windows-msvc
 
 on:
   workflow_dispatch:

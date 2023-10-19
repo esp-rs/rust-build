@@ -1,4 +1,4 @@
-name: Xtensa Rust | $TARGET_TRIPLE
+name: Xtensa Rust | aarch64-apple-darwin
 
 on:
   workflow_dispatch:
