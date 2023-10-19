@@ -46,22 +46,20 @@ jobs:
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-aarch64-unknown-linux-gnu.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
-      - name: Initialize Podman
+      - name: Initialize docker
         run: |
-          podman ps >/dev/null 2>/dev/null || podman machine start
-          podman stop rust-linux || echo "ok"
-          podman container rm rust-linux || echo "Container name rust-linux is available"
+          docker container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Build construction container
         run: |
           cd support/rust-build/aarch64-unknown-linux-gnu
-          podman build -t ubuntu-builder  .
+          docker build -t ubuntu-builder  .
       - name: Build Rust
         run: |
-          podman run -e RELEASE_DESCRIPTION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
+          docker run -e RELEASE_DESCRIPTION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
           mkdir -p build
-          podman cp rust-linux:rust/build/dist build/dist
+          docker cp rust-linux:rust/build/dist build/dist
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
@@ -74,6 +72,6 @@ jobs:
           asset_content_type: ${{ matrix.ASSET_CONTENT_TYPE }}
       - name: Clean up
         run: |
-          podman container rm rust-linux
-          podman machine stop
+          docker container rm rust-linux
+          docker machine stop
           rm -rf build
