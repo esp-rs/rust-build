@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_version:
-        description: "Xtensa Rust rlease version to build"
+        description: "Xtensa Rust release version to build"
         required: true
         default: "1.73.0.1"
       release_tag:
