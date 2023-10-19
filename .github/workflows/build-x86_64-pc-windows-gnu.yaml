@@ -29,7 +29,7 @@ jobs:
         id: get_upload_url
         run: |
           url=$(echo "$response" | jq -r '.upload_url')
-          echo "::set-output name=url::$url"
+          echo "url=$url" >> $GITHUB_OUTPUT
         env:
           response: ${{ steps.get_release.outputs.data }}
 
