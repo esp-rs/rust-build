@@ -24,7 +24,7 @@ jobs:
         board: ["esp32", "esp32c2", "esp32c3", "esp32c6", "esp32h2", "esp32s2", "esp32s3", "all"]
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Build Docker image
         if: matrix.board != 'all'
         run: |
