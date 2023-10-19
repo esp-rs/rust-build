@@ -27,6 +27,7 @@ IS_SCCACHE_INSTALLED=0
 EXPORT_FILE="export-esp.sh"
 
 echo "WARNING: This installation script is deprecated. Use espup(https://github.com/esp-rs/espup) instead."
+echo "WARNING: This will be removed for Xtensa Rust 1.75.0."
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
     echo "Arguments: "
