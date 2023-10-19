@@ -1,4 +1,4 @@
-name: Xtensa Rust | x86_64-unknown-linux-gnu
+name: Xtensa Rust | x86_64-apple-darwin
 on:
   workflow_dispatch:
     inputs:
@@ -41,8 +41,8 @@ jobs:
         os: [macos-x86_64-self-hosted]
         include:
           - os: macos-x86_64-self-hosted
-            ASSET_PATH: "build/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.xz"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-unknown-linux-gnu.tar.xz"
+            ASSET_PATH: "build/dist/rust-nightly-x86_64-apple-darwin.tar.xz"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-apple-darwin.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
