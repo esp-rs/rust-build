@@ -1,4 +1,4 @@
-name: Prepare ${{ github.event.inputs.next_release }} Xtensa Rust Release
+name: Prepare Release
 
 on:
   workflow_dispatch:
