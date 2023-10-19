@@ -36,7 +36,7 @@ jobs:
           docker run --user esp --mount type=bind,source="$(pwd)/build-template-project.sh",target=/workspace/build-template-project.sh,consistency=cached \
                  --rm idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} /bin/bash /workspace/build-template-project.sh ${{ matrix.board }}
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
+        uses: docker/setup-qemu-action@v3
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       - name: Login to DockerHub
