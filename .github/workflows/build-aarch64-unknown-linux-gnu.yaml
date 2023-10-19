@@ -1,32 +1,19 @@
-name: Xtensa Rust | aarch64-linux-dispatch
+name: Xtensa Rust | $TARGET_TRIPLE
 
 on:
   workflow_dispatch:
     inputs:
-      upload_artifacts:
-        description: "Upload final artifacts to Release?"
-        required: true
-        default: "yes"
-      rust_build_branch:
-        description: "Branch of rust-build to use"
-        required: true
-        default: "build/1.73.0.0"
       release_version:
-        description: "Release Version for generation"
+        description: "Xtensa Rust release version to build"
         required: true
-        default: '1.73.0.0'
-      rust_version:
-        description: "Version of esp rust to use"
-        required: true
-        default: "nightly"
-      rust_target:
-        description: "Target triple"
-        required: true
-        default: "aarch64-unknown-linux-gnu"
+        default: '1.73.0.1'
       release_tag:
-        description: "Tag used for uploading (e.g. v1.73.0.0, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
         required: true
-        default: "untagged-06704172812884cde852"
+        default: "untagged-3ecdd54e672f465cad2e"
+
+env:
+  TARGET_TRIPLE: aarch64-unknown-linux-gnu
 
 jobs:
   get_release:
@@ -58,8 +45,8 @@ jobs:
         os: [macos-m1-self-hosted]
         include:
           - os: macos-m1-self-hosted
-            ASSET_PATH: "build/dist/rust-${{ github.event.inputs.rust_version }}-${{ github.event.inputs.rust_target }}.tar.xz"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.tar.xz"
+            ASSET_PATH: "build/dist/rust-nightly-$TARGET_TRIPLE.tar.xz"
+            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-$TARGET_TRIPLE.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Initialize Podman
@@ -68,10 +55,10 @@ jobs:
           podman stop rust-linux || echo "ok"
           podman container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Build construction container
         run: |
-          cd support/rust-build/${{ github.event.inputs.rust_target }}
+          cd support/rust-build/$TARGET_TRIPLE
           podman build -t ubuntu-builder  .
       - name: Build Rust
         run: |
@@ -79,7 +66,6 @@ jobs:
           mkdir -p build
           podman cp rust-linux:rust/build/dist build/dist
       - name: Upload Release Asset
-        if: github.event.inputs.upload_artifacts == 'yes'
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:

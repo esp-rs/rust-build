@@ -1,36 +1,22 @@
-name: build-rust-windows-x86_64-self-hosted-dispatch
+name: Xtensa Rust | $TARGET_TRIPLE
 
 on:
   workflow_dispatch:
     inputs:
-      upload_artifacts:
-        description: "Upload final artifacts to Release?"
-        required: true
-        default: "yes"
-      rust_build_branch:
-        description: "Branch of rust-build to use"
-        required: true
-        default: "build/1.73.0.0"
       release_version:
-        description: "Release Version for generation"
+        description: "Xtensa Rust release version to build"
         required: true
-        default: '1.73.0.0'
-      rust_version:
-        description: "Version of esp rust to use"
-        required: true
-        default: "nightly"
-      rust_target:
-        description: "Target triple"
-        required: true
-        default: "x86_64-pc-windows-msvc"
+        default: '1.73.0.1'
       release_tag:
-        description: "Tag used for uploading (e.g. v1.73.0.0, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
         required: true
-        default: "untagged-06704172812884cde852"
+        default: "untagged-3ecdd54e672f465cad2e"
+
+env:
+  TARGET_TRIPLE: x86_64-pc-windows-gnu
 
 jobs:
   get_release:
-    # https://github.com/octokit/request-action
     name: Get release
     runs-on: ubuntu-latest
     outputs:
@@ -39,9 +25,7 @@ jobs:
       - uses: octokit/request-action@v2.x
         id: get_release
         with:
-          route: GET /repos/{owner}/{repo}/releases/tags/${{ github.event.inputs.release_tag }}
-          owner: esp-rs
-          repo: rust-build
+          route: GET /repos/esp-rs/rust-build/releases/tags/${{ github.event.inputs.release_tag }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: get upload url
@@ -52,24 +36,23 @@ jobs:
         env:
           response: ${{ steps.get_release.outputs.data }}
 
-  build-idf-rust:
-    name: Build IDF Rust for ${{ matrix.os }}
-    # needs: create_release
+  build-xtensa-rust:
+    name: Build Xtensa Rust for  ${{ matrix.os }}
     needs: get_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-x86_64-self-hosted]
+        os: [x86_64-pc-windows-gnu-self-hosted]
         include:
-          - os: windows-x86_64-self-hosted
-            ASSET_PATH: "rust/build/dist/rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
-            ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-${{ github.event.inputs.rust_target }}.zip"
+          - os: x86_64-pc-windows-gnu-self-hosted
+            ASSET_PATH: "rust/build/dist/rust-nightly-$TARGET_TRIPLE.zip"
+            ASSET_NAME: "rust-nightly-$TARGET_TRIPLE.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Checkout repository - esp-rs/rust
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           path: rust
           repository: esp-rs/rust
@@ -86,19 +69,31 @@ jobs:
       - name: Prepare build
         working-directory: "R:"
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description='${{ github.event.inputs.release_version }}' --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld"
       - name: Build with x.py - dist packages
+        id: build-rust
         working-directory: "R:"
         continue-on-error: true
-        run: python3 x.py dist --stage 2
+        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+      # This step make sense only on Azure runners with 8 cores and 16 GB RAM,
+      # because LLVM OOMs. Either increase memory or decrease number of parallel processes.
+      #- name: Retry build with x.py - dist packages - in case of failure on LLVM OOM
+      #  id: retry-build-rust
+      #  if: steps.build-rust.outcome == 'failure'
+      #  working-directory: "R:"
+      #  continue-on-error: true
+      #  run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
       - name: Repackage binary
+        id: repackage-binary
+        continue-on-error: true
         shell: powershell
         working-directory: "R:/build/dist"
         run: |
-          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1"
+          &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-gnu
       - name: Upload Release Asset
-        if: github.event.inputs.upload_artifacts == 'yes'
+        if: steps.repackage-binary.outcome != 'failure'
         id: upload-release-asset
+        continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -111,3 +106,6 @@ jobs:
         id: unount_path
         continue-on-error: true
         run: subst "R:" /D
+      - name: Fail if build failed
+        if: steps.repackage-binary.outcome == 'failure'
+        run: exit 1

@@ -4,7 +4,7 @@ set -eu
 #set -v
 
 # Default values
-TOOLCHAIN_VERSION="1.73.0.0"
+TOOLCHAIN_VERSION="1.73.0.1"
 RUSTUP_HOME="${RUSTUP_HOME:-${HOME}/.rustup}"
 CARGO_HOME="${CARGO_HOME:-${HOME}/.cargo}"
 TOOLCHAIN_DESTINATION_DIR="${RUSTUP_HOME}/toolchains/esp"
@@ -27,6 +27,7 @@ IS_SCCACHE_INSTALLED=0
 EXPORT_FILE="export-esp.sh"
 
 echo "WARNING: This installation script is deprecated. Use espup(https://github.com/esp-rs/espup) instead."
+echo "WARNING: This will be removed for Xtensa Rust 1.75.0."
 display_help() {
     echo "Usage: install-rust-toolchain.sh <arguments>"
     echo "Arguments: "
