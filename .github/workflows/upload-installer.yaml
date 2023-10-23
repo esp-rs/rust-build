@@ -1,4 +1,4 @@
-name: Upload installers to release
+name: Upload installer to release assets
 
 on:
   workflow_dispatch:
