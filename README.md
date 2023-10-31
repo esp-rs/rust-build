@@ -1,7 +1,5 @@
 # rust-build
 
-[![Nightly checks](https://github.com/esp-rs/rust-build/actions/workflows/nigthly-check.yaml/badge.svg)](https://github.com/esp-rs/rust-build/actions/workflows/nigthly-check.yaml)
-
 This repository contains:
 
 - Workflows for building a Rust fork [esp-rs/rust](https://github.com/esp-rs/rust) with Xtensa support
