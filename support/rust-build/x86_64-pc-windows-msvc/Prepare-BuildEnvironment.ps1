@@ -1,10 +1,11 @@
 # Requires elevation of privileges
+$ProgressPreference = 'SilentlyContinue'
+Set-ExecutionPolicy Bypass
 
 winget install --id Git.Git --accept-source-agreements
 winget install --id 7zip.7zip
 winget install --id Python.Python.3.12 --scope machine
 
-$ProgressPreference = 'SilentlyContinue'
 wget https://aka.ms/vs/17/release/vs_buildtools.exe -OutFile vs_buildtools.exe
 .\vs_buildtools.exe --passive --wait --add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --add Microsoft.VisualStudio.Component.Windows11SDK.22621
 

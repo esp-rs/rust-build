@@ -1,5 +1,7 @@
 # Requires elevation of privileges
 
+Set-ExecutionPolicy Bypass
+
 winget install --id Git.Git --accept-source-agreements
 winget install --id MSYS2.MSYS2
 winget install --id 7zip.7zip
