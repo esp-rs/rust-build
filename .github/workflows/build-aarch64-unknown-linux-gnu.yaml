@@ -84,5 +84,5 @@ jobs:
       - name: Clean up
         run: |
           docker container rm rust-linux
-          docker machine stop
+          #docker machine stop
           rm -rf build
