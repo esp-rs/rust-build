@@ -38,13 +38,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-x86_64-self-hosted]
+        os: [macos-latest]
+        #os: [macos-x86_64-self-hosted]
         include:
-          - os: macos-x86_64-self-hosted
+          - os: macos-latest
             ASSET_PATH: "build/dist/rust-nightly-x86_64-apple-darwin.tar.xz"
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-apple-darwin.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
+      - name: Check architecture
+        run: uname -a
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
