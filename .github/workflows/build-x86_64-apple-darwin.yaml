@@ -48,6 +48,8 @@ jobs:
     steps:
       - name: Check architecture
         run: uname -a
+      - name: Install ninja-build tool
+        uses: seanmiddleditch/gha-setup-ninja@v4
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
