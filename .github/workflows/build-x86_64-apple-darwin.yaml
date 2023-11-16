@@ -48,8 +48,6 @@ jobs:
     steps:
       - name: Check architecture
         run: uname -a
-      - name: Install ninja-build tool
-        uses: seanmiddleditch/gha-setup-ninja@v4
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -60,7 +58,9 @@ jobs:
         run: |
           python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --enable-cargo-native-static --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --set rust.jemalloc --enable-lld
       - name: Build with x.py - dist packages
-        run: python3 x.py dist --stage 2 || echo "Ignoring pkg failure"
+        run: |
+          brew install ninja
+          python3 x.py dist --stage 2 || echo "Ignoring pkg failure"
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
