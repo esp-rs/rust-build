@@ -6,9 +6,9 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: '1.73.0.1'
+        default: '1.74.0.0'
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.74.0.0, untagged-00000)"
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
 
@@ -39,9 +39,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [windows-x86_64-self-hosted]
+        os: [x86_64-pc-windows-msvc-self-hosted]
         include:
-          - os: windows-x86_64-self-hosted
+          - os: x86_64-pc-windows-msvc-self-hosted
             ASSET_PATH: "rust/build/dist/rust-nightly-x86_64-pc-windows-msvc.zip"
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-pc-windows-msvc.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
@@ -66,11 +66,11 @@ jobs:
       - name: Prepare build
         working-directory: "R:"
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld
+          python src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld
       - name: Build with x.py - dist packages
         working-directory: "R:"
         continue-on-error: true
-        run: python3 x.py dist --stage 2
+        run: python x.py dist --stage 2
       - name: Repackage binary
         shell: powershell
         working-directory: "R:/build/dist"

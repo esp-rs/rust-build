@@ -5,9 +5,9 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: '1.73.0.1'
+        default: '1.74.0.0'
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.74.0.0, untagged-00000)"
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
 
@@ -38,13 +38,16 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-x86_64-self-hosted]
+        os: [macos-latest]
+        #os: [macos-x86_64-self-hosted]
         include:
-          - os: macos-x86_64-self-hosted
+          - os: macos-latest
             ASSET_PATH: "build/dist/rust-nightly-x86_64-apple-darwin.tar.xz"
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-apple-darwin.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
+      - name: Check architecture
+        run: uname -a
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
@@ -55,7 +58,9 @@ jobs:
         run: |
           python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --enable-cargo-native-static --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --set rust.jemalloc --enable-lld
       - name: Build with x.py - dist packages
-        run: python3 x.py dist --stage 2 || echo "Ignoring pkg failure"
+        run: |
+          brew install ninja
+          python3 x.py dist --stage 2 || echo "Ignoring pkg failure"
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1

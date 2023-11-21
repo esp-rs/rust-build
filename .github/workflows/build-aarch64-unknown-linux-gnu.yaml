@@ -6,9 +6,9 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: '1.73.0.1'
+        default: '1.74.0.0'
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.73.0.1, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.74.0.0, untagged-00000)"
         required: true
         default: "untagged-3ecdd54e672f465cad2e"
 
@@ -48,6 +48,17 @@ jobs:
     steps:
       - name: Initialize docker
         run: |
+          if ! launchctl list | grep -q com.docker.docker; then
+            echo "Starting Docker..."
+            open --background -a Docker
+            # Wait for Docker to start
+            while ! docker system info > /dev/null 2>&1; do
+              echo "Waiting for Docker to start..."
+              sleep 10
+            done
+          else
+            echo "Docker is already running."
+          fi
           docker container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -73,5 +84,5 @@ jobs:
       - name: Clean up
         run: |
           docker container rm rust-linux
-          docker machine stop
+          #docker machine stop
           rm -rf build
