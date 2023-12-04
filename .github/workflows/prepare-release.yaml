@@ -46,13 +46,3 @@ jobs:
           release_name: Release ${{ github.event.inputs.next_release }}
           draft: true
           prerelease: true
-  check-selfhoste-builders:
-    name: Check builders
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ "macos-m1-self-hosted", "macos-x86_64-self-hosted", "x86_64-pc-windows-gnu-self-hosted", "windows-x86_64-self-hosted" ]
-    steps:
-      - name: Simple test
-        run: echo "Test"
