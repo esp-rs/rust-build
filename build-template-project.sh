@@ -7,7 +7,7 @@ chmod u+x ${HOME}/.cargo/bin/cargo-generate
 export USER=esp
 source /home/esp/export-esp.sh
 
-# Build esp-idf-template (release/v4.4)
+# Build esp-idf-template
 cargo generate esp-rs/esp-idf-template cargo --name test-std-$1 --vcs none --silent -d mcu=$1 -d advanced=false
 cd test-std-$1
 cargo build
