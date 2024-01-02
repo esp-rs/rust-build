@@ -95,7 +95,7 @@ Or, downloading the pre-compiled release binaries:
 **Deprecated method**
 
 ```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.74.0.1/install-rust-toolchain.sh
+curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.75.0.0/install-rust-toolchain.sh
 chmod a+x install-rust-toolchain.sh
 ```
 
@@ -130,7 +130,7 @@ Run `./install-rust-toolchain.sh --help` for more information about arguments.
 Installation of different version of the toolchain:
 
 ```
-./install-rust-toolchain.sh --toolchain-version 1.74.0.1
+./install-rust-toolchain.sh --toolchain-version 1.75.0.0
 . ./export-esp.sh
 ```
 
@@ -413,6 +413,6 @@ If `build/X.Y.Z.W` branch was already merged to main, change the default version
 
 ### Uploading new image tags to [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust)
 
-Once the release is ready, [manually run the `Publish IDF-Rust Tags` workflow](https://github.com/esp-rs/rust-build/actions/workflows/publish-idf-rust-tags.yml) with: 
+Once the release is ready, [manually run the `Publish IDF-Rust Tags` workflow](https://github.com/esp-rs/rust-build/actions/workflows/publish-idf-rust-tags.yml) with:
 - `Branch of rust-build to use` pointing to `main` if the `build/X.Y.Z.W` branch was already merged to `main`, or pointing to `build/X.Y.Z.W` if has not been merged yet, but the branch is ready and feature complete.
 - `Version of Rust toolchain` should be `X.Y.Z.W`.

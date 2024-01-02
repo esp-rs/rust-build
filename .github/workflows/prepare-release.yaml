@@ -6,11 +6,11 @@ on:
       last_release:
         description: "Previous Xtensa Rust release version"
         required: true
-        default: '1.74.0.1'
+        default: '1.75.0.0'
       next_release:
         description: "Next Xtensa Rust release version"
         required: true
-        default: "1.74.0.1"
+        default: "1.75.0.0"
 
 jobs:
   prepare-release:
