@@ -47,6 +47,10 @@ jobs:
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-pc-windows-msvc.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
+      - name: Setup Ninja
+        uses: ashutoshvarma/setup-ninja@master
+        with:
+          version: 1.10.0
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Checkout repository - esp-rs/rust
