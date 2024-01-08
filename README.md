@@ -10,33 +10,28 @@ If you want to know more about the Rust ecosystem on ESP targets, see [The Rust 
 
 ## Table of Contents
 
-- [rust-build](#rust-build)
-  - [Table of Contents](#table-of-contents)
-  - [Xtensa Installation](#xtensa-installation)
+- [Xtensa Installation](#xtensa-installation)
   - [`espup` installation](#espup-installation)
-      - [Download installer in Bash](#download-installer-in-bash)
-    - [Linux and macOS](#linux-and-macos)
-      - [Prerequisites](#prerequisites)
-      - [Installation commands](#installation-commands)
-      - [Set up the environment variables](#set-up-the-environment-variables)
-      - [Arguments](#arguments)
-      - [Windows Long path limitation](#windows-long-path-limitation)
     - [Windows x86\_64 MSVC](#windows-x86_64-msvc)
       - [Prerequisites x86\_64 MSVC](#prerequisites-x86_64-msvc)
     - [Windows x86\_64 GNU](#windows-x86_64-gnu)
       - [Prerequisites x86\_64 GNU](#prerequisites-x86_64-gnu)
-      - [Long path limitation](#long-path-limitation)
-  - [RISC-V Installation](#risc-v-installation)
-  - [Building projects](#building-projects)
-    - [Cargo first approach](#cargo-first-approach)
-    - [Idf first approach](#idf-first-approach)
-  - [Using Containers](#using-containers)
-  - [Using Dev Containers](#using-dev-containers)
+- [RISC-V Installation](#risc-v-installation)
+- [Building projects](#building-projects)
+  - [Cargo first approach](#cargo-first-approach)
+  - [Idf first approach](#idf-first-approach)
+- [Using Containers](#using-containers)
+- [Using Dev Containers](#using-dev-containers)
+- [Release process](#release-process)
+  - [Building release](#building-release)
+  - [Finalization of release (about 2-3 days later)](#finalization-of-release-about-2-3-days-later)
+  - [Rollback release](#rollback-release)
+  - [Uploading new image tags to espressif/idf-rust](#uploading-new-image-tags-to-espressifidf-rust)
 
 ## Xtensa Installation
 
 Deployment is done using [`espup`](https://github.com/esp-rs/espup#installation)
-## `espup` installation
+### `espup` installation
 ```sh
 cargo install espup
 espup install # To install Espressif Rust ecosystem
@@ -88,89 +83,6 @@ Or, downloading the pre-compiled release binaries:
   ```
 
 > For Windows MSVC/GNU, Rust environment can also be installed with Universal Online idf-installer: https://dl.espressif.com/dl/esp-idf/
-
-
-#### Download installer in Bash
-
-**Deprecated method**
-
-```bash
-curl -LO https://github.com/esp-rs/rust-build/releases/download/v1.74.0.1/install-rust-toolchain.sh
-chmod a+x install-rust-toolchain.sh
-```
-
-### Linux and macOS
-
-The following instructions are specific for the ESP32 and ESP32-S series based on Xtensa architecture.
-
-Instructions for ESP-C series based on RISC-V architecture are described in [RISC-V section](#risc-v-installation).
-
-#### Prerequisites
-
-- Linux:
-  - [Dependencies (command for Ubuntu/Debian)](https://github.com/esp-rs/esp-idf-template/blob/master/cargo/.devcontainer/Dockerfile#L16):
-    ```sh
-    apt-get install -y git curl gcc clang ninja-build cmake libudev-dev unzip xz-utils \
-    python3 python3-pip python3-venv libusb-1.0-0 libssl-dev pkg-config libpython2.7
-    ```
-
-No prerequisites are needed for macOS.
-
-#### Installation commands
-
-```sh
-git clone https://github.com/esp-rs/rust-build.git
-cd rust-build
-./install-rust-toolchain.sh
-. ./export-esp.sh
-```
-
-Run `./install-rust-toolchain.sh --help` for more information about arguments.
-
-Installation of different version of the toolchain:
-
-```
-./install-rust-toolchain.sh --toolchain-version 1.74.0.1
-. ./export-esp.sh
-```
-
-#### Set up the environment variables
-We need to update environment variables as some of the installed tools are not
-yet added to the PATH environment variable, we also need to add LIBCLANG_PATH
-environment variable to avoid conflicts with the system Clang. The environment
-variables that we need to update are shown at the end of the install script and
-stored in an export file. By default this export file is `export-esp.sh` but can
-be modified with the `-f|--export-file` argument.
-
-We must set the environment variables in every terminal session.
-
-
-> **Note**
-> If the export variables are added to the shell startup script, the shell may need to be refreshed.
-
-#### Arguments
-- `-b|--build-target`: Comma separated list of targets \[`esp32,esp32s2,esp32s3,esp32c3,all`]. Defaults to: `esp32,esp32s2,esp32s3`
-- `-c|--cargo-home`: Cargo path.
-- `-d|--toolchain-destination`: Toolchain installation folder. Defaults to: `<rustup_home>/toolchains/esp`
-- `-e|--extra-crates`: Extra crates to install. Defaults to: `ldproxy cargo-espflash`
-- `-f|--export-file`: Destination of the export file generated. Defaults to: `export-esp.sh`
-- `-i|--installation-mode`: Installation mode: \[`install, reinstall, uninstall`]. Defaults to: `install`
-- `-k|--minified-llvm`: Use minified LLVM. Possible values: \[`YES, NO`]. Defaults to: `YES`
-- `-l|--llvm-version`: LLVM version.
-- `-m|--minified-esp-idf`: \[Only applies if using `-s|--esp-idf-version`]. Deletes some idf folders to save space. Possible values \[`YES, NO`]. Defaults to: `NO`
-- `-n|--nightly-version`: Nightly Rust toolchain version. Defaults to: `nightly`
-- `-r|--rustup-home`: Path to .rustup. Defaults to: `~/.rustup`
-- `-s|--esp-idf-version`: [ESP-IDF branch](https://github.com/espressif/esp-idf/branches) to install. When empty, no esp-idf is installed. Default: `""`
-- `-t|--toolchain-version`: Xtensa Rust toolchain version
-- `-x|--clear-cache`: Removes cached distribution files. Possible values: \[`YES, NO`]. Defaults to: `YES`
-
-#### Windows Long path limitation
-
-Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
-
-```
-subst "R:" "rust-project"
-```
 
 ### Windows x86_64 MSVC
 
@@ -235,14 +147,6 @@ Main installation:
 ```powershell
 Invoke-WebRequest 'https://github.com/esp-rs/espup/releases/latest/download/espup-x86_64-pc-windows-msvc.exe' -OutFile .\espup.exe
 .\espup.exe install
-```
-
-#### Long path limitation
-
-Several build tools have problem with long paths on Windows including Git and CMake. We recommend to put project on short path or use command `subst` to map the directory with the project to separate disk letter.
-
-```
-subst "R:" "rust-project"
 ```
 
 ## RISC-V Installation
@@ -413,6 +317,6 @@ If `build/X.Y.Z.W` branch was already merged to main, change the default version
 
 ### Uploading new image tags to [espressif/idf-rust](https://hub.docker.com/r/espressif/idf-rust)
 
-Once the release is ready, [manually run the `Publish IDF-Rust Tags` workflow](https://github.com/esp-rs/rust-build/actions/workflows/publish-idf-rust-tags.yml) with: 
+Once the release is ready, [manually run the `Publish IDF-Rust Tags` workflow](https://github.com/esp-rs/rust-build/actions/workflows/publish-idf-rust-tags.yml) with:
 - `Branch of rust-build to use` pointing to `main` if the `build/X.Y.Z.W` branch was already merged to `main`, or pointing to `build/X.Y.Z.W` if has not been merged yet, but the branch is ready and feature complete.
 - `Version of Rust toolchain` should be `X.Y.Z.W`.
