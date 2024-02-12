@@ -39,9 +39,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [x86_64-pc-windows-gnu-self-hosted]
+        os: [self-hosted, Windows]
         include:
-          - os: x86_64-pc-windows-gnu-self-hosted
+          - os: [self-hosted, Windows]
             ASSET_PATH: "rust/build/dist/rust-${{ github.event.inputs.release_version }}-x86_64-pc-windows-gnu.zip"
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-pc-windows-gnu.zip"
             ASSET_CONTENT_TYPE: "application/x-tar"
