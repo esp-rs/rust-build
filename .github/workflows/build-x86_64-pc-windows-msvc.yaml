@@ -57,12 +57,15 @@ jobs:
         run: subst "R:" "$env:GITHUB_WORKSPACE\rust"
       - name: Prepare build
         working-directory: "R:"
+        shell: powershell
         run: |
-          python3 src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld
+          &"C:/Program Files/Python312/python" src/bootstrap/configure.py --experimental-targets=Xtensa --release-channel=nightly --release-description="${{ github.event.inputs.release_version }}" --enable-extended --tools=clippy,cargo,rustfmt,rust-analyzer-proc-macro-srv --dist-compression-formats='xz' --enable-lld
       - name: Build with x.py - dist packages
         working-directory: "R:"
         continue-on-error: true
-        run: python3 x.py dist --stage 2
+        shell: powershell
+        run: |
+          &"C:/Program Files/Python312/python" x.py dist --stage 2
       - name: Repackage binary
         shell: powershell
         working-directory: "R:/build/dist"
