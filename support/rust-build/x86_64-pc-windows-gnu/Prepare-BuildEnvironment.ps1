@@ -9,4 +9,7 @@ winget install --id Python.Python.3.12 --scope machine
 
 setx /M PATH "$env:PATH;C:\Program Files\7-Zip"
 
+# Exclude R: mounted directory for building Rust from Windows Defender scan, which blocks most of the tools
+Add-MpPreference -ExclusionPath "R:\"
+
 c:\msys64\msys2_shell.cmd -mingw64
