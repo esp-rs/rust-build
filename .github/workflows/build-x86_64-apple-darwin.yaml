@@ -38,8 +38,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [macos-latest]
-        #os: [macos-x86_64-self-hosted]
+        os: [macos-12]
         include:
           - os: macos-latest
             ASSET_PATH: "build/dist/rust-nightly-x86_64-apple-darwin.tar.xz"
