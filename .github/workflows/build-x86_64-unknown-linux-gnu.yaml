@@ -9,7 +9,7 @@ on:
       release_tag:
         description: "Release tag where artifacts will be stored (e.g. v1.79.0.0, untagged-00000)"
         required: true
-        default: "untagged-3ecdd54e672f465cad2e"
+        default: "v1.79.0.0"
 
 jobs:
   get_release:
