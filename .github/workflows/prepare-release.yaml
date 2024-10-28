@@ -6,11 +6,11 @@ on:
       last_release:
         description: "Previous Xtensa Rust release version"
         required: true
-        default: '1.80.0.0'
+        default: 'v1.82.0.2'
       next_release:
         description: "Next Xtensa Rust release version"
         required: true
-        default: "1.80.0.0"
+        default: "v1.82.0.2"
 
 jobs:
   prepare-release:
@@ -44,5 +44,4 @@ jobs:
         with:
           tag_name: ${{ github.event.inputs.next_release }}
           release_name: Release ${{ github.event.inputs.next_release }}
-          draft: true
           prerelease: true
