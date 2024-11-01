@@ -6,7 +6,7 @@ on:
       last_release:
         description: "Previous Xtensa Rust release version"
         required: true
-        default: 'v1.82.0.3'
+        default: "v1.82.0.3"
       next_release:
         description: "Next Xtensa Rust release version"
         required: true
@@ -16,27 +16,38 @@ jobs:
   prepare-release:
     runs-on: ubuntu-latest
     steps:
-    #   - uses: actions/checkout@v4
-    #   - name: Replace Xtensa Rust versions
-    #     run: |
-    #         find . -type f -exec sed -i 's/${{ github.event.inputs.last_release }}/${{ github.event.inputs.next_release }}/g' {} \;
-    #   - name: Commit changes
-    #     uses: EndBug/add-and-commit@v9
-    #     with:
-    #       default_author: github_actions
-    #       add: '*'
-    #       message: 'Bump Xtensa Rust version to ${{ github.event.inputs.next_release }}'
-    #       new_branch: build/${{ github.event.inputs.next_release }}
-    #   - name: Create Pull Request
-    #     uses: peter-evans/create-pull-request@v5
-    #     with:
-    #       token: ${{ secrets.PAT }}
-    #       branch: build/${{ github.event.inputs.next_release }}
-    #       base: main
-    #       delete-branch: false
-    #       title: 'Update Xtensa Rust version to ${{ github.event.inputs.next_release }}'
-    #       body:
-    #       draft: false
+      - uses: actions/checkout@v4
+
+      - name: Replace Xtensa Rust versions
+        run: |
+          find . -type f -exec sed -i 's/${{ github.event.inputs.last_release }}/${{ github.event.inputs.next_release }}/g' {} \;
+
+      - name: Commit changes
+        uses: EndBug/add-and-commit@v9
+        with:
+          default_author: github_actions
+          add: "*"
+          message: "Bump Xtensa Rust version to ${{ github.event.inputs.next_release }}"
+          new_branch: build/${{ github.event.inputs.next_release }}
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.PAT }}
+          branch: build/${{ github.event.inputs.next_release }}
+          base: main
+          delete-branch: false
+          title: "Update Xtensa Rust version to ${{ github.event.inputs.next_release }}"
+          body: ""
+          draft: false
+
+      - uses: mad9000/actions-find-and-replace-string@5
+        id: findandreplace
+        with:
+          source: ${{ github.event.inputs.next_release }}
+          find: "v"
+          replace: ""
+
       - name: Create Release
         uses: actions/create-release@v1
         env:
@@ -45,3 +56,14 @@ jobs:
           tag_name: ${{ github.event.inputs.next_release }}
           release_name: Release ${{ github.event.inputs.next_release }}
           prerelease: true
+          body: |
+            Rust Xtensa Toolchain ${{ github.event.inputs.next_release }} for ESP32, ESP32-S2, ESP32-S3.
+
+            Installation: https://docs.esp-rs.org/book/installation/riscv-and-xtensa.html
+
+            ```
+            espup install --toolchain-version ${{ steps.findandreplace.outputs.value }}
+            source ~/export-esp.sh
+            ```
+
+            Note: For the ESP32-C2, ESP32-C3, ESP32-C6, or ESP32-H2, you can use the Rust `nightly`, `stable`, or `esp` channels.
