@@ -6,7 +6,7 @@ on:
       next_release:
         description: "Next Xtensa Rust release version"
         required: true
-        default: "v1.83.0.1"
+        default: "v1.84.0.0"
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
