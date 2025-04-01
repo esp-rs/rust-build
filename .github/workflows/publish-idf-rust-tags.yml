@@ -6,7 +6,7 @@ on:
       toolchain-version:
         description: "Version of Rust toolchain"
         required: true
-        default: "1.84.0.0"
+        default: "1.85.0.0"
       publish:
         description: "Publish the tags to Dockehub?"
         required: true
