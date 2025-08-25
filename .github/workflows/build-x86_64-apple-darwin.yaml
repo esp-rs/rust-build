@@ -48,7 +48,7 @@ jobs:
       - name: Check architecture
         run: uname -a
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
