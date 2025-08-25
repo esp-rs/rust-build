@@ -47,7 +47,7 @@ jobs:
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           repository: esp-rs/rust
           ref: esp-${{ github.event.inputs.release_version }}
