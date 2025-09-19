@@ -6,11 +6,11 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: '1.89.0.0'
+        default: "1.90.0.0"
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.89.0.0, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.90.0.0, untagged-00000)"
         required: true
-        default: "v1.89.0.0"
+        default: "v1.90.0.0"
 
 jobs:
   get_release:
@@ -38,6 +38,10 @@ jobs:
     needs: get_release
     runs-on: [self-hosted, Windows]
     steps:
+      - name: Prepare dependencies
+        run: |
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "pacman -R mingw-w64-ucrt-x86_64-gcc --noconfirm || echo 'Package not installed'"
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "pacman -S --noconfirm git make diffutils tar mingw-w64-x86_64-python mingw-w64-x86_64-cmake mingw-w64-x86_64-gcc mingw-w64-x86_64-ninja"
       - name: Checkout repository
         uses: actions/checkout@v5
       - name: Checkout repository - esp-rs/rust
@@ -63,7 +67,8 @@ jobs:
         id: build-rust
         working-directory: "R:"
         continue-on-error: true
-        run: C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
+        run: |
+          C:\msys64\usr\bin\env.exe MSYSTEM=MINGW64 /usr/bin/bash -lc "cd /r; python3 x.py dist --stage 2"
       - name: Repackage binary
         id: repackage-binary
         continue-on-error: true
