@@ -6,11 +6,11 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: '1.89.0.0'
+        default: '1.90.0.0'
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.89.0.0, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.90.0.0, untagged-00000)"
         required: true
-        default: "v1.89.0.0"
+        default: "v1.90.0.0"
 
 jobs:
   get_release:
@@ -68,7 +68,7 @@ jobs:
           docker build -t ubuntu-builder -f Containerfile .
       - name: Build Rust
         run: |
-          docker run -e RELEASE_DESCRIPTION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
+          docker run -e RELEASE_BRANCH='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
           mkdir -p build
           docker cp rust-linux:/home/rust/rust/build/dist build/dist
       - name: Upload Release Asset
