@@ -68,7 +68,7 @@ jobs:
           docker build -t ubuntu-builder -f Containerfile .
       - name: Build Rust
         run: |
-          docker run -e RELEASE_BRANCH='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
+          docker run -e RELEASE_VERSION='${{ github.event.inputs.release_version }}' --name rust-linux ubuntu-builder ./build.sh
           mkdir -p build
           docker cp rust-linux:/home/rust/rust/build/dist build/dist
       - name: Upload Release Asset
