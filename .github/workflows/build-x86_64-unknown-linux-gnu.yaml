@@ -5,11 +5,11 @@ on:
       release_version:
         description: "Xtensa Rust release version to build"
         required: true
-        default: "1.90.0.0"
+        default: "1.91.0.0"
       release_tag:
-        description: "Release tag where artifacts will be stored (e.g. v1.90.0.0, untagged-00000)"
+        description: "Release tag where artifacts will be stored (e.g. v1.91.0.0, untagged-00000)"
         required: true
-        default: "v1.90.0.0"
+        default: "v1.91.0.0"
 
 jobs:
   get_release:
