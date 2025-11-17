@@ -38,9 +38,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [linux-x86_64-self-hosted]
+        os: [macos-m1-self-hosted]
         include:
-          - os: linux-x86_64-self-hosted
+          - os: macos-m1-self-hosted
             ASSET_PATH: "build/dist/rust-nightly-x86_64-unknown-linux-gnu.tar.xz"
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-unknown-linux-gnu.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
