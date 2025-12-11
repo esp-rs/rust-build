@@ -3,9 +3,26 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV LC_ALL=C.UTF-8
 ENV LANG=C.UTF-8
-RUN apt-get update \
-    && apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
-    pkg-config libtinfo5
+
+# The following block of commands are order sensitive!
+# update _must_ come before adding declaring to dpkg we want amd64 packages else it fails
+# we update before and after adding the arch to ensure we have the latest package lists
+# this block ensures x86 dependencies are there for rosetta to use during various build steps
+RUN apt-get update
+RUN echo '\
+deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy main restricted universe multiverse\n\
+deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-updates main restricted universe multiverse\n\
+deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-security main restricted universe multiverse\n\
+deb [arch=amd64] http://archive.ubuntu.com/ubuntu/ jammy-backports main restricted universe multiverse\n\
+' >> /etc/apt/sources.list
+RUN apt-get update
+RUN dpkg --add-architecture amd64
+RUN apt-get install libc6:amd64 libstdc++6:amd64 -y
+
+RUN apt-get install -y vim nano git curl gcc ninja-build cmake libudev-dev python3 python3-pip libusb-1.0-0 libssl-dev \
+    pkg-config libtinfo5 \
+    gcc-x86-64-linux-gnu \
+    g++-x86-64-linux-gnu
 
 RUN adduser --disabled-password --gecos "" rust
 USER rust

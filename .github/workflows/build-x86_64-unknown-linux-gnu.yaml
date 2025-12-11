@@ -45,8 +45,19 @@ jobs:
             ASSET_NAME: "rust-${{ github.event.inputs.release_version }}-x86_64-unknown-linux-gnu.tar.xz"
             ASSET_CONTENT_TYPE: "application/x-tar"
     steps:
-      - name: Initialize Docker
+      - name: Initialize docker
         run: |
+          if ! launchctl list | grep -q com.docker.docker; then
+            echo "Starting Docker..."
+            open --background -a Docker
+            # Wait for Docker to start
+            while ! docker system info > /dev/null 2>&1; do
+              echo "Waiting for Docker to start..."
+              sleep 10
+            done
+          else
+            echo "Docker is already running."
+          fi
           docker container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
         uses: actions/checkout@v6
