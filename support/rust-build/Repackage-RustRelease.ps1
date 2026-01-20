@@ -11,7 +11,7 @@ param (
 $ErrorActionPreference = "Stop"
 
 $RustVersion="nightly"
-$ReleaseVersion="1.92.0.0"
+$ReleaseVersion="1.93.0.0"
 
 if (Test-Path -Path esp -PathType Container) {
     Remove-Item -Recurse -Force -Path esp
