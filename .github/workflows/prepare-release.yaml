@@ -23,7 +23,7 @@ jobs:
           body: |
             Rust Xtensa Toolchain ${{ github.event.inputs.next_release }} for ESP32, ESP32-S2, ESP32-S3.
 
-            Installation: https://docs.esp-rs.org/book/installation/riscv-and-xtensa.html
+            Installation: https://docs.espressif.com/projects/rust/book/getting-started/toolchain.html
 
             ```
             espup install --toolchain-version ${{ steps.findandreplace.outputs.value }}
