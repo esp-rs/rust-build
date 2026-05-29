@@ -31,7 +31,7 @@ jobs:
           docker image build --tag idf-rust:${{ matrix.board }}_${{ github.event.inputs.toolchain-version }} \
            --file idf-rust.Containerfile --build-arg ESP_BOARD=${{ matrix.board }} --build-arg XTENSA_VERSION=${{ github.event.inputs.toolchain-version }} --build-arg GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }} .
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Login to DockerHub
