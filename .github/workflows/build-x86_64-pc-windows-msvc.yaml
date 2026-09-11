@@ -72,7 +72,7 @@ jobs:
         run: |
           &"$env:GITHUB_WORKSPACE/support/rust-build/Repackage-RustRelease.ps1" -DefaultHost x86_64-pc-windows-msvc
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:

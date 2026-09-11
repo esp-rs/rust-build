@@ -66,7 +66,7 @@ jobs:
       - name: Rename dist artifact
         run: cp "${{ matrix.ASSET_PATH }}" "rust/build/dist/${{ matrix.ASSET_NAME }}"
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
