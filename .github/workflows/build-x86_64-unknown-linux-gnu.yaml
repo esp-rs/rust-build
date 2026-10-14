@@ -60,7 +60,7 @@ jobs:
           fi
           docker container rm rust-linux || echo "Container name rust-linux is available"
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Build construction container
         run: |
           cd support/rust-build/x86_64-unknown-linux-gnu
