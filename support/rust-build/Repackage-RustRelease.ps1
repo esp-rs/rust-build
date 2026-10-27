@@ -2,7 +2,7 @@
 param (
     [Parameter()]
     [String]
-    [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu")]
+    [ValidateSet("x86_64-pc-windows-msvc", "x86_64-pc-windows-gnu", "aarch64-pc-windows-msvc")]
     $DefaultHost = "x86_64-pc-windows-msvc"
 )
 # Helper script to perform repackaging of Windows release
